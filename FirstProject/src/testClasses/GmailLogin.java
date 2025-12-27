@@ -18,6 +18,7 @@ public class GmailLogin {
 			driver.get("https://www.google.com");
 			Thread.sleep(2000);
 			WebElement element = driver.findElement(By.xpath("//a[text()='Gmail']"));
+			System.out.println("The font family is :"+element.getCssValue("font-family"));
 			Dimension d = element.getSize();
 			System.out.println("Width: "+d.getWidth()+" Height: "+d.getHeight());
 			Point location = element.getLocation();
