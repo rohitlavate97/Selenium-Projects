@@ -1,0 +1,890 @@
+What Selenium cannot solve alone
+CAPTCHA (you should not bypass it in real apps)
+True performance testing (use JMeter/LoadRunner)
+Full network mocking like Playwright (Selenium is improving but not same
+
+What “enterprise Selenium framework” typically includes (checklist)
+✅ POM + BaseTest + DriverFactory
+✅ ConfigReader (properties/yaml)
+✅ Wait & Actions wrapper methods
+✅ Retry + flaky test control (limited + monitored)
+✅ Logging + screenshots + reports
+✅ Parallel execution + ThreadLocal
+✅ CI pipeline + artifacts (reports/screenshots)
+✅ Grid/cloud execution support
+✅ Coding standards + folder structure + documentation
+
+Selenium WebDriver Architecture:
+--------------------------------
+Java test code acts as the client, and Selenium language bindings act as the client library.
+When the test is triggered, Selenium converts the WebDriver commands into HTTP requests formatted according to the W3C WebDriver protocol (earlier it was JSON Wire Protocol).
+These HTTP requests are sent to the browser driver (like ChromeDriver or GeckoDriver), which acts as the server.
+The browser driver interprets the request and communicates with the actual browser using browser-specific mechanisms to execute the command (click, type, navigate, etc.).
+After execution, the browser sends the result back to the browser driver, which converts it into an HTTP response and sends it back to the Selenium client library.
+Finally, the response is returned to the Java test code as success or an exception.
+
++----------------------------+
+|  Selenium Client Libraries |
+| (Java / Python / Ruby etc) |
++----------------------------+
+              |
+              |  WebDriver API Calls
+              v
++----------------------------+
+|        W3C Protocol        |
+|   (HTTP / JSON commands)   |
++----------------------------+
+              |
+              |  HTTP Request
+              v
++----------------------------+        HTTP        +----------------------+
+|       Browser Drivers      | <----------------> |    Real Browsers     |
+| (ChromeDriver, GeckoDriver)|                    | (Chrome, Firefox...) |
++----------------------------+                    +----------------------+
+              ^
+              |  HTTP Response (JSON)
+              |
++----------------------------+
+|  Selenium Client Libraries |
++----------------------------+
+              ^
+              |
++----------------------------+
+|        Java Test Code      |
++----------------------------+
+
+Java Selenium Architecture:
+---------------------------
+
+                    +------------------+
+                    |  SearchContext   |
+                    +------------------+
+                             ▲
+                             |
+                      +----------------+
+                      |   WebDriver    |
+                      +----------------+
+            ▲                 ▲                  ▲
+            |                 |                  |
++------------------+   -----------------   +------------------+
+| JavaScriptExecutor|        (interface)   |  TakesScreenshot |
++------------------+                       +------------------+
+
+            ---------------------------------------------------
+                         (implemented by)
+            ---------------------------------------------------
+
+                      +------------------+
+                      | RemoteWebDriver |
+                      +------------------+
+                               ▲
+                               |
+        -------------------------------------------------
+        |                    |                         |
++------------------+  +------------------+   +---------------------------+
+|   ChromeDriver   |  |  FirefoxDriver  |   | InternetExplorerDriver     |
++------------------+  +------------------+   +---------------------------+
+
+❌ Common Beginner Mistake (Avoid This)
+❌ Searching for libs folder
+❌ Adding only selenium-java.jar
+❌ Mixing Selenium 3 tutorials with Selenium 4 jars
+“In Selenium 4, dependencies are shipped directly as individual JARs instead of a libs folder, and we add all of them to the classpath.”
+
+Browser minimization is supported only in Selenium 4 using driver.manage().window().minimize(). Selenium 3 does not support browser minimize
+
+To maximize browser window:
+- We use Window interface
+- Window interface is accessed through Options
+- Options interface is accessed through WebDriver
+- maximize() method is called from Window interface
+Syntax:
+driver.manage().window().maximize();
+
+
+✅ Minimum JARs Required (Just for Knowledge)
+Selenium internally needs:
+selenium-api
+selenium-remote-driver
+selenium-chrome-driver
+guava
+byte-buddy
+opentelemetry
+commons-exec
+
+But do NOT try to filter manually as a beginner.
+👉 Add everything.
+
+“Selenium 4 is compiled with Java 11+, but my project was still using Java 8. Updating the project JRE and compiler level resolved the UnsupportedClassVersionError.”
+
+To navigate from one element to another element xpath uses axis.
+ The different types of axis are,
+1. child
+2. parent
+3. descendant
+4. ancestor
+5. following-sibling
+6. preceding-sibling
+Syntax:
+/axis::tagName
+ex: 
+Sample web page:
+<select>
+  <option value="j">Jan</option>
+  <option value="f">Feb</option>
+  <option value="m">Mar</option>
+  <option value="a">Apr</option>
+  <option value="m">May</option>
+</select>
+
+     Child://select//child::option[1]
+     Parent://select[@option=’j’]//parent::select
+	 Descendant:/html/descendant::option[1]
+	 Ancestor://select[@option=’j’]/ancestor::html
+	 Following-sibilng://select[@option=’m’]/following-sibling::option A,M
+                       //select[@option=’m’]/following-sibling::option[1] A
+                       //select[@option=’m’]/following-sibling::option[2] M
+	 Preceding-sibling://select[@option=’m’]/preceding-sibling::option J,F
+                       //select[@option=’m’]/preceding-sibling::option[1] F
+                       //select[@option=’m’]/preceding-sibling::option[2] J
+
+========================================
+XPATH AXES – COMPLETE NOTES (ONE SNAP)
+========================================
+
+SAMPLE HTML:
+
+<html>
+  <body>
+    <div id="container">
+      <h2>Employee Details</h2>
+
+      <table id="empTable">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Role</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <tr>
+            <td>101</td>
+            <td>Rahul</td>
+            <td>QA</td>
+          </tr>
+          <tr>
+            <td>102</td>
+            <td>Priya</td>
+            <td>Developer</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </body>
+</html>
+
+----------------------------------------
+WHAT ARE XPATH AXES?
+----------------------------------------
+XPath Axes are used to navigate elements
+based on their relationship with a known element.
+
+----------------------------------------
+1) CHILD AXIS
+----------------------------------------
+Selects direct child elements.
+
+Syntax:
+child::
+
+Example:
+Select all rows inside tbody
+//tbody/child::tr
+
+Short form:
+//tbody/tr
+
+----------------------------------------
+2) PARENT AXIS
+----------------------------------------
+Selects immediate parent of the element.
+
+Syntax:
+parent::
+
+Example:
+From Rahul td go to its row
+//td[text()='Rahul']/parent::tr
+
+----------------------------------------
+3) ANCESTOR AXIS
+----------------------------------------
+Selects all ancestors (parent, grandparent, etc).
+
+Syntax:
+ancestor::
+
+Example:
+From Rahul td go to table
+//td[text()='Rahul']/ancestor::table
+
+Example:
+From Rahul td go to div
+//td[text()='Rahul']/ancestor::div
+
+----------------------------------------
+4) DESCENDANT AXIS
+----------------------------------------
+Selects all child elements at any level.
+
+Syntax:
+descendant::
+
+Example:
+Get all td inside table
+//table[@id='empTable']/descendant::td
+
+Short form:
+//table[@id='empTable']//td
+
+----------------------------------------
+5) FOLLOWING-SIBLING AXIS
+----------------------------------------
+Selects siblings AFTER the current node.
+
+Syntax:
+following-sibling::
+
+Example:
+From Name header get Role
+//th[text()='Name']/following-sibling::th
+
+First following sibling only:
+//th[text()='Name']/following-sibling::th[1]
+
+----------------------------------------
+6) PRECEDING-SIBLING AXIS
+----------------------------------------
+Selects siblings BEFORE the current node.
+
+Syntax:
+preceding-sibling::
+
+Example:
+From Role header get Name and ID
+//th[text()='Role']/preceding-sibling::th
+
+Closest previous sibling:
+//th[text()='Role']/preceding-sibling::th[1]
+
+----------------------------------------
+7) FOLLOWING AXIS
+----------------------------------------
+Selects all nodes AFTER the current node
+(anywhere in the document).
+
+Syntax:
+following::
+
+Example:
+All td after Rahul
+//td[text()='Rahul']/following::td
+
+----------------------------------------
+8) PRECEDING AXIS
+----------------------------------------
+Selects all nodes BEFORE the current node.
+
+Syntax:
+preceding::
+
+Example:
+All td before Priya
+//td[text()='Priya']/preceding::td
+
+----------------------------------------
+9) SELF AXIS
+-------------------------------
+
+========================================
+CHROMEOPTIONS – SELENIUM NOTES (ONE SNAP)
+========================================
+
+WHAT IS CHROMEOPTIONS?
+---------------------
+ChromeOptions is a Selenium class used to
+customize how the Chrome browser is launched.
+
+It helps in:
+- Running browser in headless mode
+- Disabling notifications
+- Running in incognito
+- Setting download preferences
+- Handling SSL errors
+- Adding extensions
+- Passing Chrome arguments
+
+----------------------------------------
+BASIC SYNTAX
+----------------------------------------
+ChromeOptions options = new ChromeOptions();
+WebDriver driver = new ChromeDriver(options);
+
+----------------------------------------
+COMMONLY USED OPTIONS (IMPORTANT)
+----------------------------------------
+
+1) HEADLESS MODE
+----------------
+Runs browser without UI (used in CI/CD)
+
+options.addArguments("--headless=new");
+
+----------------------------------------
+
+2) MAXIMIZE BROWSER
+-------------------
+options.addArguments("--start-maximized");
+
+----------------------------------------
+
+3) INCOGNITO MODE
+-----------------
+options.addArguments("--incognito");
+
+----------------------------------------
+
+4) DISABLE NOTIFICATIONS
+------------------------
+options.addArguments("--disable-notifications");
+
+----------------------------------------
+
+5) DISABLE INFOBARS
+-------------------
+options.addArguments("--disable-infobars");
+
+----------------------------------------
+
+6) DISABLE EXTENSIONS
+---------------------
+options.addArguments("--disable-extensions");
+
+----------------------------------------
+
+7) IGNORE SSL CERTIFICATE ERRORS
+--------------------------------
+options.addArguments("--ignore-certificate-errors");
+
+----------------------------------------
+
+8) DISABLE POPUPS
+-----------------
+options.addArguments("--disable-popup-blocking");
+
+----------------------------------------
+SETTING DOWNLOAD PATH
+----------------------------------------
+
+Map<String, Object> prefs = new HashMap<>();
+prefs.put("download.default_directory", "D:\\Downloads");
+prefs.put("download.prompt_for_download", false);
+
+options.setExperimentalOption("prefs", prefs);
+
+----------------------------------------
+ADDING CHROME EXTENSION
+----------------------------------------
+
+options.addExtensions(
+    new File("D:\\Extensions\\extension.crx")
+);
+
+----------------------------------------
+COMPLETE WORKING EXAMPLE
+----------------------------------------
+
+ChromeOptions options = new ChromeOptions();
+options.addArguments("--start-maximized");
+options.addArguments("--incognito");
+options.addArguments("--disable-notifications");
+
+WebDriver driver = new ChromeDriver(options);
+driver.get("https://www.google.com");
+
+----------------------------------------
+CHROMEOPTIONS vs DESIREDCAPABILITIES
+----------------------------------------
+- ChromeOptions is browser specific
+- DesiredCapabilities is deprecated
+- ChromeOptions internally handles capabilities
+
+----------------------------------------
+INTERVIEW ONE-LINER
+----------------------------------------
+ChromeOptions is used to customize Chrome
+browser behavior by passing arguments,
+preferences, and experimental options.
+
+----------------------------------------
+WHEN TO USE CHROMEOPTIONS
+----------------------------------------
+- Headless execution
+- CI/CD pipelines
+- Browser customization
+- Performance optimization
+- Handling browser popups
+
+========================================
+
+========================================
+DESIREDCAPABILITIES – WORKING EXAMPLE
+========================================
+
+NOTE:
+-----
+DesiredCapabilities is DEPRECATED in Selenium 4,
+but still important for interviews and legacy projects.
+
+----------------------------------------
+MOST COMMONLY USED METHODS
+----------------------------------------
+1) setBrowserName()
+2) setPlatform()
+3) setAcceptInsecureCerts()
+4) setCapability()
+
+----------------------------------------
+EXAMPLE 1: BASIC CHROME DESIREDCAPABILITIES
+----------------------------------------
+
+DesiredCapabilities caps = DesiredCapabilities.chrome();
+
+caps.setBrowserName("chrome");
+caps.setAcceptInsecureCerts(true);
+
+WebDriver driver = new ChromeDriver(caps);
+driver.get("https://www.google.com");
+
+----------------------------------------
+EXAMPLE 2: DESIREDCAPABILITIES WITH SELENIUM GRID
+----------------------------------------
+
+import java.net.URL;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.remote.DesiredCapabilities;
+import org.openqa.selenium.remote.RemoteWebDriver;
+
+public class GridExample {
+
+    public static void main(String[] args) throws Exception {
+
+        DesiredCapabilities caps = new DesiredCapabilities();
+
+        caps.setBrowserName("chrome");
+        caps.setPlatform(org.openqa.selenium.Platform.WINDOWS);
+        caps.setAcceptInsecureCerts(true);
+
+        WebDriver driver = new RemoteWebDriver(
+                new URL("http://localhost:4444/wd/hub"),
+                caps
+        );
+
+        driver.get("https://www.google.com");
+        driver.quit();
+    }
+}
+
+----------------------------------------
+EXAMPLE 3: DESIREDCAPABILITIES + CHROMEOPTIONS
+----------------------------------------
+(MOST COMMON INTERVIEW SCENARIO)
+
+ChromeOptions options = new ChromeOptions();
+options.addArguments("--disable-notifications");
+
+DesiredCapabilities caps = DesiredCapabilities.chrome();
+caps.setCapability(ChromeOptions.CAPABILITY, options);
+caps.setAcceptInsecureCerts(true);
+
+WebDriver driver = new ChromeDriver(options);
+driver.get("https://www.google.com");
+
+----------------------------------------
+IMPORTANT COMMON METHODS EXPLAINED
+----------------------------------------
+
+setBrowserName("chrome")
+→ Tells Selenium which browser to launch
+
+setPlatform(Platform.WINDOWS)
+→ Tells Selenium OS for Grid execution
+
+setAcceptInsecureCerts(true)
+→ Accepts SSL / HTTPS certificate issues
+
+setCapability(key, value)
+→ Adds custom browser or grid capabilities
+
+----------------------------------------
+WHY DESIREDCAPABILITIES IS DEPRECATED
+----------------------------------------
+- Selenium 4 uses browser-specific Options
+- ChromeOptions, FirefoxOptions handle capabilities
+- DesiredCapabilities is kept only for backward compatibility
+
+----------------------------------------
+INTERVIEW ONE-LINER (MEMORIZE)
+----------------------------------------
+DesiredCapabilities was used to define browser
+and platform properties in Selenium 3.
+In Selenium 4, it is deprecated and replaced
+by browser-specific Options like ChromeOptions.
+
+========================================
+
+========================================
+METHODS IN DESIREDCAPABILITIES (ONE SNAP)
+========================================
+
+NOTE:
+-----
+DesiredCapabilities is DEPRECATED in Selenium 4,
+but still asked in interviews for legacy knowledge.
+
+----------------------------------------
+MOST COMMONLY USED METHODS
+----------------------------------------
+
+1) setBrowserName(String browserName)
+-------------------------------------
+Sets the browser type.
+
+Example:
+caps.setBrowserName("chrome");
+
+----------------------------------------
+
+2) getBrowserName()
+-------------------
+Returns the browser name set in capabilities.
+
+Example:
+String browser = caps.getBrowserName();
+
+----------------------------------------
+
+3) setPlatform(Platform platform)
+---------------------------------
+Sets the operating system for execution
+(mainly used in Selenium Grid).
+
+Example:
+caps.setPlatform(Platform.WINDOWS);
+
+----------------------------------------
+
+4) getPlatform()
+----------------
+Returns the platform set.
+
+Example:
+Platform p = caps.getPlatform();
+
+----------------------------------------
+
+5) setAcceptInsecureCerts(boolean value)
+----------------------------------------
+Accepts insecure SSL certificates.
+
+Example:
+caps.setAcceptInsecureCerts(true);
+
+----------------------------------------
+
+6) isAcceptInsecureCerts()
+--------------------------
+Returns whether insecure certs are accepted.
+
+Example:
+boolean flag = caps.isAcceptInsecureCerts();
+
+----------------------------------------
+
+7) setCapability(String key, Object value)
+------------------------------------------
+Adds custom capability.
+
+Example:
+caps.setCapability("browserVersion", "latest");
+
+----------------------------------------
+
+8) getCapability(String key)
+----------------------------
+Fetches a capability value.
+
+Example:
+Object version = caps.getCapability("browserVersion");
+
+----------------------------------------
+
+9) asMap()
+----------
+Returns all capabilities as a Map.
+
+Example:
+Map<String, Object> map = caps.asMap();
+
+----------------------------------------
+
+10) merge(Capabilities extraCaps)
+---------------------------------
+Merges one capability object into another.
+
+Example:
+caps.merge(otherCaps);
+
+----------------------------------------
+COMMONLY USED STATIC METHODS
+----------------------------------------
+
+1) DesiredCapabilities.chrome()
+--------------------------------
+Creates Chrome capabilities.
+
+Example:
+DesiredCapabilities caps = DesiredCapabilities.chrome();
+
+----------------------------------------
+
+2) DesiredCapabilities.firefox()
+---------------------------------
+Creates Firefox capabilities.
+
+----------------------------------------
+
+3) DesiredCapabilities.edge()
+------------------------------
+Creates Edge capabilities.
+
+----------------------------------------
+
+4) DesiredCapabilities.safari()
+--------------------------------
+Creates Safari capabilities.
+
+----------------------------------------
+
+----------------------------------------
+IMPORTANT INTERVIEW POINTS
+----------------------------------------
+• DesiredCapabilities was heavily used in Selenium 3
+• Mainly used with RemoteWebDriver and Selenium Grid
+• Replaced by ChromeOptions / FirefoxOptions in Selenium 4
+• Options internally use Capabilities concept
+
+----------------------------------------
+INTERVIEW ONE-LINER (MEMORIZE)
+----------------------------------------
+DesiredCapabilities provides methods to set
+browser name, platform, SSL handling, and
+custom capabilities, but it is deprecated
+in Selenium 4 and replaced by browser-specific
+Options classes.
+
+========================================
+
+
+
+-Keyboard Actions: 
+Actions class is used for advanced user interactions
+perform() executes the action
+keyDown() → press key
+keyUp() → release key
+Keyboard actions work on focused elements
+           Actions actions = new Actions(driver);
+           actions
+            .sendKeys(driver.findElement(By.name("q")), "Selenium keyboard actions")
+            .sendKeys(org.openqa.selenium.Keys.ENTER)
+            .perform();
+			 // Type text
+        actions.sendKeys(driver.findElement(By.id("userName")), "Selenium User").perform();
+
+        // CTRL + A (select all)
+        actions.keyDown(Keys.CONTROL).sendKeys("a").keyUp(Keys.CONTROL).perform();
+
+        // CTRL + C (copy)
+        actions.keyDown(Keys.CONTROL).sendKeys("c").keyUp(Keys.CONTROL).perform();
+
+        // TAB to move to next field
+        actions.sendKeys(Keys.TAB).perform();
+
+        // CTRL + V (paste)
+        actions.keyDown(Keys.CONTROL).sendKeys("v").keyUp(Keys.CONTROL).perform();
+		// SHIFT + text → uppercase
+        actions
+            .keyDown(Keys.SHIFT)
+            .sendKeys(driver.findElement(By.id("userName")), "selenium")
+            .keyUp(Keys.SHIFT)
+            .perform();
+
+
+<table id="employeeTable" border="1">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Role</th>
+            <th>Salary</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        <tr>
+            <td>101</td>
+            <td>Rahul</td>
+            <td>QA</td>
+            <td>50000</td>
+            <td><button>Edit</button></td>
+        </tr>
+        <tr>
+            <td>102</td>
+            <td>Priya</td>
+            <td>Developer</td>
+            <td>70000</td>
+            <td><button>Edit</button></td>
+        </tr>
+        <tr>
+            <td>103</td>
+            <td>Amit</td>
+            <td>Manager</td>
+            <td>90000</td>
+            <td><button>Edit</button></td>
+        </tr>
+    </tbody>
+</table>
+
+JavascriptExecutor js = (JavascriptExecutor) driver;
+js.executeScript("arguments[0].scrollIntoView(true);", ele);
+js.executeScript("window.scrollBy(0,500)");
+WebElement username = driver.findElement(By.id("username"));
+j.executeScript("arguments[0].setAttribute('style','background: green;border: solid 2px red');", username);  //Highlighting web element
+username.sendKeys("venkat");
+WebElement name = driver.findElement(By.xpath("//input[@name='name']"));
+WebElement inter = driver.findElement(By.xpath("//button[@aria-controls='collapseFive']"));
+WebElement login = driver.findElement(By.xpath("//input[@type='submit']"));
+js.executeScript("arguments[0].click()", inter);
+js.executeScript("arguments[0].setAttribute('style','background-color: yellow;')", name);
+js.executeScript("arguments[0].setAttribute('value','rohit')", name);
+
+In latest version of selenium, build() is already integrated with perform(). So we don’t have to call build() explicitly.
+
+For Actions class perform() is most important
+
+There are 3 types of alerts in Selenium: can not move the pop up or inspect
+-Simple Alert-->contains ok button
+-Confirmation Alert-->contains ok and cancel button
+-Prompt Alert-->contains TextBox,ok and cancel button
+   Alert a = driver.switchTo().alert();
+   a.accept();
+   driver.switchTo().defaultContent();
+   Method: accept(),dismiss(),getText(),sendKeys()
+   
+ Ways to Switch IFrame:
+1. Switch to frame by index
+2. Switch to frame by id or name
+3. Switch to frame by webelement
+driver.switchTo().frame("iframe1");
+
+Matching speed of selenium with the speed of application is called as synchronization.: implicit wait,explicit wait,Thread.sleep(),Fluent wait
+--Implicit Wait : will handle the synchronization of findElement() and findElements(). implicitlyWait() takes 2 arguments of type long(waiting time) and TimeUnit(time unit-->DAYS,HOURS,MINUTES,SECONDS,MILISECONDS...).
+                  driver.manage().timeouts().implicitlyWait(time, TimeUnit.SECONDS);
+				  driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));    //Preffered
+                  When Selenium encounters findElement() or findElements(), it first checks element presence. If implicit wait is defined, it keeps polling the DOM every 500ms until the timeout expires; otherwise, 
+                  it immediately throws an exception or returns an empty list
+--Explicit Wait : used to handle synchronization of any methods including findElement() and findElements(),WebDriverWait class is called as explicit wait which takes 2 arguments of type WebDriver and long,
+                  default time unit is seconds.During runtime, Explicit Wait continuously checks the specified condition at regular intervals of 500 millisecondsuntil the condition becomes true or the timeout expires, 
+                  after which Selenium throws a TimeoutException.All the methods present in ExpectedConditions class are called as Predicates
+				  WebDriverWait wait = new WebDriverWait(driver,Duration.ofSeconds(10));
+				  wait.until(ExpectedConditions.visibilityOf(element));
+				  Note:Refer all Expected Conditions
+--Fluent wait:    The fluent wait is used to tell the web driver to wait for a condition, as well as the frequency with which we want to check the condition before throwing an "ElementNotVisibleException" exception.
+                  Fluent Wait allows maximum wait time, polling interval, and ignored exceptions to be customized, making it suitable for highly dynamic elements.
+                  Wait<WebDriver> wait = new FluentWait<WebDriver>(driver)       //Creates a FluentWait instance using WebDriver reference
+                                        .withTimeout(Duration.ofSeconds(20))     //Maximum time Selenium should wait
+                                        .pollingEvery(Duration.ofSeconds(2))     //Selenium checks condition every 2 seconds,Default polling = 500 ms
+                                        .ignoring(NoSuchElementException.class); //Ignores exception during polling,Prevents test from failing immediately
+				  WebElement element = wait.until(driver ->driver.findElement(By.id("username")));
+				  When Fluent Wait is REALLY used
+                  ✔ Highly dynamic elements
+                  ✔ Irregular loading behavior
+                  ✔ Need to ignore specific exceptions
+
+For File Upload
+1️⃣ sendKeys()  ✅
+2️⃣ JavaScriptExecutor (only if needed)
+3️⃣ Avoid Robot & AutoIT unless unavoidable
+
+It is not possible to verify broken links by using selenium.We can verify the broken links by using Java.In order to verify the broken links we use a class called URL which is available in java.net package
+
+| Feature            | Implicit | Explicit | Fluent |
+| ------------------ | -------- | -------- | ------ |
+| Specific element   | ❌        | ✅        | ✅  |
+| Specific condition | ❌        | ✅        | ✅  |
+| Readable           | ✅        | ✅        | ❌  |
+| Maintainable       | ❌        | ✅        | ❌  |
+| Real projects      | ❌        | ✅        | Rare  |
+Implicit wait is not preferred because it applies globally and causes delays, while Fluent wait is complex and rarely needed. Explicit wait is mostly used because it is precise, flexible, and reliable.
+Don't mix Implicit Wait + Explicit Wait-->Selenium adds both waits together internally,Causes unpredictable delays.
+
+public class ReadEntireExcel {
+
+	public static void main(String[] args) throws IOException {
+		FileInputStream fis = new FileInputStream("D:\\Testing Prep\\TestData.xlsx");
+		Workbook wb = new XSSFWorkbook(fis);
+		Sheet sheet1 = wb.getSheet("Sheet1");
+		int rows = sheet1.getPhysicalNumberOfRows();
+		for(int i=0;i<rows;i++) {
+		Row row = sheet1.getRow(i);
+		int cols = row.getPhysicalNumberOfCells();
+			for(int j=0;j<cols;j++) {
+				Cell cell = row.getCell(j);
+				switch (cell.getCellType()) {
+				    case STRING:
+				        System.out.print(cell.getStringCellValue());
+				        break;
+	
+				    case NUMERIC:
+				        System.out.print(cell.getNumericCellValue());
+				        break;
+	
+				    case BOOLEAN:
+				        System.out.print(cell.getBooleanCellValue());
+				        break;
+	
+				    default:
+				        System.out.print(" ");
+				}
+			}
+			System.out.println();
+		}
+
+		wb.close();
+		fis.close();
+	}
+
+}
+
+
+
+If the javascript pop-up is not present and still if we try to switch into it, then it will throw NoAlertPresentException
+System.setProperty("webdriver.chrome.driver","D:\\Testing Prep\\chromedriver.exe");   If we do not set path of the driver exe file, then it will throw IllegalStateException.
+In findElement(), if the specified locator is not matching with any element it will throw NoSuchElementException
+In select dropdown,Value and visible text are case sensitive.If we pass any invalid arguments then it will throw NoSuchElementException
+In single select list box, we can not deselect the option. If we try to deselect the option, it will throw UnsupportedOperationException
+In multi-select list box, if the specified option is duplicate then it will select all the matching options.We can handle duplicates by using index.
+

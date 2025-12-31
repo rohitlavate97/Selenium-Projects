@@ -5,12 +5,19 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
 
 public class WebTables {
 
 	public static void main(String[] args) throws InterruptedException {
 		System.setProperty("webdriver.chrome.driver", "D:\\Testing Prep\\chromedriver.exe");
-		WebDriver driver = new ChromeDriver();
+		ChromeOptions options = new ChromeOptions();
+		options.addArguments("--start-maximized");
+		options.addArguments("--disable-notifications");
+		options.addArguments("--ignore-certificate-errors");
+		options.addArguments("--disable-popup-blocking");
+		//options.addArguments("--headless=new");
+		WebDriver driver = new ChromeDriver(options);
 		driver.get("https://www.tutorialspoint.com/selenium/practice/webtables.php");
 		Thread.sleep(2000);
 		List<WebElement> header = driver.findElements(By.xpath("//table/thead/tr/th"));
