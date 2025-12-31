@@ -879,6 +879,176 @@ public class ReadEntireExcel {
 
 }
 
+import org.testng.annotations.Test;
+
+public class GroupDemo {
+
+    @Test(groups = {"smoke"})
+    public void smokeTest1() {
+        System.out.println("Smoke Test 1");
+    }
+
+    @Test(groups = {"regression"})
+    public void regressionTest1() {
+        System.out.println("Regression Test 1");
+    }
+
+    @Test(groups = {"smoke", "regression"})
+    public void commonTest() {
+        System.out.println("Common Test");
+    }
+
+    @Test(groups = {"sanity"})
+    public void sanityTest() {
+        System.out.println("Sanity Test");
+    }
+}
+
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd" >
+<suite name="Mixed Suite">
+
+    <test name="Smoke Without Sanity">
+        <groups>
+            <run>
+                <include name="smoke"/>
+                <exclude name="sanity"/>
+            </run>
+        </groups>
+
+        <classes>
+            <class name="testng.GroupDemo"/>
+        </classes>
+    </test>
+
+</suite>
+
+========================================
+SELENIUM GRID vs JENKINS (DIFFERENTIATION)
+========================================
+
+PURPOSE
+-------
+Selenium Grid:
+Used to execute Selenium tests on multiple
+machines, browsers, and operating systems
+at the same time.
+
+Jenkins:
+Used to automate the process of building,
+testing, and deploying applications.
+
+----------------------------------------
+
+TYPE
+----
+Selenium Grid:
+Test execution infrastructure tool.
+
+Jenkins:
+CI/CD (Continuous Integration / Continuous
+Delivery) automation tool.
+
+----------------------------------------
+
+MAIN FUNCTION
+-------------
+Selenium Grid:
+Distributes test execution across nodes
+(hub and nodes architecture).
+
+Jenkins:
+Triggers and manages automation jobs
+based on events like code commits or
+scheduled runs.
+
+----------------------------------------
+
+EXECUTION SCOPE
+---------------
+Selenium Grid:
+Runs tests on multiple environments
+(Windows, Linux, Mac, Chrome, Firefox, Edge).
+
+Jenkins:
+Runs jobs on a configured machine or
+agent but does not distribute browsers
+by itself.
+
+----------------------------------------
+
+PARALLEL EXECUTION
+------------------
+Selenium Grid:
+Provides parallel execution across
+multiple machines.
+
+Jenkins:
+Provides job-level or stage-level
+parallelism, but browser parallelism
+requires TestNG or Grid.
+
+----------------------------------------
+
+DEPENDENCY
+----------
+Selenium Grid:
+Requires Selenium WebDriver and Grid setup.
+
+Jenkins:
+Requires job configuration and build tools
+like Maven or Gradle.
+
+----------------------------------------
+
+USAGE SCENARIO
+--------------
+Selenium Grid:
+Used when cross-browser and cross-OS
+testing is required at scale.
+
+Jenkins:
+Used to automatically trigger test
+execution in CI/CD pipelines.
+
+----------------------------------------
+
+REAL-TIME EXAMPLE
+-----------------
+Selenium Grid:
+Run tests on Chrome (Windows),
+Firefox (Linux), and Edge (Mac)
+at the same time.
+
+Jenkins:
+Trigger Selenium tests automatically
+whenever new code is pushed to Git.
+
+----------------------------------------
+
+CAN THEY WORK TOGETHER?
+-----------------------
+YES.
+Jenkins can trigger Selenium Grid jobs.
+
+----------------------------------------
+
+WHEN GRID IS NOT NEEDED
+-----------------------
+- Single machine execution
+- Single OS
+- Small to medium test suites
+- Jenkins-triggered local execution
+
+----------------------------------------
+
+INTERVIEW ONE-LINER
+-------------------
+Selenium Grid is used for distributed
+test execution across multiple environments,
+while Jenkins is used to automate and
+orchestrate test execution in CI/CD pipelines.
+
+========================================
 
 
 If the javascript pop-up is not present and still if we try to switch into it, then it will throw NoAlertPresentException

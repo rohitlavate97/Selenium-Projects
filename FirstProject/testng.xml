@@ -1,0 +1,14 @@
+
+<suite name="Suite">
+	<test thread-count="5" parallel="classes" name="Test">
+		<groups>
+			<run>
+				<include name="sanity" />
+				<exclude name="regression" />
+			</run>
+		</groups>
+		<classes>
+			<class name="testng.TestNgKeywords" />
+		</classes>
+	</test> <!-- Test -->
+</suite> <!-- Suite -->

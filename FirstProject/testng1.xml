@@ -1,0 +1,15 @@
+
+<suite name="Suite">
+	<test thread-count="5" name="TestChrome">
+		<parameter name="browser" value="chrome"></parameter>
+		<classes>
+			<class name="testng.MulBrowserLaunchTestNG"></class>
+		</classes>
+	</test> <!-- Test -->
+	<test thread-count="5" name="TestEdge">
+		<parameter name="browser" value="edge"></parameter>
+		<classes>
+			<class name="testng.MulBrowserLaunchTestNG"></class>
+		</classes>
+	</test> <!-- Test -->
+</suite> <!-- Suite -->
