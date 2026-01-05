@@ -1,0 +1,1127 @@
+API Testing
+Postman
+-------
+-Comes with powerful JS Editor(Postman Object)-->Helps to perform Assertions(Validates test)
+-Ready Made features of framework-->variables, environements, workflows, data driven components and pm object which helps quickly setup automation quickly
+-Powerful integration with NewMan tool, to run the automated tests from CLI, later can be integrated with Jenkins for CI/CD integration
+
+Types of workspaces-->Personal(internal),Partner(Team), public -->visibility to everyone
+Collections-->Group set of API Requests
+
+Example:
+-Create Library collection:
+ Base URL: https://rahulshettyacademy.com
+-AddBook Request
+ Base URL + Resource:--->https://rahulshettyacademy.com/Library/Addbook.php
+ Body: {
+    "name":"Java",
+    "isbn":"abn23",
+    "aisle":"1234",
+    "author":"prime"
+}
+-GetBook Request
+ Base URL + Resource:--->https://rahulshettyacademy.com/Library/GetBook.php?ID=abn231234
+-DeleteBook Request
+ Base URL + Resource:--->https://rahulshettyacademy.com/Library/DeleteBook.php
+ Body: {
+    "ID": "abn231234"
+}
+
+--Environments in Postman:
+-An Environment is a set of variables, you can use in your postman requests.You can use environments to group related set of values together and manage access to shared postman data, if you
+are working as a part of team
+-Variables allow you to store and reuse values in your requests and scripts. By storing a value in a variable, you can reference it throughout your collection,environements and requests and if you
+need to update the value, you only have to change it in one place. Using variable increases your ability to work efficiently and minimize the likelihood of error.
+-Environments tab-->Create environment-->create variable and set variable in the request by selecting and double clicking that hardcoded value.
+
+--Variable scopes:-->Postman supports following variable scopes 
+                  -Global
+				  -Collection
+				  -Environment
+				  -Data (Rarely used)
+				  -Local (Rarely used)
+Environments-->Global(Common variables to entire postman workspace)
+Collection-->Variables tab(can be accessed within that collection, request part of this collection will access it)
+Environment variables-->specific to environment
+Data variable-->for data driven testing
+Local variable-->specific to request
+Note: If variable with same name is declared in 2 different scopes, the value stored in variable with narrower scope will be used.
++--------------------------------------------------+
+|                    POSTMAN                       |
+|                                                  |
+|  +--------------------------------------------+  |
+|  |              GLOBAL VARIABLES              |  |
+|  |                                            |  |
+|  |  +--------------------------------------+  |  |
+|  |  |          COLLECTION VARIABLES        |  |  |
+|  |  |                                      |  |  |
+|  |  |  +------------------------------+  |  |  |
+|  |  |  |      ENVIRONMENT VARIABLES   |  |  |  |
+|  |  |  |                              |  |  |  |
+|  |  |  |  +----------------------+  |  |  |  |
+|  |  |  |  |     DATA VARIABLES   |  |  |  |  |
+|  |  |  |  |                      |  |  |  |  |
+|  |  |  |  |  +----------------+ |  |  |  |  |
+|  |  |  |  |  | LOCAL VARIABLES | |  |  |  |  |
+|  |  |  |  |  +----------------+ |  |  |  |  |
+|  |  |  |  +----------------------+  |  |  |  |
+|  |  |  +------------------------------+  |  |  |
+|  |  +--------------------------------------+  |  |
+|  +--------------------------------------------+  |
++--------------------------------------------------+
+
+Scripting in Postman:
+--------------------
+-Postman contains runtime based NodeJs that allows to add dynamic behavior to requests and collections. This allows us to write Test Suits, buld requests that can contain dynamic parameters, pass data between requests
+
+====================================================
+POSTMAN SCRIPT EXECUTION ORDER (ONE SNAP)
+====================================================
+
+STEP 1: COLLECTION PRE-REQUEST SCRIPT
+-------------------------------------
+• Runs first
+• Executes before every request in the collection
+• Used for:
+  - Setting common variables
+  - Auth token generation
+  - Reusable setup logic
+
+-------------------------------------
+
+STEP 2: FOLDER PRE-REQUEST SCRIPT
+---------------------------------
+• Runs after collection pre-request
+• Applies only to requests inside the folder
+• Used for folder-specific setup
+
+-------------------------------------
+
+STEP 3: REQUEST PRE-REQUEST SCRIPT
+----------------------------------
+• Runs just before the request is sent
+• Used for:
+  - Dynamic headers
+  - Timestamp, random values
+  - Updating variables
+
+-------------------------------------
+
+STEP 4: REQUEST IS SENT TO SERVER
+---------------------------------
+• Actual API call happens
+• Variables are resolved here
+• Request hits backend server
+
+-------------------------------------
+
+STEP 5: RESPONSE RECEIVED
+-------------------------
+• Response returned from server
+• Status code, headers, body available
+
+-------------------------------------
+
+STEP 6: REQUEST TEST SCRIPT
+---------------------------
+• Executes after response is received
+• Used for:
+  - Validations (status code, body)
+  - Assertions
+  - Extracting values to variables
+
+-------------------------------------
+
+STEP 7: FOLDER TEST SCRIPT
+--------------------------
+• Runs after request test script
+• Applies to all requests in the folder
+
+-------------------------------------
+
+STEP 8: COLLECTION TEST SCRIPT
+------------------------------
+• Runs last
+• Used for:
+  - Common validations
+  - Cleanup
+  - Logging
+
+In Postman, scripts execute in the order:
+      Collection pre-request → Folder pre-request →
+      Request pre-request → Request → Request test →
+      Folder test → Collection test.
+
+Go to Any collection-->Any Request-->Scripts-->Pre-request,post-response(Assertions here)
+
+--The pm Object--> You will carry out most of POSTMAN JS API functionality using "pm" which provides access to request and response data and variable.
+  pm.test("",)-->Takes two arguments, description and function where we write code.
+  
+const jsonData = pm.response.json();
+pm.test("validate status code is 200", function()
+{
+    pm.response.to.have.status(200);
+    pm.expect(jsonData).have.property("Msg");
+    pm.expect(jsonData.Msg).to.eql("successfully added");
+});
+
+--Dynamically generate values for variable
+Rule: isbn should start with RS and then dynamically generate values(Pre Request script)-->RS is constant, we can use as Global varible as "CompanyCode"
+      At collection level set isbn as new variable
+	  
+const code = pm.globals.get("CompanyCode");
+const val = pm.variables.replaceIn('{{$randomInt}}');
+pm.collectionVariables.set("isbn",code+val);
+const jsonData = pm.response.json();
+pm.test("validate status code is 200", function()
+{
+    pm.response.to.have.status(200);
+    pm.expect(jsonData).have.property("Msg");
+    pm.expect(jsonData.Msg).to.eql("successfully added");
+});
+//checking header contains Content-Type
+pm.test("Header cookies response time validations",function()
+{
+    pm.expect(pm.response.headers.get("Content-Type")).to.eql("application/json;charset=UTF-8");
+    pm.expect(pm.response.responseTime).to.be.below(400);
+    pm.expect(pm.response.text()).to.include("successfully added");
+});
+
+--Running set of tests together
+--------------------------------
+So in tests scripts, access this ID and store somewhere, from which GetBook and DeleteBook can access it.
+Go to Environments(UAT and QA)-->create variable, book_id(At runtime script will update it)
+
+const code = pm.globals.get("CompanyCode");
+const val = pm.variables.replaceIn('{{$randomInt}}');
+pm.collectionVariables.set("isbn",code+val);
+const jsonData = pm.response.json();
+const bookId = jsonData.ID;
+console.log(jsonData.ID);
+pm.environment.set("book_id",bookId);
+pm.test("validate status code is 200", function()
+{
+    pm.response.to.have.status(200);
+    pm.expect(jsonData).have.property("Msg");
+    pm.expect(jsonData.Msg).to.eql("successfully added");
+});
+pm.test("Header cookies response time validations",function()
+{
+    pm.expect(pm.response.headers.get("Content-Type")).to.eql("application/json;charset=UTF-8");
+    pm.expect(pm.response.responseTime).to.be.below(400);
+    pm.expect(pm.response.text()).to.include("successfully added");
+});
+
+-Go to GetBook and in 'params'-->set ID from environment variable-->{{book_id}}
+-same for DeleteBook
+-Go to collection level and run
+
+--Validate response with the Input data of other API through Automated Code
+-AddBook API
+const code = pm.globals.get("CompanyCode");
+const val = pm.variables.replaceIn('{{$randomInt}}');
+pm.collectionVariables.set("isbn",code+val);
+pm.collectionVariables.set("author_name","Rohit Prime");
+const jsonData = pm.response.json();
+const bookId = jsonData.ID;
+console.log(jsonData.ID);
+pm.environment.set("book_id",bookId);
+pm.test("validate status code is 200", function()
+{
+    pm.response.to.have.status(200);
+    pm.expect(jsonData).have.property("Msg");
+    pm.expect(jsonData.Msg).to.eql("successfully added");
+});
+pm.test("Header cookies response time validations",function()
+{
+    pm.expect(pm.response.headers.get("Content-Type")).to.eql("application/json;charset=UTF-8");
+    pm.expect(pm.response.responseTime).to.be.below(400);
+    pm.expect(pm.response.text()).to.include("successfully added");
+});
+
+-GetBook API
+const getBookResponse = pm.response.json();
+console.log(getBookResponse);
+pm.test("Validate JSON response logic",function()
+{
+    pm.expect(getBookResponse[0].author).to.eql(pm.collectionVariables.get("author_name"));
+});
+
+--JSON Schema validating
+-------------------------
+-We get the JSON output with four fields,every field accepting String, what your response expect and what is dataType. so check response what we get is matching with JSON Schema.
+-JSON Schema generator(Google it)-->Add expected JSON and Generate the schema.
+-If all fields are mandatory then keep them in required(in Schema)
+
+const getBookResponse = pm.response.json();
+console.log(getBookResponse);
+const schema = {
+  "type": "array",
+  "items": [
+    {
+      "type": "object",
+      "properties": {
+        "book_name": {
+          "type": "string"
+        },
+        "isbn": {
+          "type": "string"
+        },
+        "aisle": {
+          "type": "string"
+        },
+        "author": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "book_name",
+        "isbn",
+        "aisle",
+        "author"
+      ]
+    }
+  ]
+};
+pm.test("Validate JSON response logic",function()
+{
+    pm.expect(getBookResponse[0].author).to.eql(pm.collectionVariables.get("author_name"));
+});
+
+pm.test("Validate the JSON response schema",function(){
+    pm.response.to.have.jsonSchema(schema);
+});
+
+-DeletBook
+const schema = {
+  "type": "object",
+  "properties": {
+    "msg": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "msg"
+  ]
+};
+pm.test("Validate the message after succesful operation",function()
+{
+    const jsonData = pm.response.json();
+    pm.expect(jsonData.msg).to.eql("book is successfully deleted");
+});
+pm.test("validating the schema for DeleteBook API",function()
+{
+    pm.response.to.have.jsonSchema(schema);
+});
+
+-For Functional validation--> bookId should be isbn(get from collection variable) + aisle(Present in request-->request.json() is not present, so we have to access request body in raw format and then convert to JSON)
+const code = pm.globals.get("CompanyCode");
+const val = pm.variables.replaceIn('{{$randomInt}}');
+
+pm.collectionVariables.set("isbn", code + val);
+pm.collectionVariables.set("author_name", "Rohit Prime");
+
+const jsonData = pm.response.json();
+const bookId = jsonData.ID;
+pm.environment.set("book_id", bookId);
+
+pm.test("validate status code is 200", function () {
+    pm.response.to.have.status(200);
+    pm.expect(jsonData).to.have.property("Msg");
+    pm.expect(jsonData.Msg).to.eql("successfully added");
+});
+
+pm.test("Header cookies response time validations", function () {
+    pm.expect(pm.response.headers.get("Content-Type")).to.eql("application/json;charset=UTF-8");
+    pm.expect(pm.response.responseTime).to.be.below(400);
+    pm.expect(pm.response.text()).to.include("successfully added");
+});
+
+pm.test("ID Logic validation", function () {
+    const req = JSON.parse(pm.request.body.raw);
+
+    pm.expect(req).to.have.property("isbn");
+    pm.expect(req).to.have.property("aisle");
+
+    const expected_id = req.isbn + req.aisle;
+    pm.expect(expected_id).to.eql(bookId);
+});
+
+Alternate way:
+pm.test("ID Logic validation", function () {
+    const req = pm.request.body && pm.request.body.raw ? JSON.parse(pm.request.body.raw) : {};
+
+    const expected_id = (req.isbn || "") + (req.aisle || "");
+    pm.expect(req).to.have.property("isbn");
+    pm.expect(req).to.have.property("aisle");
+
+    pm.expect(expected_id).to.eql(bookId);
+});
+
+--Data Driven Testing:
+----------------------
+-For isbn and aisle, we have generator, but name and author we have to get from the document.
+-BooksData.csv
+BookName,Author
+Spring,Natraj Chowdhary
+Postman,Rahul Shetty
+Git,Narsi
+Angular,Sudhakar Sharma
+
+-add 'book_name' variable at collection level
+
+-Modified_script:
+const code = pm.globals.get("CompanyCode");
+const val = pm.variables.replaceIn('{{$randomInt}}');
+
+pm.collectionVariables.set("isbn", code + val);
+//pm.collectionVariables.set("author_name", "Rohit Prime");
+pm.collectionVariables.set("book_name",pm.iterationData.get("BookName"));
+pm.collectionVariables.set("author_name",pm.iterationData.get("Author"))
+console.log(pm.collectionVariables.get("author_name"));
+
+const jsonData = pm.response.json();
+const bookId = jsonData.ID;
+pm.environment.set("book_id", bookId);
+
+pm.test("validate status code is 200", function () {
+    pm.response.to.have.status(200);
+    pm.expect(jsonData).to.have.property("Msg");
+    pm.expect(jsonData.Msg).to.eql("successfully added");
+});
+
+pm.test("Header cookies response time validations", function () {
+    pm.expect(pm.response.headers.get("Content-Type")).to.eql("application/json;charset=UTF-8");
+    pm.expect(pm.response.responseTime).to.be.below(400);
+    pm.expect(pm.response.text()).to.include("successfully added");
+});
+
+pm.test("ID Logic validation", function () {
+    //const isbn_val = pm.collectionVariables.get("isbn");
+    const req = JSON.parse(pm.request.body.raw);
+
+    pm.expect(req).to.have.property("isbn");
+    pm.expect(req).to.have.property("aisle");
+
+    const expected_id = req.isbn + req.aisle;
+    pm.expect(expected_id).to.eql(bookId);
+});
+
+Now go to collection level -->click on Run-->Click on Select File-->Run Library(i.e Run Collection)
+
+For Delay
+pm.test("Delay test by 2 seconds", function (done) {
+    setTimeout(function () {
+        pm.expect(pm.response.code).to.eql(200);
+        done();
+    }, 1000); // 2000 ms = 2 seconds
+});
+
+--Error Handling Scenarios:
+Consider same bookId generated for AddBook request-->It will throw error, Book already exists
+replace:
+{
+    "name":"{{book_name}}",
+    "isbn":"{{isbn}}",
+    "aisle":"8772",
+    "author":"{{author_name}}"
+}
+
+with:
+{
+    "name":"{{book_name}}",
+    "isbn":"RS11",
+    "aisle":"8772",
+    "author":"{{author_name}}"
+}
+
+Modify Test: For AddBook
+-----------
+const code = pm.globals.get("CompanyCode");
+const val = pm.variables.replaceIn('{{$randomInt}}');
+
+pm.collectionVariables.set("isbn", code + val);
+//pm.collectionVariables.set("author_name", "Rohit Prime");
+pm.collectionVariables.set("book_name",pm.iterationData.get("BookName"));
+pm.collectionVariables.set("author_name",pm.iterationData.get("Author"));
+console.log(pm.collectionVariables.get("author_name"));
+
+const jsonData = pm.response.json();
+const bookId = jsonData.ID;
+pm.environment.set("book_id", bookId);
+function generateBookId()
+{
+    var req = JSON.parse(pm.request.body.raw);
+    const expected_id = req.isbn + req.aisle;
+    return expected_id;
+}
+function cleanupScript()
+{
+    const book_id = generateBookId();
+    pm.environment.set("book_id",book_id);
+    postman.setNextRequest("DeleteBook");
+}
+pm.test("validate status code is 200", function () {
+    try
+    {
+        pm.response.to.have.status(200);
+        pm.expect(jsonData).to.have.property("Msg");
+        pm.expect(jsonData.Msg).to.eql("successfully added");
+    }
+    catch(err)
+    {
+        //check if error is due to already book exists
+        if(jsonData.Msg.include("Exists"))
+        {
+            cleanupScript();
+        }
+    }
+});
+
+pm.test("Header cookies response time validations", function () {
+    pm.expect(pm.response.headers.get("Content-Type")).to.eql("application/json;charset=UTF-8");
+    pm.expect(pm.response.responseTime).to.be.below(400);
+    pm.expect(pm.response.text()).to.include("successfully added");
+});
+
+pm.test("ID Logic validation", function () {
+    //const isbn_val = pm.collectionVariables.get("isbn");
+    const req = JSON.parse(pm.request.body.raw);
+
+    pm.expect(req).to.have.property("isbn");
+    pm.expect(req).to.have.property("aisle");
+
+    const expected_id = req.isbn + req.aisle;
+    pm.expect(expected_id).to.eql(bookId);
+});
+
+// pm.test("Delay test by 2 seconds", function (done) {
+//     setTimeout(function () {
+//         pm.expect(pm.response.code).to.eql(200);
+//         done();
+//     }, 1000); // 2000 ms = 2 seconds
+// });
+
+Modify Test: For DeleteBook
+-----------
+ .
+ .
+ .
+pm.test("Validate the message after succesful operation",function()
+{
+    const jsonData = pm.response.json();
+    pm.expect(jsonData.msg).to.eql("book is successfully deleted");
+    postman.setNextRequest("AddBook");           //But it may create issue,as continuous loop,so set flag in collection level as false
+});
+
+
+=================================================
+postman.setNextRequest vs pm.execution.setNextRequest
+=================================================
+
+Feature                     | postman.setNextRequest | pm.execution.setNextRequest
+----------------------------|------------------------|-----------------------------
+API type                    | Legacy                 | Modern
+Namespace                   | postman                | pm.execution
+Current support             | Supported              | Supported
+Recommended for new code    | ❌ No                  | ✅ Yes
+Runner/Newman required      | ✅ Yes                 | ✅ Yes
+Works with Send button      | ❌ No                  | ❌ No
+Future-proof                | ⚠️ Maybe               | ✅ Yes
+
+Note: “Both methods do the same thing. postman.setNextRequest() is legacy, while pm.execution.setNextRequest() is the newer, recommended API. Both work only in runner-based executions.”
+
+Modified Test After setting flag:
+AddBook
+---------
+const code = pm.globals.get("CompanyCode");
+const val = pm.variables.replaceIn('{{$randomInt}}');
+
+pm.collectionVariables.set("isbn", code + val);
+//pm.collectionVariables.set("author_name", "Rohit Prime");
+//pm.collectionVariables.set("book_name",pm.iterationData.get("BookName"));
+//pm.collectionVariables.set("author_name",pm.iterationData.get("Author"));
+console.log(pm.collectionVariables.get("author_name"));
+
+const jsonData = pm.response.json();
+const bookId = jsonData.ID;
+pm.environment.set("book_id", bookId);
+function generateBookId()
+{
+    var req = JSON.parse(pm.request.body.raw);
+    const expected_id = req.isbn + req.aisle;
+    return expected_id;
+}
+function cleanupScript()
+{
+    const book_id = generateBookId();
+    pm.environment.set("book_id",book_id);
+    console.log("calling DeleteBook");
+    pm.collectionVariables.set("flag",true);
+    postman.setNextRequest("DeleteBook");
+    //pm.execution.setNextRequest("DeleteBook");
+}
+pm.test("validate status code is 200", function () {
+    try
+    {
+        pm.response.to.have.status(200);
+        pm.expect(jsonData).to.have.property("Msg");
+        pm.expect(jsonData.Msg).to.eql("successfully added");
+    }
+    catch(err)
+    {
+        //check if error is due to already book exists
+        if(jsonData.Msg.includes("Exists"))
+        {
+            cleanupScript();
+        }
+    }
+});
+
+pm.test("Header cookies response time validations", function () {
+    pm.expect(pm.response.headers.get("Content-Type")).to.eql("application/json;charset=UTF-8");
+    pm.expect(pm.response.responseTime).to.be.below(2000);
+    //pm.expect(pm.response.text()).to.include("successfully added");
+});
+
+pm.test("ID Logic validation", function () {
+    //const isbn_val = pm.collectionVariables.get("isbn");
+    const req = JSON.parse(pm.request.body.raw);
+
+    pm.expect(req).to.have.property("isbn");
+    pm.expect(req).to.have.property("aisle");
+
+    const expected_id = req.isbn + req.aisle;
+    pm.expect(expected_id).to.eql(bookId);
+});
+
+// pm.test("Delay test by 2 seconds", function (done) {
+//     setTimeout(function () {
+//         pm.expect(pm.response.code).to.eql(200);
+//         done();
+//     }, 1000); // 2000 ms = 2 seconds
+// });
+
+DeleteBook:
+---------
+const schema = {
+  "type": "object",
+  "properties": {
+    "msg": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "msg"
+  ]
+};
+pm.test("Validate the message after succesful operation",function()
+{
+    const jsonData = pm.response.json();
+    pm.expect(jsonData.msg).to.eql("book is successfully deleted");
+    if(pm.collectionVariables.get("flag"))
+    {
+        postman.setNextRequest("AddBook");
+        pm.collectionVariables.set("flag",false);
+    }
+});
+pm.test("validating the schema for DeleteBook API",function()
+{
+    pm.response.to.have.jsonSchema(schema);
+});
+
+
+Note: set back request body to
+{
+    "name":"{{book_name}}",
+    "isbn":"{{isbn}}",
+    "aisle":"8772",
+    "author":"{{author_name}}"
+}
+-Run again with BooksData.csv
+
+--Handling OAuth 2.0 Authenticated Google API's:(example: Sign In with Google)
+-----------------------------------------------
+-Below details are required:
+  Client,ClientId,Client Secret Id,Resource Owner, Resource/Authorization Server
+-Steps: -User signs into google by hitting Google Authorization Server and Get Code
+        -Application will use this code to hit Google Resource server in back end to get Access Token
+		-Application grants access to user by validating Access Token
+		
+-Why Applications Rely on other (Google or Facebook) authentication?-->No data breach,no user profile data required,common login
+
+Collection Pre-request
+      ↓
+Generate OAuth token (if expired)
+      ↓
+Store access_token
+      ↓
+Attach token to request
+      ↓
+Call protected API
+      ↓
+Validate response
+
+
+Grant Type Authorization flow:
+------------------------------
+User Browser
+   |
+   | 1) Click "Login with Google"
+   v
+BookMyShow (Client App)
+   |
+   | 2) Redirect to Google Auth URL (client_id, scope, redirect_uri)
+   v
+Google Authorization Server
+   |
+   | 3) User logs in + gives consent
+   | 4) Redirect back with Authorization Code
+   v
+BookMyShow Backend
+   |
+   | 5) Exchange Code + client_secret for Access Token
+   v
+Google Token Endpoint
+   |
+   | 6) Returns access_token (+ refresh_token / id_token)
+   v
+BookMyShow Backend
+   |
+   | 7) Use access_token to call Google Resource APIs
+   v
+Google Resource Server (UserInfo APIs)
+
+When you sign in to an app like BookMyShow using Google, the app uses OAuth 2.0 Authorization Code flow.
+✅ Step-by-step flow
+--BookMyShow creates a Google login URL (Authorization URL)
+This URL is unique for that application because it contains:client_id ✅ (public),redirect_uri,✅scope ✅ (what data is requested: email, profile, etc.),response_type=code
+Client Secret is never exposed in the browser.
+--User is redirected to Google Authorization Server
+User enters Google credentials then,Google verifies the user (authentication).Google also asks consent (permissions) based on scope
+--Google sends Authorization Code back to BookMyShow
+Google redirects to BookMyShow’s redirect_uri with:code=AUTHORIZATION_CODE
+This authorization code is short-lived (like a one-time code).(It’s not exactly OTP, but similar idea.)
+--BookMyShow exchanges Authorization Code for Access Token
+BookMyShow backend (server-side) sends a request to Google Token Endpoint
+It includes:authorization code,client_id,client_secret ✅ (only on server, not visible to user),redirect_uri,grant_type=authorization_code
+--Google returns tokens
+Google responds with:access_token ✅ (used to call APIs),expires_in ✅
+sometimes refresh_token ✅ (to get new access tokens without login again),sometimes id_token ✅ (OpenID Connect, contains user identity)
+--BookMyShow calls Google Resource APIs
+BookMyShow uses access_token to fetch user info like:name,email,profile picture(based on scope)
+--BookMyShow creates its own session
+BookMyShow stores a session (cookie/JWT) in the browser
+For every next operation, BookMyShow uses:
+its own session token (most common)
+and/or access token when it needs Google APIs
+
+-->Create collection-->OAuth 2.0
+====================================================
+OAUTH 2.0 – AUTHORIZATION CODE CONFIGURATION
+====================================================
+Grant Type
+----------
+Authorization Code
+
+Redirect URL / Callback URL
+---------------------------
+https://rahulshettyacademy.com/getCourse.php
+
+Authorization Server URL
+------------------------
+https://accounts.google.com/o/oauth2/v2/auth
+
+Access Token URL
+----------------
+https://www.googleapis.com/oauth2/v4/token
+
+Client ID
+---------
+692183103107-p0m7ent2hk7suguv4vq22hjcfhcr43pj.apps.googleusercontent.com
+
+Client Secret
+-------------
+erZOWM9g3UtwNRj340YYaK_W
+
+Scope
+-----
+https://www.googleapis.com/auth/userinfo.email
+
+State
+-----
+Any random string
+(example: abc123xyz)
+
+How to pass OAuth in API Request
+--------------------------------
+Headers
+Authorization: Bearer <access_token>
+====================================================
+====================================================
+OAUTH 2.0 – AUTHORIZATION CODE FLOW (MANDATORY FIELDS)
+====================================================
+
+1) GET AUTHORIZATION CODE REQUEST
+--------------------------------
+
+Purpose:
+--------
+Used to authenticate the user and obtain an
+Authorization Code from the Authorization Server.
+
+Endpoint:
+---------
+Authorization Server URL
+
+Example:
+--------
+https://accounts.google.com/o/oauth2/v2/auth
+
+
+Mandatory Query Parameters:
+---------------------------
+scope
+client_id
+response_type=code
+redirect_uri
+state   (recommended for security)
+
+
+Output:
+-------
+Authorization Code
+(example: code=4/0AX4XfWj...)
+
+
+----------------------------------------------------
+
+2) GET ACCESS TOKEN REQUEST
+---------------------------
+
+Purpose:
+--------
+Used by the client application to exchange
+Authorization Code for Access Token.
+
+Endpoint:
+---------
+Access Token URL
+
+Example:
+--------
+https://www.googleapis.com/oauth2/v4/token
+
+
+Mandatory Parameters:
+---------------------
+code
+client_id
+client_secret
+redirect_uri
+grant_type=authorization_code
+
+
+Request Method:
+---------------
+POST
+
+
+Request Body Type:
+------------------
+application/x-www-form-urlencoded
+
+
+Output:
+-------
+Access Token
+(example: access_token=ya29.a0AfH6SMD...)
+====================================================
+
+OAuth 2.0 project:https://www.youtube.com/watch?v=T5mgz0FtJiI
+
+Mock Servers and Schema validation:
+----------------------------------
+-https://jsoneditoronline.org/
+-Based on schema, you should be able to create json, their are some tools which create example, if we pass JSON Schema
+  https://www.liquid-technologies.com/online-json-to-schema-converter
+ 
+-Mock Servers: A mock API Server imitates a real API server by providing realistic mock API response to requests.Within postman, you can make requests that return mock data defined 
+               if you do not have production API ready, or you do not want to run your requests against real data yet
+			   e.g--> {{base_url}}/getapitestingcourses --> If this endpoint is under development, we have to tell postman to create mock_server
+			          {{base_url}}/getcoursedetails?name={{course}}
+					  Mock server: {{mock_server_url}}/getapitestingcourses  ---->Give postman sample response you expect(configure it)-->Based on it we can write code, which will be valid for real api
+					  
+-Automatically environment will be created
+-to create mock server-->Go to mock server tab(below collection)--> create a new mock server-->create a new colllectiorn->add request method,Request URL,Response code, response body<-----(configure all these field in table)
+give name to mock server -->MockAPITesting
+copy mock server URL--->e.g https://a561463b-4140-4ae6-b656-2955bd51f247.mock.pstmn.io
+{
+  "data": [
+    {
+      "course": "Postman",
+      "price": 150,
+      "category": "JavaScript"
+    },
+    {
+      "course": "SOAPUI",
+      "price": 25,
+      "category": "Groovy"
+    },
+    {
+      "course": "Rest Assured",
+      "price": 120,
+      "category": "Java"
+    },
+    {
+      "course": "Selenium",
+      "price": 200,
+      "category": "Java"
+    },
+    {
+      "course": "Cypress",
+      "price": 180,
+      "category": "JavaScript"
+    },
+    {
+      "course": "Playwright",
+      "price": 170,
+      "category": "TypeScript"
+    }
+  ]
+}
+
+Go to mock server-->click on collection link inside it-->go to set up tab-->click on request link
+Hit it
+now when code is ready simply switch environment to QA/UAT, url available in that environment will be hit
+-we can write script as well
+
+SOAP Webservices in Postman:
+---------------------------
+Rest API's uses HTTP Protocol to send the request and receive the response whereas SOAP Webservices/API's uses SOAP protocol to send the request and receive the response
+End Point: https://www.dataaccess.com/webservicesserver/NumberConversion.wso?WSDL
+
+http://www.dneonline.com/calculator.asmx?WSDL
+http://webservices.oorsprong.org/websamples.countryinfo/CountryInfoService.wso?WSDL
+http://www.crcind.com/csp/samples/SOAP.Demo.cls?WSDL
+http://webservices.daehosting.com/services/isbnservice.wso?WSDL
+https://www.w3schools.com/xml/tempconvert.asmx?WSDL
+https://ws.cdyne.com/ip2geo/ip2geo.asmx?WSDL
+http://currencyconverter.kowabunga.net/converter.asmx?WSDL
+https://sapserviceshub.com/Utility/ZipCode_v2.svc?singleWsdl
+http://thomas-bayer.com/axis2/services/BLZService?wsdl
+http://footballpool.dataaccess.eu/data/info.wso?wsdl
+SOAP WebServices
+
+Download WSDL from http://www.dneonline.com/calculator.asmx?WSDL and import it in Postman
+
+const responseJson = xml2Json(pm.response.text());
+console.log(responseJson);
+const expected = Number(pm.collectionVariables.get("number1"))+Number(pm.collectionVariables.get("number2"));
+pm.test("Validate Addition in the response",function()
+{
+    //const expected = Number(pm.collectionVariables.get("number1"))+Number(pm.collectionVariables.get("number2"));
+    const actualValue = Number(responseJson["soap:Envelope"]["soap:Body"]["AddResponse"]["AddResult"]);
+    pm.expect(expected).to.be.eql(actualValue);
+});
+pm.test("Validate Addition in the response method 2",function()
+{
+    pm.response.to.have.status(200);
+    pm.expect(pm.response.text()).to.includes(expected);
+});
+
+--Newman: It is commandline collection runner for postman
+--------
+-It allows you to run and test a postman collecion directly from the command line
+-Using Newman, you can easily integrate it with your CI servers and build system
+-Newman built on nodejs to run newman-->Install Nodejs as prerequisite
+-Install Newman from NPM globally on your system, which allows you to run it from anywhere
+  command: npm install -g newman
+-To run collection from NewMan
+ command: $newman run <collectionfile>
+-Generate HTML report for test execution results with newman -htmlextra plugin
+  https://www.npmjs.com/package/newman-reporter-htmlextra
+-Integrate Postman Automation Script to Jenkins CICD with help of Newman commands
+
+Steps to run: Export collection file to local(Collection v2.1)-->select enviroment and then export and also export json files for all environments)
+              Open terminal and navigate to directory where file located(Also paster csv file which needed at same location)
+			  (FileName should be underscore, no spaces should be their)
+			  run command:
+			  newman run Library.postman_collection.json -d BooksData.csv -e QA.postman_environment.json -g workspace.postman_globals.json
+			  
+newman run Library.postman_collection.json \
+-d BooksData.csv \
+-e QA.postman_environment.json \
+-g workspace.postman_globals.json
+
+			  
+			  Here  -d : data driven
+			        -e : Environment variables
+					-g : Global variables
+			 
+HTML Report:  https://www.npmjs.com/package/newman-reporter-htmlextra
+              Install Globally
+			  npm i -g newman-reporter-htmlextra
+			  
+			  newman run Library.postman_collection.json -d BooksData.csv -e QA.postman_environment.json -g workspace.postman_globals.json -r htmlextra
+			  
+			  newman folder will be created contains html file
+			  
+--Set Up Jenkins:
+----------------
+-Download Generic Java Package(.war): https://jenkins.io/download/
+-open cmd as admin and run 
+ command: java -jar jenkins.war -httpPort:9090
+-Go to localhost:9090 in browser and setup username and password
+-Go to Jenkins Dashboard, select New Item
+-Freestyle project
+-On Configuration page-->Build triggers tab-->Build steps-->Execute windows batch command(For windows)/Execute shell(For Mac or linux)-->Paste commands
+   D:
+   cd Testing Prep\Selenium Practice\Projects
+   newman run Library.postman_collection.json -d BooksData.csv -e QA.postman_environment.json -g workspace.postman_globals.json -r htmlextra
+   
+Parameterize jenkins-->
+  go to job -->configure-->General tab-->Select-->This project is Prameterized-->Click on Add Parameter-->Select choice parameter(From Dropdown)
+            -->Choice parameter-->Name as 'Environment'-->Choices as QA, UAT
+			-->Go to Build-->Execute windows batch command-->command-->"$Env".postman(new command added this)
+D:
+cd Testing Prep\Selenium Practice\Projects
+newman run Library.postman_collection.json -d BooksData.csv -e "%Environment%".postman_environment.json -g workspace.postman_globals.json
+
+cd /d "D:\Testing Prep\Selenium Practice\Projects"
+
+echo Selected Environment = %Environment%
+
+newman run Library.postman_collection.json ^
+-d BooksData.csv ^
+-e "%Environment%.postman_environment.json" ^
+-g workspace.postman_globals.json ^
+-r cli,htmlextra
+
+			-->Build with parameter
+
+--Version control features:
+-Share collection, push to workspaces
+-Share public link
+-Create a fork(Option available for collection)-->Fork label-->Click on Fork Collection
+-Make changes and click on create pull request-->Approve and Merge
+-We can Delete source of changes
+
+--Add Monitor: To run collection periodically to check for its performance and response
+  Create a monitor-->Monitor Name->Smoke test
+                     Collection->Library
+					 Collection Version Tag->Current
+					 Environment->QA
+  Run this monitor-->Frequency(e.g->minute,day etc)
+                     Select Receive mails
+					 Select retry if fials->2 times
+  Click on create
+  
+-At bottom test runner is available, Trash is also available
+
+Project:
+-------
+-Flow:-> Login API-->Create Product-->Purchase Order on created product-->Delete Order
+-URL: rahulshettyacademy.com/client/auth/login --->Register and create login
+-Inspect page before and after login to see the network calls, as we don't have documentation we should be able to create documentation from browser onlu.
+-When we login we get the token in response, which used in all subsequent calls(Token tells who we are)
+
+--Create API Collection:-->ECOM
+-Open login page-->Go to Inspect(Network calls)-->see 'login' call-->check Header for request URL-->Add request 'login' in collection which is POST call
+  URL--> https://rahulshettyacademy.com/api/ecom/auth/login
+  Body: From Payload get it
+{
+    "userEmail":"lavatero92@gmail.com",
+    "userPassword":"Admin@123"
+}
+  Copy the token and userId and set it to collection variables
+  
+const jsonData = pm.response.json();
+const userId = jsonData.userId;
+console.log(userId);
+pm.collectionVariables.set("userId",userId);
+pm.collectionVariables.set("token",jsonData.token);
+pm.test("Validating Login",function()
+{
+    pm.expect(jsonData.message).to.be.eql("Login Successfully");
+});
+
+
+-Add new Product-->Create new request for it 'CreateProduct'
+  EndPoint: https://rahulshettyacademy.com/api/ecom/product/add-product HTTP Method= POST
+  Add Auth token in header with key as 'Authorization'
+  Form Data: Paste below details after click on bulk edit
+  productName: iPhone
+  ProductAddedBy: {{userId}}
+  productCategory: Electronics
+  productSubCategory: Mobile
+  productPrice: 85000
+  productDescription: Macintosh
+  productFor: Unisex
+  productImage: (allow file reading from outside directory)
+  
+  Response we get product id
+{
+    "productId": "695b4221c941646b7a7e5e78",
+    "message": "Product Added Successfully"
+}
+
+check on https://rahulshettyacademy.com/client/#/dashboard/dash if product added or not
+
+const jsonData = pm.response.json();
+pm.collectionVariables.set("productId",jsonData.productId);
+pm.test("Verifying Product added to category",function()
+{
+    pm.expect(jsonData.message).to.be.eql("Product Added Successfully");
+});
+
+-Now let us 'CreateOrder' i.e Place Oreder
+  URL: https://rahulshettyacademy.com/api/ecom/order/create-order HTTP Method: POST
+{
+  "orders": [
+    {
+      "country": "India",
+      "productOrderedId": "{{productId}}"
+    }
+   ]
+}
+
+  Header: Add 'Authorization'
+
+Response:
+{
+    "orders": [
+        "695b4bcdc941646b7a7e6d09"
+    ],
+    "productOrderId": [
+        "695b4badc941646b7a7e6cff"
+    ],
+    "message": "Order Placed Successfully"
+}
+
+const jsonData = pm.response.json();
+const orderId = jsonData.orders[0];
+console.log(orderId);
+pm.collectionVariables.set("orderId",orderId);
+pm.test("Verifying product order placement",function()
+{
+pm.expect(jsonData.message).to.eql("Order Placed Successfully");
+});
+
+-Now let us 'GetOderDetails'
+  URL: https://rahulshettyacademy.com/api/ecom/order/get-orders-details?id={{orderId}}
+  Header: Add 'Authorization'
+  
+const jsonData = pm.response.json();
+pm.test("Verifying order details",function()
+{
+pm.expect(jsonData.data.productName).to.eql(pm.collectionVariables.get("productName"));
+});
+
+-Now let us 'DeleteProduct'
+  URL: https://rahulshettyacademy.com/api/ecom/product/delete-product/{{productId}}  HTTP Method: DELETE
+  
+pm.test("Validating Status code",function()
+{
+    pm.response.to.have.status(200);
+});
