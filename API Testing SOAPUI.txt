@@ -1,0 +1,181 @@
+--WebServices: It is method of communication between two application or electronic devices over the world wide web(www)
+eg: Integration between IRCTC and Redbus
+
+--Types of webservices: Simple object access protocol(SOAP)-->xml --> It uses SOAP protocol
+                        Representational State Transfer(REST)-->JSON -->It is Architecture with HTTP protocol
+					  
+--SOAP Services: 
+  SOAP Protocol: for sending or receiving messages between application without confronting interoperability issue, underlying language used by SOAP is xml
+                 Structure of SOAP message: https://www.ibm.com/docs/en/integration-bus/9.0.0?topic=soap-structure-message
+				 EndPoint: Where services hosted, SOAP reads endpoint and go to server link and submit message to webservice
+				 
+┌─────────────────────────────────────────────────────────────┐
+│                        SOAP MESSAGE                          
+│                                                             │
+│  ┌───────────────────────────────────────────────────────┐ │
+│  │               SOAP ENVELOPE (Mandatory)               │ │
+│  │                                                       │ │
+│  │  ┌─────────────────────────────────────────────────┐ │ │
+│  │  │            SOAP HEADER (Optional)                │ │ │
+│  │  │                                                 │ │ │
+│  │  │  ┌───────────────────────────────────────────┐ │ │ │
+│  │  │  │ Authentication Info                        │ │ │ │
+│  │  │  │ Security (WS-Security)                     │ │ │ │
+│  │  │  │ Transaction Details                        │ │ │ │
+│  │  │  │ Metadata                                   │ │ │ │
+│  │  │  └───────────────────────────────────────────┘ │ │ │
+│  │  └─────────────────────────────────────────────────┘ │ │
+│  │                                                       │ │
+│  │  ┌─────────────────────────────────────────────────┐ │ │
+│  │  │             SOAP BODY (Mandatory)               │ │ │
+│  │  │                                                 │ │ │
+│  │  │  ┌───────────────────────────────────────────┐ │ │ │
+│  │  │  │ Request / Response Data                    │ │ │ │
+│  │  │  │                                           │ │ │ │
+│  │  │  │ Operation Name                             │ │ │ │
+│  │  │  │   └── Parameters                           │ │ │ │
+│  │  │  └───────────────────────────────────────────┘ │ │ │
+│  │  │                                                 │ │ │
+│  │  │  ┌───────────────────────────────────────────┐ │ │ │
+│  │  │  │ SOAP FAULT (Optional)                      │ │ │ │
+│  │  │  │ ├── faultcode                              │ │ │ │
+│  │  │  │ ├── faultstring                            │ │ │ │
+│  │  │  │ ├── faultactor                             │ │ │ │
+│  │  │  │ └── detail                                 │ │ │ │
+│  │  │  └───────────────────────────────────────────┘ │ │ │
+│  │  └─────────────────────────────────────────────────┘ │ │
+│  └───────────────────────────────────────────────────────┘ │
+└─────────────────────────────────────────────────────────────┘
+
+WSDL(Web Services Definition Language): - A wsdl is an xml document that describes a web service.
+                                        - Web Service = Collection of Operations.
+										- Webservice reads your SOAP message, it will see particular operation and redirects to that specific thing.
+										- For testing SOAP webservices, we get WSDL as contract
+										e.g->www.dneonline.com/calculator.asmx -->Service description i.e contract(It is mentioned here, following operations are supported-->Add,Substract,Multiply,Divide)
+										wsdl:binding ->Term which shows how many operations it supports
+										wsdl:type ->What type of parameter operation is expecting
+										-wsdl specifies the location of service and the methods of the service using these major elements
+										
+-SOAP message is an xml document which used to transmit data. Wsdl is an xml document which describes how to connect and make requests to your web service
+Basically SOAP messages are the data you transmit, WSDL tells you what you can do and how to make the calls
+SOAP is structure you apply to your message/data for transfer,WSDL are used only to determine how to make calls to the service in the 1st place.
+
+--Calculator webservice example:
+ Click on SOAP in the header-->Project Name: Calculator
+                               Initial WSDL: http://www.dneonline.com/calculator.asmx?WSDL
+							   Create Requests: Select Create Sample Requests for all Operations(All requests which are present in particular wsdl will be seen)
+							   Expand Add-->Click on Request->We can see endpoint and Request
+							   ?-->pass values here
+							   ▶ click on Run
+ Creating TestSuite and TestCases: Right click on project-->New TestSuite-->name it(eg->Calculator TestSuite)-->Folder will be created, where we can write testcases
+                                                                            Right click on it-->New TestCase-->Adding Functionality(Specify name)->click on OK-->expand it
+																			Add Step-->SOAP-->specify name(Add)-->select operation involved(Add)-->check Add SOAP Response Assertion,create optional elements-->Window will open.
+																			Now Perform operations in xml in window
+																			Use + to add Assertions in Test Case
+
+Local Webservice installation for testing:
+  //Add later-->page number 4
+
+-Other SOAP WebServices							   
+http://www.dneonline.com/calculator.asmx?WSDL
+http://webservices.oorsprong.org/websamples.countryinfo/CountryInfoService.wso?WSDL
+http://www.crcind.com/csp/samples/SOAP.Demo.cls?WSDL
+http://webservices.daehosting.com/services/isbnservice.wso?WSDL
+https://www.w3schools.com/xml/tempconvert.asmx?WSDL
+https://ws.cdyne.com/ip2geo/ip2geo.asmx?WSDL
+http://currencyconverter.kowabunga.net/converter.asmx?WSDL
+https://sapserviceshub.com/Utility/ZipCode_v2.svc?singleWsdl
+http://thomas-bayer.com/axis2/services/BLZService?wsdl
+http://footballpool.dataaccess.eu/data/info.wso?wsdl
+
+Basic Assertions for SOAPUI
+---------------------------
+EmployeeManagementService
+-Create TestSuite-->Name=Employee--->New TEstCase-->name=Adding-->Add SOAP Request(select addEmployee)-->Click OK
+                                     click on + to add Assertions-->Property content tab
+									                                e.g contains-->click on it-->content=true (provided value it will check in response, here it will check if true is present in the response)
+																 -->To check response not having null or false value--> use not contains
+																 -->To verify response is valid SOAP Response-->Compliance,status and standard--->SOAP Response(By default present)
+																 -->Response have valid HTTP code-->Compliance,status and standard-->Valid HTTP Status Code(add 200)
+																 -->Verify Response time is within boundary-->SLA-->Response SLA (200 ms)
+																 -->Verify Security threats(like leaking sensitive info like token)-->Security tab-->Sensitive Information Exposure-->Add Token
+-When we switch from xml to raw--> we can see status code HTTP/1.1 200 ok
+
+--Advanced Assertions: GetEmployeeTest
+   --verify age of the Employee is --- Property Content-->xpath match(travel to node using xpath)
+   //Here wen need to give proper namespace--> so click on declare button and then add it
+
+declare namespace soapenv='http://www.w3.org/2003/05/soap-envelope';
+declare namespace ns='http://sample.com/reservation/guest/types';
+declare namespace ax21='http://exception.reservation.sample.com/xsd';
+//ns:return/ns:age
+
+  --verify dept is IT-->Use Xpath match
+  --verify age attribute is displayed-->Use Xpath match for age node verification
+declare namespace soapenv='http://www.w3.org/2003/05/soap-envelope';
+declare namespace ns='http://sample.com/reservation/guest/types';
+declare namespace ax21='http://exception.reservation.sample.com/xsd';
+exists(//ns:age)
+
+  --verify only unique name returns-->Use Xpath match for verification
+declare namespace soapenv='http://www.w3.org/2003/05/soap-envelope';
+declare namespace ns='http://sample.com/reservation/guest/types';
+declare namespace ax21='http://exception.reservation.sample.com/xsd';
+count(//ns:name)
+
+Note: <ns:id>*</ns:id> -->* means wildcard, means whatever there it accepts as expected value.
+
+-Click on the TestSuite and Run all tests at a time
+
+--Data Driven Strategy: Properties Access --->Different ways to call properties
+-----------------------------------------
+-TestCase Level Properties Access
+-TestSuite Level Properties Access
+-Project Level Properties Access
+-Properties TestStep
+-Properties upload from external file
+-Properties transfer teststep
+-Accessing custom properties
+
+-Click on Soap and Create test cases in same way as earlier(After creating new project-->while doing it check Crates a Testsuite check box also)-->then one testcase for each operation,select all operations
+-Go to Testsuite-->addEmployee-->we can data drive by using Custom Properties tab at different levels
+ let us start with Testcase level--> Scope of properties is testcase level only
+ Click on AddEmployee TestCase--->click on + in window--> name=john,age=27 (add these values in key-value table)  <--as properties have limited scope it is better to declare at testsuite level
+ Click on suite-->properties in window popup-->go to custom properties--->name=John (remove from above) -->now we can access it to all 3 test cases
+ Go to testcase--><typ:name>..<typ:name> -->(as a exmple-->right click on .. and Get Data-->testsuite-->Property[name])
+ Go to project level-->custom properties--> id=12345(example)
+ Go to Testcase(AddEmployee)-->Test Steps-->Right Click it-->Add Steps-->Properties(Opens window-->+-->add Department=IT)
+ 
+ -fetch all properties in SOAP message as follows
+ Synatx:
+ <soap:Envelope xmlns:soap="http://www.w3.org/2003/05/soap-envelope" xmlns:typ="http://sample.com/reservation/guest/types">
+   <soap:Header/>
+   <soap:Body>
+      <typ:addEmployee>
+         <!--Optional:-->
+         <typ:name>${#TestSuite#name}</typ:name>
+         <!--Optional:-->
+         <typ:id>${#Project#id}</typ:id>
+         <!--Optional:-->
+         <typ:Department>${Properties#Department}</typ:Department>    //${Properties#Department} -->As we have given name 'Properties' to test step, we can see this name here, name of the test step appear, not generic like others
+         <!--Optional:-->
+         <typ:age>${#TestCase#age}</typ:age>
+      </typ:addEmployee>
+   </soap:Body>
+</soap:Envelope>
+
+--Properties Upload from external files:
+---------------------------------------
+Under custom properties their is option(Loads property values from an external file)--> create properties file(key-value) and select (Decide what level you want and click on it)
+we can use these properties under custom properties, and then isert using GetData
+eg-
+id=6357
+department=IT
+
+--Property Transfer from response to another request:
+Go To getEmployeeDetails testcase-->Test step-->right click and clone-->Target testcase select AddEmployee Testcase (Keep else as it is)
+do same for deleteEmployee
+
+Go to newly added test step-->click on insert step-->Property transfer-->ok
+window will open-->click on +-->namePropertyTransfer(example name of value transfer)
+Under window select source ex: getEmployeeDetails, Property=Response, Path Language=Xpath
