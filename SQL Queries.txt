@@ -1,0 +1,355 @@
+use sbms;
+
+show tables;
+
+select * from student;
+
+CREATE TABLE employees (
+    emp_id INT PRIMARY KEY,
+    emp_name VARCHAR(50),
+    department VARCHAR(30),
+    salary INT,
+    age INT,
+    city VARCHAR(30),
+    join_date DATE
+);
+
+-- drop table employees
+
+INSERT INTO employees VALUES
+(1, 'Rahul',   'IT',        60000, 25, 'Pune',       '2019-06-10'),
+(2, 'Amit',    'HR',        45000, 30, 'Mumbai',     '2018-03-15'),
+(3, 'Sneha',   'IT',        70000, 28, 'Pune',       '2020-01-20'),
+(4, 'Priya',   'Finance',   55000, 32, 'Delhi',      '2017-11-05'),
+(5, 'Ankit',   'HR',        40000, 26, 'Mumbai',     '2021-07-12'),
+(6, 'Neha',    'IT',        65000, 27, 'Bangalore',  '2019-09-18'),
+(7, 'Rohit',   'IT',     128000, 29, 'Pune',       '2018-12-22'),
+(8, 'Kiran',   'Finance',   72000, 35, 'Mumbai',     '2016-05-30'),
+(9, 'Pooja',   'Sales',     52000, 31, 'Delhi',      '2020-10-08'),
+(10,'Suresh',  'IT',        80000, 34, 'Hyderabad',  '2015-02-14'),
+(11,'Nikita',  'HR',        27000, 28, 'Pune',       '2019-08-01'),
+(12,'Vikas',   'Finance',   60000, 33, 'Bangalore',  '2017-06-19'),
+(13,'Meena',   'Sales',     45000, 26, 'Chennai',    '2021-01-25'),
+(14,'Arjun',   'IT',        75000, 29, 'Pune',       '2018-04-11'),
+(15,'Komal',   'HR',        43000, 27, 'Nagpur',     '2020-09-30'),
+(16,'Deepak',  'Finance',   68000, 36, 'Delhi',      '2016-12-03'),
+(17,'Isha',    'IT',        62000, 24, 'Mumbai',     '2022-02-17'),
+(18,'Manoj',   'Sales',     50000, 38, 'Pune',       '2014-08-09'),
+(19,'Rina',    'HR',        46000, 31, 'Bangalore',  '2018-10-27'),
+(20,'Karthik', 'IT',        72000, 35, 'Chennai',    '2016-03-06');
+
+select * from Employees;
+
+select distinct department from Employees;
+
+select * from Employees where department = 'IT' and (city='Pune' or city='Delhi');
+
+select * from Employees where department='IT' order by salary desc;
+
+CREATE TABLE food_items (
+    id INT PRIMARY KEY,
+    item VARCHAR(50),
+    price DECIMAL(10,2)
+);
+
+drop table food_items;
+
+INSERT INTO food_items VALUES
+(1, 'Samosa', 10.00),
+(2, 'Vadapav', 20.00);
+
+select * from food_items;
+
+update food_items
+set item='kurma puri'
+where id=3;
+
+insert into food_items values (3,'Kurma',20.00);
+
+delete from food_items where id=3;
+
+CREATE TABLE products (
+    product_id INT PRIMARY KEY,
+    product_name VARCHAR(50),
+    category VARCHAR(30),
+    price DECIMAL(10,2),
+    rating DECIMAL(2,1)
+);
+
+INSERT INTO products VALUES
+(1,  'Laptop',        'Electronics', 55000.00, 4.5),
+(2,  'Mobile',        'Electronics', 25000.00, 4.3),
+(3,  'Headphones',    'Electronics', 3000.00, 4.0),
+(4,  'Smart Watch',   'Electronics', 12000.00, 4.2),
+(5,  'TV',            'Electronics', 45000.00, 4.6),
+
+(6,  'Chair',         'Furniture',   2500.00, 3.8),
+(7,  'Table',         'Furniture',   6000.00, 4.1),
+(8,  'Sofa',          'Furniture',   35000.00, 4.4),
+(9,  'Bed',           'Furniture',   28000.00, 4.2),
+(10, 'Cupboard',      'Furniture',   22000.00, 4.0),
+
+(11, 'Notebook',      'Stationery',  50.00,   4.1),
+(12, 'Pen',           'Stationery',  10.00,   3.9),
+(13, 'Backpack',      'Stationery',  1500.00, 4.3),
+(14, 'Calculator',    'Stationery',  1200.00, 4.0),
+(15, 'Marker',        'Stationery',  40.00,   3.7),
+
+(16, 'T-Shirt',       'Clothing',    700.00,  4.2),
+(17, 'Jeans',         'Clothing',    1800.00, 4.4),
+(18, 'Jacket',        'Clothing',    3500.00, 4.5),
+(19, 'Shoes',         'Clothing',    4200.00, 4.6),
+(20, 'Cap',           'Clothing',    300.00,  3.8),
+
+(21, 'Mixer',         'Appliances',  4500.00, 4.1),
+(22, 'Fridge',        'Appliances',  30000.00,4.6),
+(23, 'Washing Machine','Appliances', 28000.00,4.4),
+(24, 'Microwave',     'Appliances',  12000.00,4.2),
+(25, 'Toaster',       'Appliances',  2500.00, 3.9);
+
+ select * from products;
+ 
+select * from products where category='Electronics' limit 3;
+
+select * from products where product_name like 'J%'
+
+select * from products where product_name like '__air';
+
+SELECT *
+FROM products
+WHERE product_name LIKE 'L%'
+   OR product_name LIKE 'M%'
+   OR product_name LIKE 'H%';
+
+select * from products where category in ('Electronics','Clothing');
+
+select * from products where category not in ('Electronics','Clothing');
+
+select * from products where price between 1500 and 6000;
+
+select * from products where product_name between 'Chair' and 'Fridge';
+
+select product_name as product from products
+
+CREATE TABLE customers (
+    customer_id INT PRIMARY KEY,
+    customer_name VARCHAR(50),
+    city VARCHAR(30)
+);
+
+CREATE TABLE orders (
+    order_id INT PRIMARY KEY,
+    customer_id INT,
+    product VARCHAR(50),
+    amount DECIMAL(10,2)
+);
+
+INSERT INTO customers VALUES
+(1, 'Rahul',  'Pune'),
+(2, 'Amit',   'Mumbai'),
+(3, 'Sneha',  'Delhi'),
+(4, 'Priya',  'Bangalore'),
+(5, 'Rohit',  'Kolhapur');
+
+INSERT INTO orders VALUES
+(101, 1, 'Laptop', 55000.00),
+(102, 2, 'Mobile', 25000.00),
+(103, 1, 'Mouse',  1200.00),
+(104, 3, 'Tablet', 18000.00),
+(105, 6, 'Camera', 30000.00);
+
+-- inner join
+SELECT c.customer_name, o.product, o.amount
+FROM customers c
+INNER JOIN orders o
+ON c.customer_id = o.customer_id;
+
+-- left join
+SELECT c.customer_name, o.product
+FROM customers c
+LEFT JOIN orders o
+ON c.customer_id = o.customer_id;
+
+-- right join
+SELECT c.customer_name, o.product
+FROM customers c
+RIGHT JOIN orders o
+ON c.customer_id = o.customer_id;
+
+-- full join
+SELECT c.customer_name, o.product
+FROM customers c
+LEFT JOIN orders o ON c.customer_id = o.customer_id
+
+UNION
+
+SELECT c.customer_name, o.product
+FROM customers c
+RIGHT JOIN orders o ON c.customer_id = o.customer_id;
+
+-- cross join
+SELECT c.customer_name, o.product
+FROM customers c
+CROSS JOIN orders o;
+
+CREATE TABLE Persons (
+    P_Id INT PRIMARY KEY,
+    LastName VARCHAR(50),
+    FirstName VARCHAR(50),
+    Address VARCHAR(100),
+    City VARCHAR(50)
+);
+
+CREATE TABLE Items (
+    O_Id INT PRIMARY KEY,
+    OrderNo INT,
+    P_Id INT
+);
+
+INSERT INTO Persons VALUES
+(1, 'Hansen',    'Ola',  'Timoteivn 10', 'Sandnes'),
+(2, 'Svendson',  'Tove', 'Borgvn 23',    'Sandnes'),
+(3, 'Pettersen', 'Kari', 'Storgt 20',    'Stavanger');
+
+
+INSERT INTO Items VALUES
+(1, 77895, 3),
+(2, 44678, 3),
+(3, 22456, 1),
+(4, 24562, 1),
+(5, 34764, 15);
+
+select * from orders;
+
+select * from Persons inner join Items on Persons.P_Id = Items.P_ID
+
+select * from Persons left join Items on Persons.P_Id = Items.P_ID;
+
+SELECT 
+    p.P_Id,
+    p.FirstName,
+    p.LastName,
+    o.O_Id,
+    o.OrderNo
+FROM Persons p
+CROSS JOIN Items o;
+
+
+
+
+select * from Persons right join Items on Persons.P_Id = Items.P_ID;
+
+select * from Persons full join Items on Persons.P_Id = Items.P_ID;
+
+CREATE TABLE Emp (
+    emp_id INT PRIMARY KEY,
+    emp_name VARCHAR(50),
+    manager_id INT
+);
+
+INSERT INTO Emp VALUES
+(1, 'Rahul',  NULL),
+(2, 'Amit',   1),
+(3, 'Sneha',  1),
+(4, 'Priya',  2),
+(5, 'Rohit',  2);
+
+
+-- self join
+SELECT 
+    e.emp_name AS employee,
+    m.emp_name AS manager
+FROM Emp e
+LEFT JOIN Emp m
+ON e.manager_id = m.emp_id;
+
+SELECT 
+    e1.emp_name,
+    e2.emp_name AS colleague
+FROM employees e1
+JOIN employees e2
+ON e1.department = e2.department
+AND e1.emp_id <> e2.emp_id;
+
+
+CREATE TABLE Employees_Norway (
+    E_ID INT,
+    E_Name VARCHAR(50)
+);
+
+CREATE TABLE Employees_USA (
+    E_ID INT,
+    E_Name VARCHAR(50)
+);
+
+INSERT INTO Employees_Norway VALUES
+(1, 'Hansen, Ola'),
+(2, 'Svendson, Tove'),
+(3, 'Svendson, Stephen'),
+(4, 'Pettersen, Kari');
+
+INSERT INTO Employees_USA VALUES
+(1, 'Turner, Sally'),
+(2, 'Kent, Clark'),
+(3, 'Svendson, Stephen'),
+(4, 'Scott, Stephen');
+
+SELECT E_Name FROM Employees_Norway
+UNION
+SELECT E_Name FROM Employees_USA;  -- keeps duplicate
+
+Note:
+UNION → combines result sets and removes duplicates
+UNION ALL → faster, keeps duplicates
+Both tables must have same number of columns & compatible data types
+
+SQL Constraints:
+following constraints:
+• NOT NULL
+• UNIQUE : uniquely identifies each record in a database table,UNIQUE and PRIMARY KEY constraints both provide a guarantee for uniqueness for a column or 
+set of columns.
+CREATE TABLE Persons (
+    P_Id INT NOT NULL,
+    LastName VARCHAR(255) NOT NULL,
+    FirstName VARCHAR(255),
+    Address VARCHAR(255),
+    City VARCHAR(255),
+    UNIQUE (P_Id)
+);
+• PRIMARY KEY
+CREATE TABLE Persons (
+    P_Id INT NOT NULL,
+    LastName VARCHAR(255) NOT NULL,
+    FirstName VARCHAR(255),
+    Address VARCHAR(255),
+    City VARCHAR(255),
+    PRIMARY KEY (P_Id)
+);
+
+• FOREIGN KEY
+CREATE TABLE Orders (
+    O_Id INT NOT NULL,
+    OrderNo INT NOT NULL,
+    P_Id INT,
+    PRIMARY KEY (O_Id),
+    FOREIGN KEY (P_Id) REFERENCES Persons(P_Id)
+);
+
+• CHECK: CHECK constraint is used to limit the value range that can be placed in a column.
+CREATE TABLE Persons (
+    P_Id INT NOT NULL,
+    LastName VARCHAR(255) NOT NULL,
+    FirstName VARCHAR(255),
+    Address VARCHAR(255),
+    City VARCHAR(255),
+    CHECK (P_Id > 0)
+);
+
+• DEFAULT: used to insert a default value into a column
+CREATE TABLE Persons (
+    P_Id INT NOT NULL,
+    LastName VARCHAR(255) NOT NULL,
+    FirstName VARCHAR(255),
+    Address VARCHAR(255),
+    City VARCHAR(255) DEFAULT 'Sandnes'
+);

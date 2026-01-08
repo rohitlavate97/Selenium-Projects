@@ -1,0 +1,455 @@
+                     WHAT IS A REST API
+================================================================================
+
++--------------------+                                   +--------------------+
+|                    |                                   |                    |
+|       CLIENT       |                                   |       SERVER       |
+|   (Browser / App)  |                                   |     (Backend)      |
+|                    |                                   |                    |
++--------------------+                                   +--------------------+
+          |                                                           |
+          |                                                           |
+          |   HTTP REQUEST                                           |
+          |   ---------------------------------------------------->  |
+          |                                                           |
+          |   METHODS:                                               |
+          |     • GET                                                 |
+          |     • POST                                                |
+          |     • PUT                                                 |
+          |     • DELETE                                              |
+          |                                                           |
+          |   URL / ENDPOINTS                                        |
+          |     • /surveys                                           |
+          |     • /surveys/123                                       |
+          |     • /surveys/123/resp                                  |
+          |                                                           |
+          |                                                           |
+          |                           PROCESS REQUEST                 |
+          |                     (Business Logic + Database)           |
+          |                                                           |
+          |   JSON RESPONSE                                          |
+          |   <----------------------------------------------------  |
+          |                                                           |
+          |   {                                                       |
+          |     "survey_id"  : 123,                                   |
+          |     "score"      : 9,                                     |
+          |     "message"    : "amaze ...",                           |
+          |     "response_id": 4                                      |
+          |   }                                                       |
+          |                                                           |
++--------------------+                                   +--------------------+
+
+
+Client (App / Browser)
+        |
+        |  Request (GET / POST)
+        ↓
+      API
+        |
+        |  Logic + Validation
+        ↓
+   Server / Database
+        |
+        |  Data
+        ↑
+      API
+        |
+        |  JSON Response
+        ↓
+Client
+
+REST API: Light weight protocols(Easy to build and maintain)
+SOAP Services: So many conditons and restriction
+Base URL or Endpoint: Address where API is hosted on the server
+
+HTTP Methods used to communicate with Rest API's are:
+ GET:   Used to extract information from the given server using a given URI, no payload/Body required(BODY is the containerPAYLOAD is the data inside the container)
+        To input data in GET, use Query parameter
+ POST:  A POST Request is used to send data to the server using Form parameters/Body payload
+ PUT:   Updating/Replace all current representation of the target resource with the uploaded content
+ DELETE:Remove all current Representations of the target resource given by a URI
+ 
+-Resources represent API/Collection which can be accessed from the server 
+  www.google.com/maps  --> www.google.com is server(Place where all your api's stored i.e Basic URI) + /maps is resource(which help to tie up to map api)
+  There are few more details which are optional, depends upon how api is designed.
+  
+-Path Parameter--> Are variable parts of a URL path. They are typically used to point specific resource within collection, such as a user identified by ID
+                   eg: https://www.google.com/images/112233
+				       https://www.google.com/search?q=rest
+-Query Parameter-->Used to sort/filter the resources, identified with '?'
+                   eg: https://amazon.com/orders?sort_by=2/20/2020   --->sort_by=2/20/2020 this is the query
+-Header/cookies-->Headers represent the meta-data associated with API request and response.(Additional details to process the request)
+                  eg: Autorization details
+				  
+End Point Request URL constructed as below--> Base_URL/Resource/(Query_params/Path_params)
+
+--Google Map API's:
+-------------------
+-Google maps Add API(POST)-->Adds new place into server
+ Complete URL : https://rahulshettyacademy.com/maps/api/place/add/json?key=qaclick23
+ Base URL: https://rahulshettyacademy.com
+ Resource: /maps/api/place/add/json
+ Query Param: key=qaclick23
+ HTTP Method: POST
+
+Sample Body:
+{
+  "location": {
+    "lat": -33.8669710,
+    "lng": 151.1958750
+  },
+  "accuracy": 50,
+  "name": "Test Place from Rahul Shetty",
+  "phone_number": "(02) 1234 5678",
+  "address": "100 Fictional Street, Test City",
+  "types": ["restaurant", "bar"],
+  "website": "http://testplace.example.com",
+  "language": "en-AU"
+}
+
+-curl command:
+curl -X POST \
+  "https://rahulshettyacademy.com/maps/api/place/add/json?key=qaclick23" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "location": {"lat": -33.8669710, "lng": 151.1958750},
+    "accuracy": 50,
+    "name": "Test Place from Rahul Shetty",
+    "phone_number": "(02) 1234 5678",
+    "address": "100 Fictional Street, Test City",
+    "types": ["restaurant","bar"],
+    "website": "http://testplace.example.com",
+    "language": "en-AU"
+  }'
+  
+Response Body:
+{
+  "status": "OK",
+  "place_id": "some-generated-id",
+  "scope": "App",
+  "reference": "some-reference",
+  "id": "some-id"
+}
+
+-Google maps GET API(GET)-->Gets existing place details from server
+ Complete URL : https://rahulshettyacademy.com/maps/api/place/get/json?place_id=xxxx&key=qaclick23
+ Base URL: https://rahulshettyacademy.com
+ Resource: /maps/api/place/get/json
+ Query Param: key=qaclick23,place_id (place_id value comes from Add place response)
+ HTTP Method: GET
+ 
+Response Body:
+{
+  "location": {
+    "lat": -33.8669710,
+    "lng": 151.1958750
+  },
+  "accuracy": 50,
+  "name": "Test Place from Rahul Shetty",
+  "phone_number": "(02) 1234 5678",
+  "address": "100 Fictional Street, Test City",
+  "types": [
+    "restaurant",
+    "bar"
+  ],
+  "website": "http://testplace.example.com",
+  "language": "en-AU"
+}
+
+curl -X GET "https://rahulshettyacademy.com/maps/api/place/get/json?place_id=xxxx&key=qaclick23"
+
+-Google maps PUT API(PUT)-->This API will update existing place in server with new values
+ Complete URL : https://rahulshettyacademy.com/maps/api/place/update/json?place_id=xxxx&key=qaclick23
+ Base URL: https://rahulshettyacademy.com
+ Resource: /maps/api/place/update/json
+ Query Param: key=qaclick23,place_id (place_id value comes from Add place response)
+ HTTP Method: PUT
+ 
+Request Body:
+{
+  "place_id": "xxxx",
+  "address": "70 Summer walk, USA",
+  "key": "qaclick23"
+}
+
+curl -X PUT "https://rahulshettyacademy.com/maps/api/place/update/json?key=qaclick23" \
+-H "Content-Type: application/json" \
+-d '{
+  "place_id": "xxxx",
+  "address": "70 Summer walk, USA",
+  "key": "qaclick23"
+}'
+
+
+Response Body:
+{
+  "msg": "Address successfully updated"
+}
+
+-Google maps DELETE API(POST)-->This API will update existing place in server with new values
+ Complete URL : https://rahulshettyacademy.com/maps/api/place/delete/json?key=qaclick23
+ Base URL: https://rahulshettyacademy.com
+ Resource: /maps/api/place/delete/json
+ Query Param: key=qaclick23
+ HTTP Method: DELETE
+ 
+Request Body:
+{
+  "place_id": "xxxx"
+}
+
+curl -X DELETE "https://rahulshettyacademy.com/maps/api/place/delete/json?key=qaclick23" \
+-H "Content-Type: application/json" \
+-d '{
+  "place_id": "xxxx"
+}'
+
+Response Body:
+{
+  "status": "OK"
+}
+
+--Rest Assured Automation:
+--------------------------
+-Create a maven project(GroupId,ArtifactID)
+-Go to mvn repository-->RestAssured, TestNg, Hamcrest dependencies add into the pom.xml
+Note: hamcrest dependency is used to match JSON response to actual response.
+Note: Remove <scope>test</scope>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>com.alchemist</groupId>
+  <artifactId>rest_assured_demos</artifactId>
+  <version>0.0.1-SNAPSHOT</version>
+  <packaging>jar</packaging>
+
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <maven.compiler.source>11</maven.compiler.source>
+    <maven.compiler.target>11</maven.compiler.target>
+  </properties>
+
+  <dependencies>
+    <dependency>
+      <groupId>io.rest-assured</groupId>
+      <artifactId>rest-assured</artifactId>
+      <version>5.5.6</version>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.testng</groupId>
+      <artifactId>testng</artifactId>
+      <version>7.10.2</version>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.hamcrest</groupId>
+      <artifactId>hamcrest</artifactId>
+      <version>2.2</version>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <version>3.5.2</version>
+        <configuration>
+          <suiteXmlFiles>
+            <suiteXmlFile>testng.xml</suiteXmlFile>
+          </suiteXmlFiles>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+</project>
+
+--Given–When–Then is a simple way to write test cases in human-readable steps.
+✅ Given: This method accepts all the input we need to submit for API.
+Precondition / Setup
+What is already true before the action?
+Example: Base URI set, headers set, payload prepared, user is logged in.
+✅ When: This method will hit and submit API
+Action
+What you do / what request you send.
+Example: Send a POST request to add a place.
+
+✅ Then: This method validate the response
+Expected Result / Verification
+What you validate after action.
+Example: Status code is 200, response has place_id, message is OK.
+
+Note: User JSON to Java String Converter for body(https://dadroit.com/json-to-string/)
+
+
+given()
+    .baseUri("https://rahulshettyacademy.com")
+    .queryParam("key", "qaclick23")
+    .header("Content-Type", "application/json")
+    .body(payload)
+.when()
+    .post("/maps/api/place/add/json")
+.then()
+    .statusCode(200)
+    .body("status", equalTo("OK"))
+    .body("place_id", notNullValue());
+
+
+Note: These methods are static so have to add import statement -->import static io.restassured.RestAssured.*; without static import we have to call it using classname
+RestAssured.given()
+    .when()
+    .get("/maps/api/place/get/json")
+    .then()
+    .statusCode(200);
+
+--To given()--> we pass baseUri as string, queryparam, header as keyvalue pair and body as String format
+--To when()-->we pass resource and Http method
+Note:If Content-Type header is missing, the API may fail with, 415 Unsupported Media Type
+
+import static io.restassured.RestAssured.*;
+import io.restassured.RestAssured;
+import io.restassured.response.Response;
+
+public class BasicsPOST {
+
+    public static void main(String[] args) {
+
+        // Validate Add Place API is working as expected
+
+        // Given --> all input details
+        // When  --> Submit the API (resource + HTTP method)
+        // Then  --> Validate the response
+
+        RestAssured.baseURI = "https://rahulshettyacademy.com";
+
+        Response response =
+        given()
+            .queryParam("key", "qaclick23")
+            .header("Content-Type", "application/json")
+            .body("{\n" +
+                    "  \"location\": {\n" +
+                    "    \"lat\": -33.8669710,\n" +
+                    "    \"lng\": 151.1958750\n" +
+                    "  },\n" +
+                    "  \"accuracy\": 50,\n" +
+                    "  \"name\": \"Test Place from Rest Assured\",\n" +
+                    "  \"phone_number\": \"(02) 1234 5678\",\n" +
+                    "  \"address\": \"100 Fictional Street, Test City\",\n" +
+                    "  \"types\": [\"restaurant\", \"bar\"],\n" +
+                    "  \"website\": \"http://testplace.example.com\",\n" +
+                    "  \"language\": \"en-AU\"\n" +
+                    "}")
+        .when()
+            .post("/maps/api/place/add/json")
+        .then()
+            .assertThat().statusCode(200)
+            .extract().response();
+//        .then()
+//        .log().all()
+//        .assertThat().statusCode(200);
+
+        System.out.println(response.asString());
+    }
+}
+
+
+import static io.restassured.RestAssured.*;
+import io.restassured.RestAssured;
+
+public class PUTMap {
+
+    public static void main(String[] args) {
+
+        RestAssured.baseURI = "https://rahulshettyacademy.com";
+
+        given()
+            .queryParam("key", "qaclick23")
+            .header("Content-Type", "application/json")
+            .body("{\n" +
+                  "  \"place_id\": \"ee796e4c454d7aa33ba151dcaafd5e97\",\n" +
+                  "  \"address\": \"70 Summer walk, USA\",\n" +
+                  "  \"key\": \"qaclick23\"\n" +
+                  "}")
+        .when()
+            .put("/maps/api/place/update/json")
+        .then()
+            .log().all()
+            .assertThat().statusCode(200);
+    }
+}
+
+
+import io.restassured.RestAssured;
+import io.restassured.response.Response;
+
+import static io.restassured.RestAssured.*;
+
+public class GetMaps {
+
+    public static void main(String[] args) {
+
+        RestAssured.baseURI = "https://rahulshettyacademy.com";
+
+        String placeId = "3e75a09f680d8979531d2528cadf055c"; // <-- replace with real place_id from ADD API response
+
+        Response response =
+            given()
+                .queryParam("key", "qaclick23")
+                .queryParam("place_id", placeId)
+            .when()
+                .get("/maps/api/place/get/json")
+            .then()
+                .log().all()
+                .statusCode(200)
+                .extract().response();
+
+        System.out.println("Response Body:\n" + response.asString());
+    }
+}
+
+--Validation/Assertion:
+-----------------------
+.then()
+                .log().all().assertThat()
+                .statusCode(200)
+                .body("scope",equalTo("App"));
+-we can also have validation in headers as well
+
+import io.restassured.RestAssured;
+import static io.restassured.RestAssured.*;
+import static org.hamcrest.CoreMatchers.equalTo;
+
+public class ValidateResponseAddApi {
+
+	public static void main(String[] args) {
+		/* Add test case for validation of property in the header and body */
+		RestAssured.baseURI = "https://rahulshettyacademy.com";
+		given()
+		   .queryParam("key", "qaclick23")
+		   .header("Content-Type","application/json")
+		   .body("{\n" +
+                    "  \"location\": {\n" +
+                    "    \"lat\": -33.8669710,\n" +
+                    "    \"lng\": 151.1958750\n" +
+                    "  },\n" +
+                    "  \"accuracy\": 50,\n" +
+                    "  \"name\": \"Test Place from Rest Assured\",\n" +
+                    "  \"phone_number\": \"(02) 1234 5678\",\n" +
+                    "  \"address\": \"100 Fictional Street, Test City\",\n" +
+                    "  \"types\": [\"restaurant\", \"bar\"],\n" +
+                    "  \"website\": \"http://testplace.example.com\",\n" +
+                    "  \"language\": \"en-AU\"\n" +
+                    "}")
+		  .when()
+		     .post("/maps/api/place/add/json")
+		  .then()
+		    .log().all().assertThat().statusCode(200).body("scope", equalTo("APP")).header("Server", "Apache/2.4.52 (Ubuntu)");
+	}
+
+}
