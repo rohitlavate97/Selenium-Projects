@@ -1,0 +1,16 @@
+{
+  "location": {
+    "lat": -33.8669710,
+    "lng": 151.1958750
+  },
+  "accuracy": 50,
+  "name": "Test Place from Rahul Shetty",
+  "phone_number": "(02) 1234 5678",
+  "address": "100 Fictional Street, Test City",
+  "types": [
+    "restaurant",
+    "bar"
+  ],
+  "website": "http://testplace.rohitlavate.com",
+  "language": "en-AU"
+}

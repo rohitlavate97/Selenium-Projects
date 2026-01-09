@@ -696,3 +696,627 @@ public class GoogleMapsCrudTest {
         System.out.println(delResponse);
     }
 }
+
+
+--Understanding structure of complex Json and ites array Notation:
+------------------------------------------------------------------
+{
+  "dashboard": {
+    "purchaseAmount": 910,
+    "website": "rahulshettyacademy.com"
+  },
+  "courses": [
+    {
+      "title": "selenium python",
+      "price": 50,
+      "copies": 6
+    },
+    {
+      "title": "cypress",
+      "price": 40,
+      "copies": 4
+    },
+    {
+      "title": "RPA",
+      "price": 45,
+      "copies": 10
+    }
+  ]
+}
+
+import io.restassured.path.json.JsonPath;
+
+public class CourseParsing {
+
+    public static void main(String[] args) {
+
+        String response = "{\n" +
+                "  \"dashboard\": {\n" +
+                "    \"purchaseAmount\": 910,\n" +
+                "    \"website\": \"rahulshettyacademy.com\"\n" +
+                "  },\n" +
+                "  \"courses\": [\n" +
+                "    {\"title\": \"selenium python\", \"price\": 50, \"copies\": 6},\n" +
+                "    {\"title\": \"cypress\", \"price\": 40, \"copies\": 4},\n" +
+                "    {\"title\": \"RPA\", \"price\": 45, \"copies\": 10}\n" +
+                "  ]\n" +
+                "}";
+
+        JsonPath js = new JsonPath(response);
+
+        // 1) Print number of courses returned by API
+        int courseCount = js.getInt("courses.size()");
+        System.out.println("Number of courses: " + courseCount);
+
+        // 2) Print purchase amount
+        int purchaseAmount = js.getInt("dashboard.purchaseAmount");
+        System.out.println("Purchase Amount: " + purchaseAmount);
+
+        // 3) Print title of the first course
+        String firstTitle = js.getString("courses[0].title");
+        System.out.println("First course title: " + firstTitle);
+
+        // 4) Print all course titles and their respective prices
+        System.out.println("\nAll courses (Title -> Price):");
+        for (int i = 0; i < courseCount; i++) {
+            String title = js.getString("courses[" + i + "].title");
+            int price = js.getInt("courses[" + i + "].price");
+            System.out.println(title + " -> " + price);
+        }
+
+        // 5) Print number of copies sold by RPA course
+        int rpaCopies = 0;
+        for (int i = 0; i < courseCount; i++) {
+            String title = js.getString("courses[" + i + "].title");
+            if (title.equalsIgnoreCase("RPA")) {
+                rpaCopies = js.getInt("courses[" + i + "].copies");
+                break;
+            }
+        }
+        System.out.println("\nCopies sold by RPA: " + rpaCopies);
+
+        // 6) Verify sum of all course amounts (price * copies) matches purchase amount
+        int totalRevenue = 0;
+        for (int i = 0; i < courseCount; i++) {
+            int price = js.getInt("courses[" + i + "].price");
+            int copies = js.getInt("courses[" + i + "].copies");
+            totalRevenue += price * copies;
+        }
+
+        System.out.println("Total revenue (price * copies): " + totalRevenue);
+
+        if (totalRevenue == purchaseAmount) {
+            System.out.println("✅ Verified: Total revenue matches purchase amount");
+        } else {
+            System.out.println("❌ Not matched: Total revenue != purchase amount");
+        }
+    }
+}
+
+Framework-style:
+package com.alchemist.utility;
+
+public class Payloads {
+	public static String complexJson() {
+		return "{\n  \"dashboard\": {\n    \"purchaseAmount\": 910,\n    \"website\": \"rahulshettyacademy.com\"\n  },\n  \"courses\": [\n    {\n      \"title\": \"selenium python\",\n      \"price\": 50,\n      \"copies\": 6\n    },\n    {\n      \"title\": \"cypress\",\n      \"price\": 40,\n      \"copies\": 4\n    },\n    {\n      \"title\": \"RPA\",\n      \"price\": 45,\n      \"copies\": 10\n    }\n  ]\n}";
+	}
+}
+
+package com.alchemist.utility;
+
+import io.restassured.path.json.JsonPath;
+
+public class JsonUtility {
+	public static String getValueAsString(String response, String key) {
+        return new JsonPath(response).getString(key);
+    }
+	
+	public static Integer getValueAsInteger(String response, String key) {
+        return new JsonPath(response).getInt(key);
+    }
+}
+
+
+package com.alchemist;
+
+import org.testng.Assert;
+
+import com.alchemist.utility.JsonUtility;
+import com.alchemist.utility.Payloads;
+
+public class ComplexJsonParse {
+
+	public static void main(String[] args) {
+		String payload = Payloads.complexJson();
+		//Get the size of courses
+		Integer numOfCourses = JsonUtility.getValueAsInteger(payload, "courses.size()");
+		System.out.println(numOfCourses);
+		//To print the purchase amount
+		Integer purchaseAmount = JsonUtility.getValueAsInteger(payload, "dashboard.purchaseAmount");
+		System.out.println(purchaseAmount);
+		//Print the title of the first course
+		String firstCourseTitle = JsonUtility.getValueAsString(payload, "courses[0].title");
+		System.out.println(firstCourseTitle);
+		//Print all courses title and their respective prices
+		for(int i=0;i<numOfCourses;i++) {
+			String courseTitle = JsonUtility.getValueAsString(payload, "courses["+i+"].title");
+			Integer coursePrice = JsonUtility.getValueAsInteger(payload, "courses["+i+"].price");
+			System.out.println(courseTitle+"  "+coursePrice);
+		}
+		//Print number of copies sold by RPA course-->As index may change in the future
+		for(int i=0;i<numOfCourses;i++) {
+			String title = JsonUtility.getValueAsString(payload, "courses["+i+"].title");
+			if(title.equalsIgnoreCase("RPA")) {
+				Integer copies = JsonUtility.getValueAsInteger(payload, "courses["+i+"].copies");
+				System.out.println(copies);
+				break;
+			}
+		}
+		//Check if purchaseAmount is equal to sum of all the prices
+		int sum = 0;
+		for(int i=0;i<numOfCourses;i++) {
+			Integer coursePrice = JsonUtility.getValueAsInteger(payload, "courses["+i+"].price");
+			Integer copies = JsonUtility.getValueAsInteger(payload, "courses["+i+"].copies");
+			int total = coursePrice*copies;
+			sum +=total;
+		}
+		System.out.println(sum);
+		Assert.assertEquals(purchaseAmount, sum);
+		
+	}
+
+}
+
+
+--Handling dynamic Json Payloads with Parameterization: Advanced payload creation strategies
+------------------------------------------------------
+-Dynamically build Json payload with external data inputs.
+-Parameterize the API tests with multiple data sets.
+-Send Static Json files(payload) directly into post method of rest assured.
+
+-Library API: 
+-------------
+BaseURI: https://rahulshettyacademy.com   (or)    http://216.10.245.166
+
+-AddBook:
+ Resource: Library/Addbook.php
+ Complete URL: https://rahulshettyacademy.com/Library/Addbook.php
+ Method: POST
+ Input Payload:
+{
+"name":"Learn Appium Automation with Java",
+"isbn":"bcd",
+"aisle":"227",
+"author":"John foe"
+}
+ Output Json :
+{
+   "Msg": "successfully added",
+   "ID": "bcd227"
+} 
+
+-GetBookByAuthorName:
+ Resource: /Library/GetBook.php?AuthorName=somename
+ Complete URL:  https://rahulshettyacademy.com/Library/GetBook.php?AuthorName=somename
+ Method: GET
+ Output Json:
+{
+Name : “bookname”   ( String)
+Isbn :  “A2fdsf”   (String)
+Aisle : 32 (Integer)
+}
+
+-GetBookByID:
+ Resource: Library/GetBook.php?ID=3389
+ Complete URL:  https://rahulshettyacademy.com/Library/GetBook.php?ID=3389
+ Method: GET
+ Output Json:
+{
+      "book_name": "Selenium automation using Java",
+      "isbn": "a23hd738",
+      "aisle": "1223"
+}
+
+-DeleteBookByID:
+ Resource: /Library/DeleteBook.php
+ Complete URL:  https://rahulshettyacademy.com//Library/DeleteBook.php
+ Method: POST
+ Input Payload: Json:
+{
+ 
+"ID" : "a23h345122332"
+ 
+} 
+ Output Json:
+{
+
+msg : book is successfully deleted”
+ 
+}
+
+Scenarions:
+----------
+Verify if API responses returns Success Codes with Proper Assertions
+Verify if Response Json Schema is displayed as expected
+Create Environment/Global/Collection variables to dynamically switch end points of APIs to test in different stages of QA Life cycle
+Pass response ID of Add Book to Get Book and Delete ID request Parameters for full functional Automation Testing
+Validate the book ID response calculation Logic
+Validate if Get Book API retrieves the correct response with Book Details requested
+Validate if Delete Book API successfully deleted Book
+Implement Try Catch Error Handling Mechanism for every Automation test as Tear Down Script
+If Book Already exists in DB, Implement Smart Strategy to delete the existing Book first before Adding the Book again as Prerequisite Automation Step
+Parse the complete Json response and verify if the values are displayed as expected
+Generate Unique ISBN/ aisle value for every run to make Book Unique using Automation Script
+Import the Book Details from CSV/Json without hard coding for Validating API’s
+Run the APIs with multiple data sets by iterating the data from the CSV as a Data driven testing
+
+Rest Assured Tests:
+-------------------
+package com.alchemist.utils;
+
+public class Payload {
+	public static String addBook(String isbn, String aisle) {
+		return "{\n" +
+	               "  \"name\": \"Learn Appium Automation with Java\",\n" +
+	               "  \"isbn\": \"" + isbn + "\",\n" +
+	               "  \"aisle\": \"" + aisle + "\",\n" +
+	               "  \"author\": \"John foe\"\n" +
+	               "}";
+	}
+
+}
+
+
+package com.alchemist.utils;
+
+public class Resources {
+	public static final String ADD_BOOK = "Library/Addbook.php";
+}
+
+
+package com.alchemist.utils;
+
+import static io.restassured.RestAssured.given;
+
+import io.restassured.specification.RequestSpecification;
+
+public class BaseRequests {
+	public static RequestSpecification requestSpec() {
+        return given()
+                .baseUri("https://rahulshettyacademy.com")
+                .queryParam("key", "qaclick23")
+                .header("Content-Type", "application/json");
+    }
+}
+
+
+package com.alchemist.utils;
+
+import io.restassured.path.json.JsonPath;
+
+public class JsonUtils {
+	public static String getValueAsString(String payload,String key) {
+		JsonPath js = new JsonPath(payload);
+		return js.getString(key);
+	}
+	
+	public static Integer getValueAsInteger(String payload,String key) {
+		JsonPath js = new JsonPath(payload);
+		return js.getInt(key);
+	}
+}
+
+
+package com.alchemist;
+
+import org.testng.annotations.DataProvider;
+import org.testng.annotations.Test;
+
+import com.alchemist.utils.BaseRequests;
+import com.alchemist.utils.JsonUtils;
+import com.alchemist.utils.Payload;
+import com.alchemist.utils.Resources;
+
+public class DynamicJsonTest {
+	@Test
+	public void addBook() {
+		String response = BaseRequests.requestSpec()
+		   .body(Payload.addBook("RS126","45"))
+		 .when()
+		    .post(Resources.ADD_BOOK)
+		 .then()
+		    .assertThat().statusCode(200)
+		    .extract().asString();
+		
+		System.out.println(response);
+		
+		String id = JsonUtils.getValueAsString(response, "ID");
+		System.out.println(id);
+	}
+	//With Parameterization by dataProvider
+	@DataProvider(name = "BooksData")
+	public Object[][] getData(){
+		return new Object[][] {
+			{"RS234","67"},
+			{"RSA12","34"},
+			{"RSB23","45"}
+		};	
+	}
+	
+	@Test(dataProvider = "BooksData")
+	public void addBookWithDataProvider(String isbn,String aisle) {
+		String response = BaseRequests.requestSpec()
+		    .body(Payload.addBook(isbn, aisle))
+		.when()
+		    .post(Resources.ADD_BOOK)
+		.then()
+		    .assertThat().statusCode(200).extract().asString();
+		
+		System.out.println(response);
+		
+		String id = JsonUtils.getValueAsString(response, "ID");
+		System.out.println(id);
+		System.out.println("----------------------------------");
+	}
+	
+}
+
+
+--Handle with static json payloads:---> we can call that json file directly into the code
+create file-->static_json.json
+{
+  "location": {
+    "lat": -33.8669710,
+    "lng": 151.1958750
+  },
+  "accuracy": 50,
+  "name": "Test Place from Rahul Shetty",
+  "phone_number": "(02) 1234 5678",
+  "address": "100 Fictional Street, Test City",
+  "types": [
+    "restaurant",
+    "bar"
+  ],
+  "website": "http://testplace.rohitlavate.com",
+  "language": "en-AU"
+}
+
+TestNG Test:
+-----------
+    @Test
+	public void addPlaceTest() throws IOException {
+		RestAssured.baseURI = "https://rahulshettyacademy.com";
+
+        // Step 1: Read JSON file
+        Path path = Paths.get("D:\\Testing Prep\\Selenium Practice\\Projects\\static_json.json");
+        String payload = new String(Files.readAllBytes(path));
+
+        // Step 2: Pass payload to Rest Assured
+        given()
+            .queryParam("key", "qaclick23")
+            .header("Content-Type", "application/json")
+            .body(payload)
+        .when()
+            .post("/maps/api/place/add/json")
+        .then()
+            .log().all()
+            .assertThat().statusCode(200);
+	}
+
+------------------------
+package com.alchemist;
+
+import java.io.IOException;
+
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.HashMap;
+import java.util.Map;
+
+import org.testng.Assert;
+import org.testng.annotations.Test;
+
+import com.alchemist.utils.BaseRequests;
+import com.alchemist.utils.JsonUtils;
+
+import io.restassured.RestAssured;
+import io.restassured.http.ContentType;
+import io.restassured.response.Response;
+
+import static io.restassured.RestAssured.*;
+import static org.hamcrest.CoreMatchers.anyOf;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.notNullValue;
+
+public class BookAPICrudTests {
+	
+	/*
+	 * public String getStringFromResource(Path path) throws IOException { return
+	 * new String(Files.readAllBytes(path), StandardCharsets.UTF_8); }
+	 */
+	
+	//latest
+	public String getStringFromResource(Path path) throws IOException {
+	    return Files.readString(path);
+	}
+	
+	@Test
+    public void addBookTest() throws IOException {
+
+        Path path = Paths.get("D:\\Testing Prep\\Selenium Practice\\Projects\\addbook_json.json");
+        String payload = getStringFromResource(path);
+
+        Response response = BaseRequests.requestSpecForLibrary()
+                .contentType("application/json")   // important
+                .body(payload)
+            .when()
+                .post("Library/Addbook.php")
+            .then()
+                .log().all()
+                .statusCode(200)
+                .extract().response();
+
+        String id = JsonUtils.getValueAsString(response.asPrettyString(), "ID");
+        System.out.println("Generated ID: " + id);
+
+        Assert.assertNotNull(id, "ID should not be null");
+        Assert.assertFalse(id.trim().isEmpty(), "ID should not be empty");
+    }
+	
+	//Using Random
+	@Test
+	public void addBookTestGenerateISBN() {
+
+	    String isbn = "bcd" + (System.currentTimeMillis() % 10000);
+	    int aisle = (int)(Math.random() * 10000);
+
+	    Map<String, Object> body = new HashMap<>();
+	    body.put("name", "Learn Appium Automation with Java");
+	    body.put("isbn", isbn);
+	    body.put("aisle", String.valueOf(aisle));
+	    body.put("author", "John foe");
+
+	    given()
+	        .baseUri("https://rahulshettyacademy.com")
+	        .basePath("/Library")
+	        .contentType(ContentType.JSON)
+	        .accept(ContentType.JSON)
+	        .log().all()
+	        .body(body)
+	    .when()
+	        .post("/Addbook.php")
+	    .then()
+	        .log().all()
+	        .statusCode(anyOf(is(200), is(201)))   // some docs show 200; some flows show 201
+	        .body("ID", notNullValue());
+	}
+}
+-------------------------------
+Dependency needed for second test
+<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-databind</artifactId>
+			<version>2.17.2</version>
+</dependency>
+
+
+--Automating JIRA API:
+----------------------
+-Download zip-->https://www.atlassian.com/software/jira/download-archives
+1) Create Jira Home folder
+Create this folder:
+✅ C:\Atlassian\JiraHome
+2) Edit jira-application.properties
+Open this file:
+C:\Atlassian\atlassian-jira-software-11.3.1-standalone\atlassian-jira\WEB-INF\classes\jira-application.properties
+Inside it, add (or replace) this line:
+jira.home = C:\\Atlassian\\JiraHome
+
+also download https://mvnrepository.com/artifact/com.mysql/mysql-connector-j/9.5.0
+and paste in atlassian-jira-software-11.3.1-standalone\lib
+Step 1: Open server.xml
+Edit this file:
+C:\Atlassian\atlassian-jira-software-11.3.1-standalone\conf\server.xml
+Step 2: Find the connector line
+Search for:
+Connector port="8081"  //change it
+
+Open mysql shell: run commands
+\connect root@localhost:3306
+\sql
+CREATE DATABASE jiradb CHARACTER SET utf8mb4 COLLATE utf8mb4_bin;
+
+CREATE USER 'jiradbuser'@'localhost' IDENTIFIED BY 'admin@123';
+GRANT ALL PRIVILEGES ON jiradb.* TO 'jiradbuser'@'localhost';
+FLUSH PRIVILEGES;
+SHOW CREATE DATABASE jiradb;
+
+
+3) Start Jira
+Go to:
+C:\Atlassian\atlassian-jira-software-11.3.1-standalone\bin
+Run:
+✅ start-jira.bat
+Then open:
+✅ http://localhost:8081
+
+Database type: MySQL
+Hostname: localhost
+Port: 3306
+Database: jiradb
+Username: jiradbuser
+Password: admin@123
+
+-Database will setup
+-Generate license key for server id
+-Add details Full name etc, username: rohitl97, password: admin@123 -->Finish
+-create new project-->Scrum software development-->name=RSA-->submit
+
+http://localhost:8081/rest/api/2/serverInfo
+{
+  "baseUrl": "http://localhost:8081",
+  "version": "11.3.1",
+  "versionNumbers": [11, 3, 1],
+  "deploymentType": "Server",
+  "buildNumber": 11030001,
+  "buildDate": "2025-12-19T00:00:00.000+0530",
+  "databaseBuildNumber": 11030001,
+  "serverTime": "2026-01-10T01:02:30.033+0530",
+  "scmInfo": "3bbd06b87da95fb5a2b9058d016fc646657b7bd8",
+  "serverTitle": "Jira"
+}
+http://localhost:8081/rest/api/2/myself
+{
+  "self": "http://localhost:8081/rest/api/2/user?username=rohitl97",
+  "key": "JIRAUSER10000",
+  "name": "rohitl97",
+  "emailAddress": "rohitlavate97@gmail.com",
+  "avatarUrls": {
+    "48x48": "https://www.gravatar.com/avatar/9f8603746aeac9134e07c10163025007?d=mm&s=48",
+    "24x24": "https://www.gravatar.com/avatar/9f8603746aeac9134e07c10163025007?d=mm&s=24",
+    "16x16": "https://www.gravatar.com/avatar/9f8603746aeac9134e07c10163025007?d=mm&s=16",
+    "32x32": "https://www.gravatar.com/avatar/9f8603746aeac9134e07c10163025007?d=mm&s=32"
+  },
+  "displayName": "Rohit Lavate",
+  "active": true,
+  "deleted": false,
+  "timeZone": "Asia/Calcutta",
+  "locale": "en_US",
+  "groups": {
+    "size": 3,
+    "items": []
+  },
+  "applicationRoles": {
+    "size": 1,
+    "items": []
+  },
+  "expand": "groups,applicationRoles"
+}
+
+-Cookie authentication API fro JIRA Requests:
+ https://developer.atlassian.com/server/jira/platform/rest/v11002/intro/#gettingstarted
+ 2 types of Apis-->JIRA Server API's(we use)
+                   JIRA cloud APIs
+ https://docs.atlassian.com/software/jira/docs/api/REST/8.5.15/ -->we can see different apis
+ 
+ https://developer.atlassian.com/server/jira/platform/rest/v11003/intro/#field-input-formats
+
+Most important endpoints to practice (work in Jira 11.3.1)
+A) Platform (Issues, projects, users)
+Server info: GET /rest/api/2/serverInfo
+Myself: GET /rest/api/2/myself
+Create issue: POST /rest/api/2/issue
+Get issue: GET /rest/api/2/issue/{issueKey}
+Update issue: PUT /rest/api/2/issue/{issueKey}
+Add comment: POST /rest/api/2/issue/{issueKey}/comment
+Search (JQL): GET /rest/api/2/search?jql=...
+B) Agile (Boards/Sprints) — if Jira Software project exists
+List boards: GET /rest/agile/1.0/board
+Board sprints: GET /rest/agile/1.0/board/{boardId}/sprint
+Sprint issues: GET /rest/agile/1.0/sprint/{sprintId}/issue
+ 
+-->log into jira-->create-->summary=xyz (we also can create issue by hitting API)
+
+-->Login via REST API-->There are different types of logins supported by JIRA
+                       -JIRA login cookie based authentication-->(Google it)-->https://developer.atlassian.com/server/jira/platform/cookie-based-authentication/
