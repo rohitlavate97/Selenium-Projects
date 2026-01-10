@@ -1,0 +1,208 @@
+{
+	"info": {
+		"_postman_id": "b0610e8a-152f-41b6-9d04-e1e4d21eacfe",
+		"name": "JIRA APIs",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "21432456",
+		"_collection_link": "https://www.postman.com/team-avengers-7972/workspace/automation-api-testing/collection/21432456-b0610e8a-152f-41b6-9d04-e1e4d21eacfe?action=share&source=collection_link&creator=21432456"
+	},
+	"item": [
+		{
+			"name": "Auth API",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"username\": \"rohitl97\",\r\n    \"password\": \"admin@123\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8081/rest/auth/1/session",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"rest",
+						"auth",
+						"1",
+						"session"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "CreatIssue API",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n      \"fields\": {\r\n        \"project\": { \"key\": \"RES\" },\r\n        \"summary\": \"Issue created via Rest Assured (Session Cookies Auth)\",\r\n        \"description\": \"Practice issue\",\r\n        \"issuetype\": { \"name\": \"Task\" }\r\n      }\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8081/rest/api/2/issue",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"rest",
+						"api",
+						"2",
+						"issue"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete Issue",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8081/rest/api/2/issue/RSA-2",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"rest",
+						"api",
+						"2",
+						"issue",
+						"RSA-2"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "AddComment API",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"body\": \"Internal note: this is visible only to Administrators.\",\r\n  \"visibility\": {\r\n    \"type\": \"role\",\r\n    \"value\": \"Administrators\"\r\n  }\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8081/rest/api/2/issue/RSA-3/comment",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"rest",
+						"api",
+						"2",
+						"issue",
+						"RSA-3",
+						"comment"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "UpdateComment API",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"body\": \"Updating comment for Administrators.\",\r\n  \"visibility\": {\r\n    \"type\": \"role\",\r\n    \"value\": \"Administrators\"\r\n  }\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8081/rest/api/2/issue/RSA-3/comment/10002",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"rest",
+						"api",
+						"2",
+						"issue",
+						"RSA-3",
+						"comment",
+						"10002"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "AddAttachment",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "multipart/form-data",
+						"type": "text"
+					},
+					{
+						"key": "X-Atlassian-Token",
+						"value": "no-check",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "file",
+							"type": "file",
+							"src": "/D:/Testing Prep/Selenium Practice/Projects/jira.txt"
+						}
+					]
+				},
+				"url": {
+					"raw": "http://localhost:8081/rest/api/2/issue/RSA-3/attachments",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"rest",
+						"api",
+						"2",
+						"issue",
+						"RSA-3",
+						"attachments"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

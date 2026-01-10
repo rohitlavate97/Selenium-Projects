@@ -1320,3 +1320,408 @@ Sprint issues: GET /rest/agile/1.0/sprint/{sprintId}/issue
 
 -->Login via REST API-->There are different types of logins supported by JIRA
                        -JIRA login cookie based authentication-->(Google it)-->https://developer.atlassian.com/server/jira/platform/cookie-based-authentication/
+--After restart : Open this http://localhost:8081/secure/RapidBoard.jspa?rapidView=1&projectKey=RSA&view=planning.nodetail&issueLimit=100#
+
+--Once we login , we will get session cookies, using that session cookies we will call all subsequent api calls and make the request and get the response back.
+  To get key(Use this as header)-->we have to authenticate with username and password 
+  
+-For disabling MFA(2 step auth)-->Edit setenv.bat(C:\Atlassian\atlassian-jira-software-11.3.1-standalone\bin\setenv.bat)
+                                  set JVM_SUPPORT_RECOMMENDED_ARGS="-Datlassian.authentication.legacy.mode=true"  (Make this change)
+								  or
+								  set JVM_SUPPORT_RECOMMENDED_ARGS="-Dsome.other.flag=true -Datlassian.authentication.legacy.mode=true"
+								  
+								  start-jira.bat
+
+Board: http://localhost:8081/secure/RapidBoard.jspa?rapidView=1&projectKey=RSA&view=planning.nodetail&selectedIssue=RSA-2&issueLimit=100#
+
+--Go to postman-->
+-Login API
+POST http://localhost:8081/rest/auth/1/session
+Request Body: 
+{
+    "username": "rohitl97",
+    "password": "admin@123"
+}
+Response Body: we will get sessionId
+{
+    "session": {
+        "name": "JSESSIONID",
+        "value": "7A59C1B42FFA01A000D257C406BCB616"
+    },
+    "loginInfo": {
+        "loginCount": 6,
+        "previousLoginTime": "2026-01-10T13:50:23.779+0530"
+    }
+}
+
+-Create Issue API
+POST http://localhost:8081/rest/api/2/issue   (More info: https://docs.atlassian.com/jira/REST/cloud/#api/2/issue-CreateIssue) https://developer.atlassian.com/cloud/jira/platform/rest/v3/intro/#authentication
+Request header: cookie-->add sessionId value(JSESSIONID=7A59C1B42FFA01A000D257C406BCB616)-->It would have set automatically in the postman, just check and hit send
+Request Body:
+{
+      "fields": {
+        "project": { "key": "RSA" },
+        "summary": "Issue created via Rest Assured (Session Cookies Auth)",
+        "description": "Practice issue",
+        "issuetype": { "name": "Task" }
+      }
+}
+Response Body:
+{
+    "id": "10000",
+    "key": "RSA-1",
+    "self": "http://localhost:8081/rest/api/2/issue/10000"     //login browser and check if issue can be seen(Yes)
+}
+
+-Delete Issue API
+DELETE http://localhost:8081/rest/api/2/issue/{issueIdorKey}     -->issueIdorKey is path parameter-->eg http://localhost:8081/rest/api/2/issue/RSA-1
+ set cookie in the header and send-->we will get status 204(i.e removed successfully)
+ 
+-Add comment API
+POST http://localhost:8081/rest/api/2/issue/{issueIdorKey}/comment 
+//To update comment first you have to add comment to the issue.
+Request Body: 
+{
+  "body": "Internal note: this is visible only to Administrators.",
+  "visibility": {
+    "type": "role",
+    "value": "Administrators"
+  }
+}
+or simple comment
+{
+  "body": "Hi [~rohitl97], please review this issue."
+}
+
+Response Body:
+{
+    "startAt": 0,
+    "maxResults": 50,
+    "total": 1,
+    "comments": [
+        {
+            "self": "http://localhost:8081/rest/api/2/issue/10002/comment/10000",
+            "id": "10000",
+            "author": {
+                "self": "http://localhost:8081/rest/api/2/user?username=rohitl97",
+                "name": "rohitl97",
+                "key": "JIRAUSER10000",
+                "emailAddress": "rohitlavate97@gmail.com",
+                "avatarUrls": {
+                    "48x48": "https://www.gravatar.com/avatar/9f8603746aeac9134e07c10163025007?d=mm&s=48",
+                    "24x24": "https://www.gravatar.com/avatar/9f8603746aeac9134e07c10163025007?d=mm&s=24",
+                    "16x16": "https://www.gravatar.com/avatar/9f8603746aeac9134e07c10163025007?d=mm&s=16",
+                    "32x32": "https://www.gravatar.com/avatar/9f8603746aeac9134e07c10163025007?d=mm&s=32"
+                },
+                "displayName": "Rohit Lavate",
+                "active": true,
+                "timeZone": "Asia/Calcutta"
+            },
+            "body": "Thank you Jira",
+            "updateAuthor": {
+                "self": "http://localhost:8081/rest/api/2/user?username=rohitl97",
+                "name": "rohitl97",
+                "key": "JIRAUSER10000",
+                "emailAddress": "rohitlavate97@gmail.com",
+                "avatarUrls": {
+                    "48x48": "https://www.gravatar.com/avatar/9f8603746aeac9134e07c10163025007?d=mm&s=48",
+                    "24x24": "https://www.gravatar.com/avatar/9f8603746aeac9134e07c10163025007?d=mm&s=24",
+                    "16x16": "https://www.gravatar.com/avatar/9f8603746aeac9134e07c10163025007?d=mm&s=16",
+                    "32x32": "https://www.gravatar.com/avatar/9f8603746aeac9134e07c10163025007?d=mm&s=32"
+                },
+                "displayName": "Rohit Lavate",
+                "active": true,
+                "timeZone": "Asia/Calcutta"
+            },
+            "created": "2026-01-10T14:33:37.065+0530",
+            "updated": "2026-01-10T14:33:37.065+0530"
+        }
+    ]
+}
+
+-Update Comment API:
+PUT http://localhost:8081/rest/api/2/issue/{issueIdorKey}/comment/{id}  -->http://localhost:8081/rest/api/2/issue/RSA-3/comment/10002
+Request Body:
+{
+  "body": "Updating comment for Administrators.",
+  "visibility": {
+    "type": "role",
+    "value": "Administrators"
+  }
+}
+Response Body:
+{
+    "self": "http://localhost:8081/rest/api/2/issue/10002/comment/10002",
+    "id": "10002",
+    "author": {
+        "self": "http://localhost:8081/rest/api/2/user?username=rohitl97",
+        "name": "rohitl97",
+        "key": "JIRAUSER10000",
+        "emailAddress": "rohitlavate97@gmail.com",
+        "avatarUrls": {
+            "48x48": "https://www.gravatar.com/avatar/9f8603746aeac9134e07c10163025007?d=mm&s=48",
+            "24x24": "https://www.gravatar.com/avatar/9f8603746aeac9134e07c10163025007?d=mm&s=24",
+            "16x16": "https://www.gravatar.com/avatar/9f8603746aeac9134e07c10163025007?d=mm&s=16",
+            "32x32": "https://www.gravatar.com/avatar/9f8603746aeac9134e07c10163025007?d=mm&s=32"
+        },
+        "displayName": "Rohit Lavate",
+        "active": true,
+        "timeZone": "Asia/Calcutta"
+    },
+    "body": "Updating comment for Administrators.",
+    "updateAuthor": {
+        "self": "http://localhost:8081/rest/api/2/user?username=rohitl97",
+        "name": "rohitl97",
+        "key": "JIRAUSER10000",
+        "emailAddress": "rohitlavate97@gmail.com",
+        "avatarUrls": {
+            "48x48": "https://www.gravatar.com/avatar/9f8603746aeac9134e07c10163025007?d=mm&s=48",
+            "24x24": "https://www.gravatar.com/avatar/9f8603746aeac9134e07c10163025007?d=mm&s=24",
+            "16x16": "https://www.gravatar.com/avatar/9f8603746aeac9134e07c10163025007?d=mm&s=16",
+            "32x32": "https://www.gravatar.com/avatar/9f8603746aeac9134e07c10163025007?d=mm&s=32"
+        },
+        "displayName": "Rohit Lavate",
+        "active": true,
+        "timeZone": "Asia/Calcutta"
+    },
+    "created": "2026-01-10T14:44:35.305+0530",
+    "updated": "2026-01-10T14:45:38.163+0530",
+    "visibility": {
+        "type": "role",
+        "value": "Administrators"
+    }
+}
+
+-Steps to automate JIRA application:
+   -Login to JIRA to create session using Login API
+   -Add comment to existing issue using Add comment API
+   -Add an attachment to existing issue using Add Attachmetn API
+   -Get issue details and verify if added comment and attachment exists using Get Issue API
+-Create new project in JIRA-->Scrum Software Development
+                              Name: RestAssuredAutomation
+							  Key: RES
+							  
+ Using JsonPath we can extract SessionId
+-From postman first create issue
+-How to add variable to java string
+{
+      "fields": {
+        "project": { "key": "RES" },
+        "summary": "Issue created via Rest Assured (Session Cookies Auth)",
+        "description": "Practice issue",
+        "issuetype": { "name": "Task" }
+      }
+}
+
+    "{\n" +
+    "  \"fields\": {\n" +
+    "    \"project\": { \"key\": \"RES\" },\n" +
+    "    \"summary\": \"Issue created via Rest Assured (Session Cookies Auth)\",\n" +
+    "    \"description\": \"Practice issue\",\n" +
+    "    \"issuetype\": { \"name\": \"Task\" }\n" +
+    "  }\n" +
+    "}";
+
+If we want to add variable
+    "{\n" +
+    "  \"fields\": {\n" +
+    "    \"project\": { \"key\": \"RES\" },\n" +
+    "    \"summary\": \"" + summary + "\",\n" +   // ✅ quotes around summary value
+    "    \"description\": \"Practice issue\",\n" +
+    "    \"issuetype\": { \"name\": \"Task\" }\n" +
+    "  }\n" +
+    "}"
+
+Code:
+package com.alchemist.utils;
+
+import io.restassured.specification.RequestSpecification;
+import static io.restassured.RestAssured.*;
+
+public class BaseRequests {
+	public static RequestSpecification reqSpec() {
+		return given()
+				   .baseUri("http://localhost:8081")
+				   .header("Content-Type","application/json");
+	}
+}
+
+package com.alchemist.utils;
+
+public class Payloads {
+	public static final String authPayload() {
+		return "{\n    \"username\": \"rohitl97\",\n    \"password\": \"admin@123\"\n}";
+	}
+	
+	public static final String createIssue(String summary) {
+		return  "{\n" +
+			    	    "  \"fields\": {\n" +
+			    	    "    \"project\": { \"key\": \"RES\" },\n" +
+			    	    "    \"summary\": \"" + summary + "\",\n" +   // ✅ quotes around summary value
+			    	    "    \"description\": \"Practice issue\",\n" +
+			    	    "    \"issuetype\": { \"name\": \"Task\" }\n" +
+			    	    "  }\n" +
+			    	    "}";
+	}
+	
+	public static String addComment(String comment) {
+	    // Optional: escape " to keep JSON valid
+	    String safeComment = comment == null ? "" : comment.replace("\"", "\\\"");
+
+	    return "{\n" +
+	           "  \"body\": \"" + safeComment + "\",\n" +
+	           "  \"visibility\": {\n" +
+	           "    \"type\": \"role\",\n" +
+	           "    \"value\": \"Administrators\"\n" +
+	           "  }\n" +
+	           "}";
+	}
+
+}
+
+package com.alchemist.utils;
+
+public class Resources {
+	public static final String AUTH_URL = "rest/auth/1/session";
+	public static final String CREATE_ISSUE = "rest/api/2/issue";
+	public static final String ADD_COMMENT = "rest/api/2/issue/RSA-3/comment";
+	public static final String UPDATE_COMMENT = "rest/api/2/issue/RSA-3/comment/10002";
+}
+
+package com.alchemist.utils;
+
+import io.restassured.path.json.JsonPath;
+
+public class JsonUtils {
+	
+	public static String getValueAsString(String payload, String key) {
+		JsonPath js = new JsonPath(payload);
+		return js.getString(key);
+	}
+	
+	public static Integer getValueAsInt(String payload, String key) {
+		JsonPath js = new JsonPath(payload);
+		return js.getInt(key);
+	}
+
+}
+
+
+package com.alchemist;
+
+import static org.hamcrest.CoreMatchers.equalTo;
+
+import com.alchemist.utils.BaseRequests;
+import com.alchemist.utils.Payloads;
+
+import io.restassured.response.Response;
+
+public class JiraTest {
+
+	public static void main(String[] args) {
+		String response = BaseRequests.reqSpec()
+		.pathParam("id", "RSA-3")
+		      .body(Payloads.addComment("This comment is added by using REST Assured..."))
+		.when()
+		      .post("rest/api/2/issue/{id}/comment")
+		.then().log().all()
+		      .assertThat().statusCode(200).body("displayName",equalTo("Rohit Lavate")).extract().response().asString();
+	}
+
+}
+--But fails
+{
+    "errorMessages": [
+        "You do not have the permission to see the specified issue.",
+        "Login Required"
+    ],
+    "errors": {
+        
+    }
+}
+
+--Using JsonPath we can extract SessionId or with class SessionFilter(i.e when new session started value stored in this object and by extracting values from it we can apply to subsequent HTTP methods)
+  Just have to use filter()-->pass session variable inside it, response session will be stroed into session variable.
+
+package com.alchemist;
+
+import static org.hamcrest.CoreMatchers.equalTo;
+
+import com.alchemist.utils.BaseRequests;
+import com.alchemist.utils.Payloads;
+
+import io.restassured.filter.session.SessionFilter;
+import io.restassured.response.Response;
+
+public class JiraTest {
+
+	public static void main(String[] args) {
+		//Login scenarios
+		SessionFilter session = new SessionFilter();
+		String logres = BaseRequests.reqSpec()
+		          .body(Payloads.authPayload()).log().all().filter(session)
+		.when()
+		      .post("rest/auth/1/session")
+		.then()
+		      .log().all().assertThat().statusCode(200).extract().response().asString();
+		      
+		String response = BaseRequests.reqSpec()
+		.pathParam("id", "RSA-3")
+		      .body(Payloads.addComment("This comment is added by using REST Assured...")).filter(session)
+		.when()
+		      .post("rest/api/2/issue/{id}/comment")
+		.then().log().all()
+		      .assertThat().statusCode(201).body("author.emailAddress",equalTo("rohitlavate97@gmail.com")).extract().response().asString();
+	}
+
+}
+
+--Sending Attachment to REST API using multipart method:
+ https://developer.atlassian.com/cloud/jira/platform/rest/v2/api-group-issue-attachments/#api-group-issue-attachments
+ curl command: -D -->Stands for different parameters we are passing
+               -X -->Which HTTP Method you passing
+			   -H -->Header, with key and value
+header("X-Atlassian-Token", "no-check") is used to bypass Atlassian’s XSRF/CSRF protection checks for requests that may be treated as “browser-style” requests (especially when you authenticate using session cookies like JSESSIONID).
+Why it’s needed for session cookie
+When you authenticate with cookies, Jira treats your request more like a browser session. For some POST/PUT/DELETE actions, Jira may enforce CSRF/XSRF protection and reject the request unless you either:
+send a valid XSRF token, or explicitly tell Jira to skip the check using X-Atlassian-Token: no-check.
+So this header helps prevent errors like: 403 Forbidden
+                                          “XSRF check failed”
+										  “Operation requires XSRF token”
+-create text file-->jira.txt
+//Add Attachement
+		given()
+		     .baseUri("http://localhost:8081")
+		     .pathParam("issueKey","RSA-3")
+		     .header("X-Atlassian-Token","no-check")
+		     .header("Content-Type","multipart/form-data")
+		     .multiPart("file",new File("D:\\Testing Prep\\Selenium Practice\\Projects\\jira.txt"))
+		     .filter(session)
+		 .when()
+		     .post(Resources.ATTACH_FILE)
+		 .then()
+		     .log().all();
+			 
+-Integrating Query Params and Path Params in single Test to restrict results:-->GET Issue-->Response is so large-->.https://jsonformatter.org/json-viewer can view objects here
+		String getRes = BaseRequests.reqSpec()
+		      .pathParam("issueKey", "RSA-3")
+		      .queryParam("fields", "comment")         //use this when we don't want entire response to store in variable
+		      .filter(session)
+		.when()
+		      .get(Resources.GET_ISSUE)
+		.then().assertThat().statusCode(200).extract().response().asPrettyString();
+		System.out.println(getRes);
+
+-add relaxedHTTPSValidation() in Rest Assured is used to ignore SSL/HTTPS certificate validation errors.
+(PKIX path building failed”,“unable to find valid certification path”,“handshake_failure”,self-signed certificate not trusted)
+      
+	    SessionFilter session = new SessionFilter();
+		String logres = BaseRequests.reqSpec()
+				  .relaxedHTTPSValidation()
+		          .body(Payloads.authPayload()).log().all().filter(session)
+		.when()
+		      .post("rest/auth/1/session")
+		.then()
+		      .log().all().assertThat().statusCode(200).extract().response().asString();
+
+-Validate comment you added is displaying or not
