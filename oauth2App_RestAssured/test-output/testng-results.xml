@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testng-results ignored="0" total="1" passed="1" failed="0" skipped="0">
+  <reporter-output>
+  </reporter-output>
+  <suite started-at="2026-01-11T12:11:41 IST" name="Default suite" finished-at="2026-01-11T12:11:42 IST" duration-ms="1788">
+    <groups>
+    </groups>
+    <test started-at="2026-01-11T12:11:41 IST" name="Default test" finished-at="2026-01-11T12:11:42 IST" duration-ms="1788">
+      <class name="com.alchemist.tests.OAuthTest">
+        <test-method is-config="true" signature="setup()[pri:0, instance:com.alchemist.tests.OAuthTest@7d8995e]" started-at="2026-01-11T12:11:41 IST" name="setup" finished-at="2026-01-11T12:11:41 IST" duration-ms="379" status="PASS">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- setup -->
+        <test-method signature="getCourseDetails_shouldMatchExpectedData()[pri:0, instance:com.alchemist.tests.OAuthTest@7d8995e]" started-at="2026-01-11T12:11:41 IST" name="getCourseDetails_shouldMatchExpectedData" finished-at="2026-01-11T12:11:42 IST" duration-ms="1372" status="PASS">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- getCourseDetails_shouldMatchExpectedData -->
+      </class> <!-- com.alchemist.tests.OAuthTest -->
+    </test> <!-- Default test -->
+  </suite> <!-- Default suite -->
+</testng-results>

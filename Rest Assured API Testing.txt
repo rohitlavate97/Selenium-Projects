@@ -1976,3 +1976,347 @@ public class RahulShettyOAuthTest {
 }
 
 
+HTTP STATUS CODES (Quick Notes)
+
+CATEGORIES
+1xx = Informational
+2xx = Success
+3xx = Redirection
+4xx = Client Error (request issue)
+5xx = Server Error (server issue)
+
+1xx INFORMATIONAL
+100 Continue
+101 Switching Protocols
+
+2xx SUCCESS
+200 OK (success)
+201 Created (resource created)
+202 Accepted (processing later)
+204 No Content (success, no body)
+206 Partial Content (partial response)
+
+3xx REDIRECTION
+301 Moved Permanently
+302 Found (temporary redirect)
+304 Not Modified (cache)
+307 Temporary Redirect (method unchanged)
+308 Permanent Redirect (method unchanged)
+
+4xx CLIENT ERROR
+400 Bad Request (invalid request)
+401 Unauthorized (missing/invalid authentication)
+403 Forbidden (authenticated but not allowed)
+404 Not Found (endpoint/resource not found)
+405 Method Not Allowed (wrong HTTP method)
+408 Request Timeout
+409 Conflict (duplicate/constraint conflict)
+410 Gone (resource removed)
+412 Precondition Failed (ETag/If-Match failure)
+413 Payload Too Large
+415 Unsupported Media Type (wrong Content-Type)
+422 Unprocessable Entity (validation failed)
+429 Too Many Requests (rate limited)
+
+5xx SERVER ERROR
+500 Internal Server Error
+501 Not Implemented
+502 Bad Gateway
+503 Service Unavailable
+504 Gateway Timeout
+
+
+--OAuth 2.0 Automation:
+src
+├─ main
+│  ├─ java
+│  │  └─ com
+│  │     └─ alchemist
+│  │        └─ framework
+│  │           ├─ clients
+│  │           │  ├─ OAuthClient.java
+│  │           │  └─ CourseClient.java
+│  │           ├─ config
+│  │           │  ├─ ConfigManager.java
+│  │           │  └─ PropertyLoader.java
+│  │           ├─ constants
+│  │           │  └─ Endpoints.java
+│  │           ├─ models
+│  │           │  ├─ Course.java
+│  │           │  ├─ CourseDetailsResponse.java
+│  │           │  └─ TokenResponse.java
+│  │           ├─ specs
+│  │           │  └─ SpecBuilder.java
+│  │           └─ utils
+│  │              └─ TokenManager.java
+│  └─ resources
+│     ├─ framework.properties          (baseUrl, scope, paths...)
+│     └─ secrets.properties            (clientId, clientSecret)  <-- add to .gitignore
+│
+└─ test
+   ├─ java
+   │  └─ com
+   │     └─ alchemist
+   │        └─ tests
+   │           ├─ base
+   │           │  └─ BaseTest.java
+   │           └─ oauth
+   │              └─ RahulShettyOAuthTest.java
+   └─ resources
+      └─ testng.xml
+
+-config.properties
+baseUrl=https://rahulshettyacademy.com
+scope=create
+tokenPath=/oauthapi/oauth2/resourceOwner/token
+courseDetailsPath=/oauthapi/getCourseDetails
+
+-secrets.properties
+clientId=692183103107-p0m7ent2hk7suguv4vq22hjcfhcr43pj.apps.googleusercontent.com
+clientSecret=erZOWM9g3UtwNRj340YYaK_W
+
+
+package com.alchemist.framework.models;
+
+public class Course {
+    public String courseTitle;
+    public String price;
+}
+
+package com.alchemist.framework.models;
+
+import java.util.List;
+
+public class CourseDetailsResponse {
+    public String instructor;
+    public String url;
+    public String services;
+    public String expertise;
+    public Courses courses;
+    public String linkedIn;
+
+    public static class Courses {
+        public List<Course> webAutomation;
+        public List<Course> api;
+        public List<Course> mobile;
+    }
+}
+
+
+package com.alchemist.framework.models;
+
+public class TokenResponse {
+    public String access_token;
+    public String token_type;
+    public int expires_in;
+    public String refresh_token;
+    public String scope;
+}
+
+
+package com.alchemist.framework.specs;
+
+import com.alchemist.framework.config.ConfigManager;
+import io.restassured.RestAssured;
+import io.restassured.builder.RequestSpecBuilder;
+
+public class SpecBuilder {
+
+    private SpecBuilder() {}
+
+    public static void init() {
+        RestAssured.requestSpecification = new RequestSpecBuilder()
+                .setBaseUri(ConfigManager.baseUrl())
+                .build();
+    }
+}
+
+
+package com.alchemist.framework.config;
+
+import java.io.InputStream;
+import java.util.Properties;
+
+public class ConfigManager {
+
+    private static final Properties configProps = new Properties();
+    private static final Properties secretProps = new Properties();
+
+    static {
+        // Load config.properties (required)
+        try (InputStream is = ConfigManager.class.getClassLoader().getResourceAsStream("config.properties")) {
+            if (is == null) throw new RuntimeException("config.properties not found in src/main/resources");
+            configProps.load(is);
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to load config.properties", e);
+        }
+
+        // Load secrets.properties (optional but recommended for local)
+        try (InputStream is = ConfigManager.class.getClassLoader().getResourceAsStream("secrets.properties")) {
+            if (is != null) {
+                secretProps.load(is);
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to load secrets.properties", e);
+        }
+    }
+
+    private ConfigManager() {}
+
+    public static String baseUrl() { return configProps.getProperty("baseUrl"); }
+    public static String scope() { return configProps.getProperty("scope"); }
+    public static String tokenPath() { return configProps.getProperty("tokenPath"); }
+    public static String courseDetailsPath() { return configProps.getProperty("courseDetailsPath"); }
+
+    // Priority: ENV -> secrets.properties
+    public static String clientId() {
+        String env = System.getenv("RSA_CLIENT_ID");
+        if (env != null && !env.isBlank()) return env;
+
+        String v = secretProps.getProperty("clientId");
+        if (v == null || v.isBlank()) throw new IllegalStateException("clientId missing (set RSA_CLIENT_ID env OR secrets.properties)");
+        return v;
+    }
+
+    public static String clientSecret() {
+        String env = System.getenv("RSA_CLIENT_SECRET");
+        if (env != null && !env.isBlank()) return env;
+
+        String v = secretProps.getProperty("clientSecret");
+        if (v == null || v.isBlank()) throw new IllegalStateException("clientSecret missing (set RSA_CLIENT_SECRET env OR secrets.properties)");
+        return v;
+    }
+}
+
+
+package com.alchemist.framework.clients;
+
+import com.alchemist.framework.config.ConfigManager;
+import com.alchemist.framework.models.TokenResponse;
+
+import static io.restassured.RestAssured.given;
+
+public class OAuthClient {
+
+    public TokenResponse generateToken() {
+        return given()
+                .contentType("application/x-www-form-urlencoded")
+                .formParam("client_id", ConfigManager.clientId())
+                .formParam("client_secret", ConfigManager.clientSecret())
+                .formParam("grant_type", "client_credentials")
+                .formParam("scope", ConfigManager.scope())
+            .when()
+                .post(ConfigManager.tokenPath())
+            .then()
+                .statusCode(200)
+                .extract().as(TokenResponse.class);
+    }
+}
+
+
+package com.alchemist.framework.clients;
+
+import com.alchemist.framework.config.ConfigManager;
+import com.alchemist.framework.models.CourseDetailsResponse;
+
+import static io.restassured.RestAssured.given;
+
+public class CourseClient {
+
+    public CourseDetailsResponse getCourseDetails(String accessToken) {
+        return given()
+                .queryParam("access_token", accessToken)
+            .when()
+                .get(ConfigManager.courseDetailsPath())
+            .then()
+                .statusCode(401)
+                .extract().as(CourseDetailsResponse.class);
+    }
+}
+
+
+package com.alchemist.framework.utils;
+
+import com.alchemist.framework.clients.OAuthClient;
+import com.alchemist.framework.models.TokenResponse;
+
+public class TokenManager {
+
+    private TokenManager() {}
+
+    private static String token;
+    private static long expiryTimeMs;
+
+    public static synchronized String getToken() {
+        long now = System.currentTimeMillis();
+
+        if (token == null || now >= expiryTimeMs) {
+            TokenResponse tr = new OAuthClient().generateToken();
+            token = tr.access_token;
+            expiryTimeMs = now + (tr.expires_in - 30) * 1000L; // 30 sec buffer
+        }
+        return token;
+    }
+}
+
+
+package com.alchemist.tests.base;
+
+import com.alchemist.framework.specs.SpecBuilder;
+import org.testng.annotations.BeforeClass;
+
+public class BaseTest {
+
+    @BeforeClass
+    public void setup() {
+        SpecBuilder.init();
+    }
+}
+
+
+package com.alchemist.tests;
+
+import com.alchemist.framework.clients.CourseClient;
+import com.alchemist.framework.models.CourseDetailsResponse;
+import com.alchemist.framework.utils.TokenManager;
+import com.alchemist.tests.base.BaseTest;
+import org.testng.Assert;
+import org.testng.annotations.Test;
+
+import java.util.List;
+
+public class OAuthTest extends BaseTest {
+
+    @Test
+    public void getCourseDetails_shouldMatchExpectedData() {
+        String token = TokenManager.getToken();
+        CourseDetailsResponse res = new CourseClient().getCourseDetails(token);
+
+        Assert.assertEquals(res.instructor, "RahulShetty");
+        Assert.assertEquals(res.url, "rahulshettycademy.com");
+        Assert.assertEquals(res.services, "projectSupport");
+        Assert.assertEquals(res.expertise, "Automation");
+        Assert.assertTrue(res.linkedIn.contains("linkedin.com"));
+
+        List<String> webTitles = res.courses.webAutomation.stream().map(c -> c.courseTitle).toList();
+        Assert.assertEquals(webTitles, List.of("Selenium Webdriver Java", "Cypress", "Protractor"));
+
+        int cypressPrice = res.courses.webAutomation.stream()
+                .filter(c -> "Cypress".equals(c.courseTitle))
+                .mapToInt(c -> Integer.parseInt(c.price))
+                .findFirst()
+                .orElseThrow(() -> new AssertionError("Cypress not found"));
+        Assert.assertEquals(cypressPrice, 40);
+
+        int apiSum = res.courses.api.stream().mapToInt(c -> Integer.parseInt(c.price)).sum();
+        Assert.assertEquals(apiSum, 90);
+
+        int total = res.courses.webAutomation.size() + res.courses.api.size() + res.courses.mobile.size();
+        Assert.assertEquals(total, 6);
+
+        Assert.assertEquals(res.courses.mobile.get(0).courseTitle,
+                "Appium-Mobile Automation using Java");
+    }
+}
+
+
