@@ -3521,3 +3521,90 @@ public class AddPlaceWithHashMapTest {
         System.out.println("place_id = " + placeId);
     }
 }
+
+
+--Library API example:
+package com.alchemist.utils;
+
+import io.restassured.specification.RequestSpecification;
+import io.restassured.specification.ResponseSpecification;
+
+import static io.restassured.RestAssured.*;
+
+import io.restassured.builder.RequestSpecBuilder;
+import io.restassured.builder.ResponseSpecBuilder;
+import io.restassured.http.ContentType;
+
+public class SpecificationFactory {
+	public static RequestSpecification reqSpec() {
+		return new RequestSpecBuilder()
+                .setBaseUri("https://rahulshettyacademy.com")
+                .setContentType(ContentType.JSON)
+                .addHeader("Accept", "application/json")
+                .build();
+	}
+	
+	public static ResponseSpecification resSpec() {
+		return new ResponseSpecBuilder()
+				.expectStatusCode(200)
+				.expectContentType(ContentType.JSON)
+				.build();
+	}
+}
+
+
+package com.alchemist.utils;
+
+public class Resources {
+	public static final String ADD_BOOK = "Library/Addbook.php";
+}
+
+
+
+package com.alchemist.utils;
+
+import io.restassured.path.json.JsonPath;
+
+public class JsonUtils {
+	public static String getValueAsString(String response, String key) {
+		return new JsonPath(response).getString(key);
+	}
+	
+	public static Integer getValueAsInt(String response, String key) {
+		return new JsonPath(response).getInt(key);
+	}
+}
+
+
+package com.alchemist;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import org.testng.annotations.Test;
+import static io.restassured.RestAssured.*;
+
+import com.alchemist.utils.Resources;
+import com.alchemist.utils.SpecificationFactory;
+
+public class LibraryApiHashMapToJsonTest {
+	@Test
+	public void addBookHashMaptoJsonTest() {
+		Map<String,Object> body = new HashMap<String,Object>();
+		body.put("name", "Java");
+		body.put("isbn", "isb12");
+		body.put("aisle", "345");
+		body.put("author", "Sunny");
+		//we used hashmap so com.alchemist.utils.Payload class is not needed
+		String response = given()
+		     .spec(SpecificationFactory.reqSpec())
+		     .body(body).log().all()
+		.when()
+		     .post(Resources.ADD_BOOK)
+		.then()
+		     .spec(SpecificationFactory.resSpec())
+		     .extract().response().asString();
+		
+		System.out.println(response);
+	}
+}
