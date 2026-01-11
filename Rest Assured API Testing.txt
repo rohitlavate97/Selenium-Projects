@@ -3201,6 +3201,136 @@ public class MapTestWithSpecBuilder {
     }
 }
 
+--Simple Example for Reading Excel:
+public class ReadExcel {
+
+	public static void main(String[] args) throws Exception {
+		FileInputStream fis = new FileInputStream("D:\\Testing Prep\\TestData.xlsx");
+		Workbook wb = new XSSFWorkbook(fis);
+		Sheet sheet1 = wb.getSheet("Sheet1");
+		// Row index starts from 0
+		Row row = sheet1.getRow(1);
+		Cell cell = row.getCell(0);
+		String stringCellValue = cell.getStringCellValue();
+		System.out.println(stringCellValue);
+		wb.close();
+		fis.close();
+	}
+
+}
+
+package excel;
+
+import java.io.FileInputStream;
+import java.io.IOException;
+
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+
+
+public class ReadEntireExcel {
+
+	public static void main(String[] args) throws IOException {
+		FileInputStream fis = new FileInputStream("D:\\Testing Prep\\TestData.xlsx");
+		Workbook wb = new XSSFWorkbook(fis);
+		Sheet sheet1 = wb.getSheet("Sheet1");
+		int rows = sheet1.getPhysicalNumberOfRows();
+		for(int i=0;i<rows;i++) {
+		Row row = sheet1.getRow(i);
+		int cols = row.getPhysicalNumberOfCells();
+			for(int j=0;j<cols;j++) {
+				Cell cell = row.getCell(j);
+				switch (cell.getCellType()) {
+				    case STRING:
+				        System.out.print(cell.getStringCellValue());
+				        break;
+	
+				    case NUMERIC:
+				        System.out.print(cell.getNumericCellValue());
+				        break;
+	
+				    case BOOLEAN:
+				        System.out.print(cell.getBooleanCellValue());
+				        break;
+	
+				    default:
+				        System.out.print(" ");
+				}
+			}
+			System.out.println();
+		}
+
+		wb.close();
+		fis.close();
+	}
+
+}
+
+Way To use in Tests:
+--------------------
+package com.alchemist.utils;
+
+import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+
+import java.io.FileInputStream;
+import java.util.ArrayList;
+import java.util.List;
+
+public class ExcelUtils {
+
+    private ExcelUtils(){}
+
+    public static Object[][] readBooksFromFile(String filePath, String sheetName) {
+        try (FileInputStream fis = new FileInputStream(filePath);
+             Workbook wb = new XSSFWorkbook(fis)) {
+
+            Sheet sheet = wb.getSheet(sheetName);
+            if (sheet == null) throw new RuntimeException("Sheet not found: " + sheetName);
+
+            DataFormatter fmt = new DataFormatter();
+            List<Object[]> rows = new ArrayList<>();
+
+            for (int r = 1; r <= sheet.getLastRowNum(); r++) {
+                Row row = sheet.getRow(r);
+                if (row == null) continue;
+
+                String run = fmt.formatCellValue(row.getCell(0)).trim();
+                if (!run.equalsIgnoreCase("Y")) continue;
+
+                String isbn = fmt.formatCellValue(row.getCell(1)).trim();
+                String aisle = fmt.formatCellValue(row.getCell(2)).trim();
+
+                rows.add(new Object[]{isbn, aisle});
+            }
+
+            return rows.toArray(new Object[0][0]);
+
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to read Excel file: " + filePath, e);
+        }
+    }
+}
+
+Usage in Test:
+@DataProvider(name="BooksData")
+public Object[][] getData() {
+    return ExcelUtils.readBooksFromFile("D:\\Testing Prep\\TestData.xlsx", "BooksData");
+}
+
+
+DataFormatter fmt = new DataFormatter();
+String value = fmt.formatCellValue(cell);
+
+It returns:
+Numeric cell 67 → "67"
+String cell RS189 → "RS189"
+Date cell → "11-01-2026" (as displayed)
+Formula cell → formatted result (display value)
+Blank → ""
 
 --Excel Integration with Rest Assured Test:
 --------------------------------------------
@@ -3293,7 +3423,7 @@ public class ExcelUtils {
                 throw new RuntimeException("Sheet not found: " + sheetName);
             }
 
-            DataFormatter fmt = new DataFormatter();
+            DataFormatter fmt = new DataFormatter();     //✅ DataFormatter avoids that problem and gives you a safe String output.
             int lastRow = sheet.getLastRowNum();
 
             List<Object[]> rows = new ArrayList<>();
@@ -3308,7 +3438,7 @@ public class ExcelUtils {
                 String isbn = fmt.formatCellValue(row.getCell(1)).trim();
                 String aisle = fmt.formatCellValue(row.getCell(2)).trim();
 
-                rows.add(new Object[]{isbn, aisle});
+                rows.add(new Object[]{isbn, aisle});       //Object[] = one row of data, Object[][] = many rows (multiple test iterations)
             }
 
             wb.close();
