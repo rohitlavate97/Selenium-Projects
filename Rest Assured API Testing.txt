@@ -2872,3 +2872,198 @@ public class OAuthTest extends BaseTest {
     }
 }
 
+---Serialization of Input Payload using Google Maps API Excercise
+{
+  "location": {
+    "lat": -33.8669710,
+    "lng": 151.1958750
+  },
+  "accuracy": 50,
+  "name": "Place from Rahul Shetty",
+  "phone_number": "(02) 1234 5678",
+  "address": "100 Fictional Street, Test City",
+  "types": ["restaurant", "bar"],
+  "website": "http://testplace.example.com",
+  "language": "en-AU"
+}
+-Contract is already available in this file.
+-Google maps Add API(POST)-->Adds new place into server
+ Complete URL : https://rahulshettyacademy.com/maps/api/place/add/json?key=qaclick23
+ Base URL: https://rahulshettyacademy.com
+ Resource: /maps/api/place/add/json
+ Query Param: key=qaclick23
+ HTTP Method: POST
+
+
+package com.alchemist.utils;
+
+import io.restassured.builder.RequestSpecBuilder;
+import io.restassured.http.ContentType;
+import io.restassured.specification.RequestSpecification;
+
+public class BaseRequest {
+
+    public static RequestSpecification reqSpec() {
+        return new RequestSpecBuilder()
+                .setBaseUri("https://rahulshettyacademy.com")
+                .addQueryParam("key", "qaclick123")
+                .setContentType(ContentType.JSON)
+                .build();
+    }
+}
+
+
+package com.alchemist.utils;
+
+public class Resources {
+	public static final String ADD_PLACE = "/maps/api/place/add/json";
+	public static final String GET_PLACE = "/maps/api/place/get/json";
+}
+
+
+package com.alchemist.pojo;
+
+public class Location {
+	private Double lat;
+	private Double lng;
+	public Double getLat() {
+		return lat;
+	}
+	public void setLat(Double lat) {
+		this.lat = lat;
+	}
+	public Double getLng() {
+		return lng;
+	}
+	public void setLng(Double lng) {
+		this.lng = lng;
+	}
+	@Override
+	public String toString() {
+		return "Location [lat=" + lat + ", lng=" + lng + "]";
+	}
+}
+
+
+package com.alchemist.pojo;
+
+public class Type {
+	private String type;
+
+	public String getType() {
+		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
+	}
+
+	@Override
+	public String toString() {
+		return "Type [type=" + type + "]";
+	}
+	
+}
+
+
+package com.alchemist.pojo;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
+import java.util.List;
+
+public class AddPlaceRequest {
+    private Location location;
+    private Integer accuracy;
+    private String name;
+
+    @JsonProperty("phone_number")
+    private String phoneNumber;
+
+    private String address;
+    private List<String> types;
+    private String website;
+    private String language;
+
+    public Location getLocation() { return location; }
+    public void setLocation(Location location) { this.location = location; }
+
+    public Integer getAccuracy() { return accuracy; }
+    public void setAccuracy(Integer accuracy) { this.accuracy = accuracy; }
+
+    public String getName() { return name; }
+    public void setName(String name) { this.name = name; }
+
+    public String getPhoneNumber() { return phoneNumber; }
+    public void setPhoneNumber(String phoneNumber) { this.phoneNumber = phoneNumber; }
+
+    public String getAddress() { return address; }
+    public void setAddress(String address) { this.address = address; }
+
+    public List<String> getTypes() { return types; }
+    public void setTypes(List<String> types) { this.types = types; }
+
+    public String getWebsite() { return website; }
+    public void setWebsite(String website) { this.website = website; }
+
+    public String getLanguage() { return language; }
+    public void setLanguage(String language) { this.language = language; }
+}
+
+
+package com.alchemist;
+
+import static io.restassured.RestAssured.given;
+
+import java.util.Arrays;
+
+import org.testng.Assert;
+import org.testng.annotations.Test;
+
+import com.alchemist.pojo.AddPlaceRequest;
+import com.alchemist.pojo.Location;
+import com.alchemist.utils.BaseRequest;
+import com.alchemist.utils.Resources;
+
+import io.restassured.path.json.JsonPath;
+
+public class MapsTest {
+
+    @Test
+    public void addMapTest() {
+
+        AddPlaceRequest request = new AddPlaceRequest();
+
+        Location location = new Location();
+        location.setLat(-38.383494);
+        location.setLng(33.427362);
+
+        request.setLocation(location);
+        request.setAccuracy(50);
+        request.setName("Frontline house");
+        request.setPhoneNumber("(+91) 983 893 3937");
+        request.setAddress("29, side layout, cohen 09");
+        request.setTypes(Arrays.asList("shoe park", "shop"));
+        request.setWebsite("http://google.com");
+        request.setLanguage("French-IN");
+
+        String response =
+                given()
+                    .spec(BaseRequest.reqSpec())
+                    .body(request)
+                    .log().all()
+                .when()
+                    .post(Resources.ADD_PLACE)
+                .then()
+                    .log().all()
+                    .statusCode(200)   // now your test will FAIL if server returns 500
+                    .extract().asString();
+
+        JsonPath js = new JsonPath(response);
+        String placeId = js.getString("place_id");
+        Assert.assertNotNull(placeId, "place_id should not be null");
+        System.out.println("place_id = " + placeId);
+    }
+}
+
+--Understand Request and Response Spec Builder in Rest Assured:
+---------------------------------------------------------------
