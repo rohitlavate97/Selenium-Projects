@@ -3067,3 +3067,136 @@ public class MapsTest {
 
 --Understand Request and Response Spec Builder in Rest Assured:
 ---------------------------------------------------------------
+REQUESTSPECBUILDER & RESPONSESPECBUILDER (Rest Assured) 
+========================================================
+
+1) RequestSpecBuilder
+---------------------
+Meaning:
+- Used to create a reusable "RequestSpecification"
+- Common request settings that you repeat in every API call
+
+Common things to keep in Request Spec:
+- baseUri / basePath
+- default query params (ex: key=qaclick123)
+- default headers
+- Content-Type
+- authentication
+- logging filters
+
+Example:
+RequestSpecification reqSpec = new RequestSpecBuilder()
+  .setBaseUri("https://rahulshettyacademy.com")
+  .addQueryParam("key","qaclick123")
+  .setContentType(ContentType.JSON)
+  .addHeader("Accept","application/json")
+  .build();
+
+Usage:
+given()
+  .spec(reqSpec)
+  .body(payload)
+.when()
+  .post("/maps/api/place/add/json");
+
+
+2) ResponseSpecBuilder
+----------------------
+Meaning:
+- Used to create a reusable "ResponseSpecification"
+- Common validations you apply to responses
+
+Common things to keep in Response Spec:
+- expected status code (200/201/401 etc.)
+- expected response content type (JSON/XML)
+- expected headers
+- response time limit
+
+Example:
+ResponseSpecification resSpec = new ResponseSpecBuilder()
+  .expectStatusCode(200)
+  .expectContentType(ContentType.JSON)
+  .build();
+
+Usage:
+given()
+  .spec(reqSpec)
+.when()
+  .get("/oauthapi/getCourseDetails")
+.then()
+  .spec(resSpec);
+
+
+WHY USE THEM (Framework):
+- Removes duplicate code
+- Makes tests clean and readable
+- Easy to change baseUrl/headers in one place
+- Easy to create multiple specs (200, 201, 401, etc.)
+
+
+package com.alchemist;
+
+import java.util.Arrays;
+
+import org.testng.annotations.Test;
+
+import com.alchemist.pojo.AddPlaceRequest;
+import com.alchemist.pojo.Location;
+import com.alchemist.utils.Resources;
+
+import io.restassured.builder.RequestSpecBuilder;
+import io.restassured.builder.ResponseSpecBuilder;
+import io.restassured.http.ContentType;
+import io.restassured.response.ValidatableResponse;
+import io.restassured.specification.RequestSpecification;
+import io.restassured.specification.ResponseSpecification;
+
+import static io.restassured.RestAssured.*;
+
+public class MapTestWithSpecBuilder {
+
+    @Test
+    public void addPlace() {
+
+        AddPlaceRequest request = new AddPlaceRequest();
+
+        Location location = new Location();
+        location.setLat(-38.383494);
+        location.setLng(33.427362);
+
+        request.setLocation(location);
+        request.setAccuracy(70);
+        request.setName("Testing SpecBuilder");
+        request.setPhoneNumber("(+91) 983 893 3934");
+        request.setAddress("29, side layout, cohen 09");
+        request.setTypes(Arrays.asList("shoe park", "shop"));
+        request.setWebsite("http://google.com");
+        request.setLanguage("French-IN");
+
+        RequestSpecification reqSpec = new RequestSpecBuilder()
+                .setBaseUri("https://rahulshettyacademy.com")
+                .addQueryParam("key", "qaclick123")
+                .setContentType(ContentType.JSON)
+                .addHeader("Accept", "application/json")
+                .build();
+
+        ResponseSpecification resSpec = new ResponseSpecBuilder()
+                .expectStatusCode(200)
+                .expectContentType(ContentType.JSON)
+                .build();
+
+        ValidatableResponse spec =
+                given()
+                    .spec(reqSpec)
+                    .body(request)          // ✅ MISSING IN YOUR CODE
+                    .log().all()
+                .when()
+                    .post(Resources.ADD_PLACE)
+                .then()
+                    .log().all()
+                    .spec(resSpec);
+
+        String response = spec.extract().asString();
+        System.out.println(response);
+    }
+}
