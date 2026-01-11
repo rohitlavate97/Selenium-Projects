@@ -2025,8 +2025,184 @@ CATEGORIES
 503 Service Unavailable
 504 Gateway Timeout
 
+package com.alchemist;
 
---OAuth 2.0 Automation:
+import io.restassured.RestAssured;
+import io.restassured.http.ContentType;
+import io.restassured.path.json.JsonPath;
+
+import static io.restassured.RestAssured.given;
+
+public class OAuthRawTest {
+    public static void main(String[] args) {
+
+        RestAssured.baseURI = "https://rahulshettyacademy.com/oauthapi/"; 
+
+        String tokenResponse =
+                given()
+                    .contentType(ContentType.URLENC)   //similar to .header("Content-Type", "application/x-www-form-urlencoded")
+                    .formParam("client_id", "692183103107-p0m7ent2hk7suguv4vq22hjcfhcr43pj.apps.googleusercontent.com")
+                    .formParam("client_secret", "erZOWM9g3UtwNRj340YYaK_W")
+                    .formParam("grant_type", "client_credentials")
+                    .formParam("scope", "trust")
+                .when()
+                    .post("oauth2/resourceOwner/token")
+                .then()
+                    .log().all()
+                    .assertThat().statusCode(200)
+                    .extract().asString();
+        JsonPath js = new JsonPath(tokenResponse);
+        String token = js.getString("access_token");
+        System.out.println("ACCESS TOKEN :\n" + token);
+        
+        given()
+              .queryParam("access_token", token)
+              //.header("Content-Type","application/json") -->not required for GET calls
+        .when()
+              .get("/getCourseDetails")
+        .then().log().all()
+               .assertThat().statusCode(401).extract().response().asString();
+    }
+}
+
+-SERIALIZATION & DESERIALIZATION in Rest Assured (POJO Based)
+------------------------------------------------------------
+SERIALIZATION
+------------------------------------------------------------
+Meaning:
+- Converting a Java Object (POJO) into Request Body (Payload)
+  (Usually JSON, sometimes XML)
+
+Example:
+given()
+  .contentType(ContentType.JSON)
+  .body(javaObject);   // Rest Assured converts POJO -> JSON at runtime
+
+------------------------------------------------------------
+DESERIALIZATION
+------------------------------------------------------------
+Meaning:
+- Converting Response Body (JSON/XML) back into a Java Object (POJO)
+
+Example:
+ResponsePojo res =
+given()
+.when()
+  .get("/endpoint")
+.then()
+  .extract().as(ResponsePojo.class);  // JSON -> POJO
+
+------------------------------------------------------------
+ADVANTAGES (Why POJO?)
+------------------------------------------------------------
+- Easy to build payloads (no manual JSON strings)
+- Easy to parse response values using getters
+- Cleaner, reusable, maintainable automation framework
+- Strong typing + fewer parsing errors
+
+------------------------------------------------------------
+DESIGN APPROACH
+------------------------------------------------------------
+1) Create POJO classes based on Request/Response payload structure
+2) Construct Java Object using POJO class + setters
+3) Serialize POJO -> JSON for request
+4) Deserialize JSON -> POJO for response
+
+------------------------------------------------------------
+REQUIRED LIBRARIES (Mappers)
+------------------------------------------------------------
+For JSON (any one in classpath):
+- Jackson / Jackson2
+- Gson
+- Johnzon
+
+For XML:
+- JAXB
+
+------------------------------------------------------------
+SAMPLE POJO
+------------------------------------------------------------
+public class Message {
+  private String message;
+
+  public String getMessage() {
+    return message;
+  }
+
+  public void setMessage(String message) {
+    this.message = message;
+  }
+}
+
+------------------------------------------------------------
+SERIALIZATION EXAMPLE (Java Object -> JSON)
+------------------------------------------------------------
+1) Create POJO object
+   Message message = new Message();
+2) Set values
+   message.setMessage("Hello");
+3) Pass POJO to Rest Assured
+   given()
+     .contentType(ContentType.JSON)
+     .body(message);
+4) Rest Assured uses mapper (Jackson/Gson) to convert POJO -> JSON
+   This is SERIALIZATION
+Generated JSON:
+{
+  "message": "Hello"
+}
+
+
+--OAuth 2.0 Automation with client credentials grant-type:
+WHEN TO USE .contentType(ContentType.URLENC)  (application/x-www-form-urlencoded)--> .contentType(ContentType.URLENC)   //similar to .header("Content-Type", "application/x-www-form-urlencoded")
+USE URLENC WHEN:
+1) OAuth token APIs (most common)
+   - /token endpoint expects:
+     grant_type, client_id, client_secret, code, refresh_token
+   - Body format: key=value&key2=value2
+   - Postman: Body -> x-www-form-urlencoded
+
+   Example:
+   given()
+     .contentType(ContentType.URLENC)
+     .formParam("grant_type","client_credentials")
+     .formParam("client_id","...")
+     .formParam("client_secret","...")
+   .when()
+     .post("/token");
+
+2) Any API that explicitly says:
+   - Content-Type: application/x-www-form-urlencoded
+   - "Send as form-urlencoded"
+
+DO NOT USE URLENC WHEN:
+1) API expects JSON payload
+   - Use: .contentType(ContentType.JSON)
+   - Use: .body("{...}")
+
+   Example:
+   given()
+     .contentType(ContentType.JSON)
+     .body("{\"name\":\"Sujal\"}")
+   .when()
+     .post("/users");
+
+2) File upload / multipart
+   - Use: multipart/form-data
+   - Use: .multiPart(...)
+
+   Example:
+   given()
+     .multiPart("file", new File("a.png"))
+   .when()
+     .post("/upload");
+
+EASY RULE:
+- Token / login-form style data -> URLENC
+- REST APIs with JSON -> JSON
+- File upload -> multipart
+
+
 src
 ├─ main
 │  ├─ java
@@ -2318,5 +2494,4 @@ public class OAuthTest extends BaseTest {
                 "Appium-Mobile Automation using Java");
     }
 }
-
 
