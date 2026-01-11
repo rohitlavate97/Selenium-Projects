@@ -3200,3 +3200,242 @@ public class MapTestWithSpecBuilder {
         System.out.println(response);
     }
 }
+
+
+--Excel Integration with Rest Assured Test:
+--------------------------------------------
+-Need Apache POI maven dependency
+	<dependencies>
+		<!-- Rest Assured -->
+		<dependency>
+			<groupId>io.rest-assured</groupId>
+			<artifactId>rest-assured</artifactId>
+			<version>5.5.5</version>
+		</dependency>
+
+		<!-- TestNG -->
+		<dependency>
+			<groupId>org.testng</groupId>
+			<artifactId>testng</artifactId>
+			<version>7.11.0</version>
+		</dependency>
+
+		<!-- Apache POI for Excel -->
+		<dependency>
+			<groupId>org.apache.poi</groupId>
+			<artifactId>poi-ooxml</artifactId>
+			<version>5.3.0</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/org.hamcrest/hamcrest -->
+		<dependency>
+			<groupId>org.hamcrest</groupId>
+			<artifactId>hamcrest</artifactId>
+			<version>2.2</version>
+		</dependency>
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-databind</artifactId>
+			<version>2.17.2</version>
+		</dependency>
+	</dependencies>
+	
+	
+package com.alchemist.utils;
+
+import io.restassured.builder.RequestSpecBuilder;
+import io.restassured.builder.ResponseSpecBuilder;
+import io.restassured.http.ContentType;
+import io.restassured.specification.RequestSpecification;
+import io.restassured.specification.ResponseSpecification;
+
+public class SpecFactory {
+
+    private SpecFactory() {}
+
+    public static RequestSpecification requestSpec() {
+        return new RequestSpecBuilder()
+                .setBaseUri("https://rahulshettyacademy.com")
+                .setContentType(ContentType.JSON)
+                .addHeader("Accept", "application/json")
+                .build();
+    }
+
+    public static ResponseSpecification success200Json() {
+        return new ResponseSpecBuilder()
+                .expectStatusCode(200)
+                .expectContentType(ContentType.JSON)
+                .build();
+    }
+}
+
+	
+package com.alchemist.utils;
+
+import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
+
+public class ExcelUtils {
+
+    private ExcelUtils(){}
+
+    public static Object[][] readBooksFromResource(String excelResourceName, String sheetName) {
+        try (InputStream is = ExcelUtils.class.getClassLoader().getResourceAsStream(excelResourceName)) {
+            if (is == null) throw new RuntimeException("Excel not found: " + excelResourceName);
+
+            Workbook wb = new XSSFWorkbook(is);
+            Sheet sheet = wb.getSheet(sheetName);
+            if (sheet == null) {
+                wb.close();
+                throw new RuntimeException("Sheet not found: " + sheetName);
+            }
+
+            DataFormatter fmt = new DataFormatter();
+            int lastRow = sheet.getLastRowNum();
+
+            List<Object[]> rows = new ArrayList<>();
+
+            for (int r = 1; r <= lastRow; r++) {
+                Row row = sheet.getRow(r);
+                if (row == null) continue;
+
+                String run = fmt.formatCellValue(row.getCell(0)).trim();
+                if (!run.equalsIgnoreCase("Y")) continue;
+
+                String isbn = fmt.formatCellValue(row.getCell(1)).trim();
+                String aisle = fmt.formatCellValue(row.getCell(2)).trim();
+
+                rows.add(new Object[]{isbn, aisle});
+            }
+
+            wb.close();
+            return rows.toArray(new Object[0][0]);
+
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to read Excel: " + excelResourceName + " sheet: " + sheetName, e);
+        }
+    }
+}
+
+
+package com.alchemist.utils;
+
+public class Payload {
+
+    private Payload(){}
+
+    public static String addBook(String isbn, String aisle) {
+        return "{\n" +
+                "  \"name\":\"Learn Appium Automation with Java\",\n" +
+                "  \"isbn\":\"" + isbn + "\",\n" +
+                "  \"aisle\":\"" + aisle + "\",\n" +
+                "  \"author\":\"John foe\"\n" +
+                "}";
+    }
+
+    public static String deleteBook(String id) {
+        return "{\n" +
+                "  \"ID\":\"" + id + "\"\n" +
+                "}";
+    }
+}
+
+
+package com.alchemist.utils;
+
+public class Resources {
+    public static final String ADD_BOOK = "/Library/Addbook.php";
+    public static final String DELETE_BOOK = "/Library/DeleteBook.php";
+}
+
+
+package com.alchemist.utils;
+
+import io.restassured.path.json.JsonPath;
+
+public class JsonUtils {
+    private JsonUtils(){}
+
+    public static String getValueAsString(String json, String key) {
+        return new JsonPath(json).getString(key);
+    }
+}
+
+
+package com.alchemist;
+
+import com.alchemist.utils.ExcelUtils;
+import com.alchemist.utils.JsonUtils;
+import com.alchemist.utils.Payload;
+import com.alchemist.utils.Resources;
+import com.alchemist.utils.SpecFactory;
+import org.testng.Assert;
+import org.testng.annotations.DataProvider;
+import org.testng.annotations.Test;
+
+import static io.restassured.RestAssured.given;
+
+public class AddBookExcelSpecBuilderTest {
+
+    @DataProvider(name = "BooksData")
+    public Object[][] getData() {
+        return ExcelUtils.readBooksFromResource("testRestAssured.xlsx", "BooksData");
+    }
+
+    @Test(dataProvider = "BooksData")
+    public void addBookThenDeleteBook_usingSpecBuilder(String isbn, String aisle) {
+
+        // 1) ADD BOOK
+        String addRes =
+                given()
+                    .spec(SpecFactory.requestSpec())
+                    .body(Payload.addBook(isbn, aisle))
+                    .log().all()
+                .when()
+                    .post(Resources.ADD_BOOK)
+                .then()
+                    .log().all()
+                    .spec(SpecFactory.success200Json())
+                    .extract().asString();
+
+        String msg = JsonUtils.getValueAsString(addRes, "Msg");
+        String idFromRes = JsonUtils.getValueAsString(addRes, "ID");
+
+        // Fallback if ID not returned for some reason
+        String expectedId = isbn + aisle;
+        String idToDelete = (idFromRes != null && !idFromRes.isBlank()) ? idFromRes : expectedId;
+
+        Assert.assertNotNull(msg, "Msg should not be null");
+        Assert.assertNotNull(idToDelete, "ID should not be null");
+
+        // Handle both valid cases
+        boolean successAdd = msg.toLowerCase().contains("successfully added");
+        boolean alreadyExists = msg.toLowerCase().contains("already exists");
+
+        if (!(successAdd || alreadyExists)) {
+            Assert.fail("Unexpected Msg from AddBook: " + msg + " | Response: " + addRes);
+        }
+
+        // 2) DELETE BOOK (works for both added + already exists)
+        String delRes =
+                given()
+                    .spec(SpecFactory.requestSpec())
+                    .body(Payload.deleteBook(idToDelete))
+                    .log().all()
+                .when()
+                    .post(Resources.DELETE_BOOK)
+                .then()
+                    .log().all()
+                    .spec(SpecFactory.success200Json())
+                    .extract().asString();
+
+        // Delete response usually returns: {"msg":"book is successfully deleted"}
+        String delMsg = JsonUtils.getValueAsString(delRes, "msg");
+        Assert.assertNotNull(delMsg, "Delete msg should not be null. Response: " + delRes);
+        Assert.assertTrue(delMsg.toLowerCase().contains("successfully deleted"),
+                "Delete msg mismatch. Actual: " + delMsg);
+    }
+}
