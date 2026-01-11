@@ -1,61 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testng-results ignored="0" total="3" passed="3" failed="0" skipped="0">
+<testng-results ignored="0" total="1" passed="1" failed="0" skipped="0">
   <reporter-output>
   </reporter-output>
-  <suite started-at="2026-01-11T22:08:23 IST" name="Default suite" finished-at="2026-01-11T22:08:28 IST" duration-ms="5129">
+  <suite started-at="2026-01-11T22:37:30 IST" name="Default suite" finished-at="2026-01-11T22:37:34 IST" duration-ms="3956">
     <groups>
     </groups>
-    <test started-at="2026-01-11T22:08:23 IST" name="Default test" finished-at="2026-01-11T22:08:28 IST" duration-ms="5129">
-      <class name="com.alchemist.AddBookExcelSpecBuilderTest">
-        <test-method signature="addBookThenDeleteBook_usingSpecBuilder(java.lang.String,java.lang.String)[pri:0, instance:com.alchemist.AddBookExcelSpecBuilderTest@18078bef]" started-at="2026-01-11T22:08:24 IST" name="addBookThenDeleteBook_usingSpecBuilder" data-provider="BooksData" finished-at="2026-01-11T22:08:28 IST" duration-ms="3339" status="PASS">
-          <params>
-            <param index="0">
-              <value>
-                <![CDATA[RS247]]>
-              </value>
-            </param>
-            <param index="1">
-              <value>
-                <![CDATA[67]]>
-              </value>
-            </param>
-          </params>
+    <test started-at="2026-01-11T22:37:30 IST" name="Default test" finished-at="2026-01-11T22:37:34 IST" duration-ms="3956">
+      <class name="com.alchemist.AddPlaceWithHashMapTest">
+        <test-method signature="addPlace_usingHashMapPayload()[pri:0, instance:com.alchemist.AddPlaceWithHashMapTest@747ddf94]" started-at="2026-01-11T22:37:30 IST" name="addPlace_usingHashMapPayload" finished-at="2026-01-11T22:37:34 IST" duration-ms="3878" status="PASS">
           <reporter-output>
           </reporter-output>
-        </test-method> <!-- addBookThenDeleteBook_usingSpecBuilder -->
-        <test-method signature="addBookThenDeleteBook_usingSpecBuilder(java.lang.String,java.lang.String)[pri:0, instance:com.alchemist.AddBookExcelSpecBuilderTest@18078bef]" started-at="2026-01-11T22:08:28 IST" name="addBookThenDeleteBook_usingSpecBuilder" data-provider="BooksData" finished-at="2026-01-11T22:08:28 IST" duration-ms="329" status="PASS">
-          <params>
-            <param index="0">
-              <value>
-                <![CDATA[RSA84]]>
-              </value>
-            </param>
-            <param index="1">
-              <value>
-                <![CDATA[34]]>
-              </value>
-            </param>
-          </params>
-          <reporter-output>
-          </reporter-output>
-        </test-method> <!-- addBookThenDeleteBook_usingSpecBuilder -->
-        <test-method signature="addBookThenDeleteBook_usingSpecBuilder(java.lang.String,java.lang.String)[pri:0, instance:com.alchemist.AddBookExcelSpecBuilderTest@18078bef]" started-at="2026-01-11T22:08:28 IST" name="addBookThenDeleteBook_usingSpecBuilder" data-provider="BooksData" finished-at="2026-01-11T22:08:28 IST" duration-ms="223" status="PASS">
-          <params>
-            <param index="0">
-              <value>
-                <![CDATA[RSB94]]>
-              </value>
-            </param>
-            <param index="1">
-              <value>
-                <![CDATA[45]]>
-              </value>
-            </param>
-          </params>
-          <reporter-output>
-          </reporter-output>
-        </test-method> <!-- addBookThenDeleteBook_usingSpecBuilder -->
-      </class> <!-- com.alchemist.AddBookExcelSpecBuilderTest -->
+        </test-method> <!-- addPlace_usingHashMapPayload -->
+      </class> <!-- com.alchemist.AddPlaceWithHashMapTest -->
     </test> <!-- Default test -->
   </suite> <!-- Default suite -->
 </testng-results>
