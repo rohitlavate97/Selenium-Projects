@@ -2152,8 +2152,385 @@ Generated JSON:
   "message": "Hello"
 }
 
+Note: We need Jackson Databind,GSon jar dependencies
+
+Response:
+{
+    "instructor": "RahulShetty",
+    "url": "rahulshettycademy.com",
+    "services": "projectSupport",
+    "expertise": "Automation",
+    "courses": {
+        "webAutomation": [
+            {
+                "courseTitle": "Selenium Webdriver Java",
+                "price": "50"
+            },
+            {
+                "courseTitle": "Cypress",
+                "price": "40"
+            },
+            {
+                "courseTitle": "Protractor",
+                "price": "40"
+            }
+        ],
+        "api": [
+            {
+                "courseTitle": "Rest Assured Automation using Java",
+                "price": "50"
+            },
+            {
+                "courseTitle": "SoapUI Webservices testing",
+                "price": "40"
+            }
+        ],
+        "mobile": [
+            {
+                "courseTitle": "Appium-Mobile Automation using Java",
+                "price": "50"
+            }
+        ]
+    },
+    "linkedIn": "https://www.linkedin.com/in/rahul-shetty-trainer/"
+}
+
+package com.alchemist.pojo;
+
+public class CourseDetails {
+	private String courseTitle;
+	private String price;
+	public String getCourseTitle() {
+		return courseTitle;
+	}
+	public void setCourseTitle(String courseTitle) {
+		this.courseTitle = courseTitle;
+	}
+	public String getPrice() {
+		return price;
+	}
+	public void setPrice(String price) {
+		this.price = price;
+	}
+	
+}
+
+
+package com.alchemist.pojo;
+
+import java.util.List;
+
+public class Courses {
+	private List<CourseDetails> webAutomation;
+	private List<CourseDetails> api;
+	private List<CourseDetails> mobile;
+	public List<CourseDetails> getWebAutomation() {
+		return webAutomation;
+	}
+	public void setWebAutomation(List<CourseDetails> webAutomation) {
+		this.webAutomation = webAutomation;
+	}
+	public List<CourseDetails> getApi() {
+		return api;
+	}
+	public void setApi(List<CourseDetails> api) {
+		this.api = api;
+	}
+	public List<CourseDetails> getMobile() {
+		return mobile;
+	}
+	public void setMobile(List<CourseDetails> mobile) {
+		this.mobile = mobile;
+	}
+	
+}
+
+
+package com.alchemist.pojo;
+
+public class ResponseForCourseDetails {
+	private String instructor;
+	private String url;
+	private String services;
+	private String expertise;
+	private Courses courses;
+	private String linkedIn;
+	public String getInstructor() {
+		return instructor;
+	}
+	public void setInstructor(String instructor) {
+		this.instructor = instructor;
+	}
+	public String getUrl() {
+		return url;
+	}
+	public void setUrl(String url) {
+		this.url = url;
+	}
+	public String getServices() {
+		return services;
+	}
+	public void setServices(String services) {
+		this.services = services;
+	}
+	public String getExpertise() {
+		return expertise;
+	}
+	public void setExpertise(String expertise) {
+		this.expertise = expertise;
+	}
+	public Courses getCourses() {
+		return courses;
+	}
+	public void setCourses(Courses courses) {
+		this.courses = courses;
+	}
+	public String getLinkedIn() {
+		return linkedIn;
+	}
+	public void setLinkedIn(String linkedIn) {
+		this.linkedIn = linkedIn;
+	}
+	
+}
+-For Deserialization we will use as(.class) method
+-Create Project and add dependencies:
+<!-- https://mvnrepository.com/artifact/io.rest-assured/rest-assured -->
+		<dependency>
+			<groupId>io.rest-assured</groupId>
+			<artifactId>rest-assured</artifactId>
+			<version>5.5.5</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/org.testng/testng -->
+		<dependency>
+			<groupId>org.testng</groupId>
+			<artifactId>testng</artifactId>
+			<version>7.10.2</version>
+			<scope>test</scope>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/org.hamcrest/hamcrest -->
+		<dependency>
+			<groupId>org.hamcrest</groupId>
+			<artifactId>hamcrest</artifactId>
+			<version>2.2</version>
+		</dependency>
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-databind</artifactId>
+			<version>2.17.2</version>
+		</dependency>
+
+//below this app is more modified version--line 2580
+package com.alchemist.pojo;
+
+public class ApiCourseDetails {
+	private String courseTitle;
+	private String price;
+	public String getCourseTitle() {
+		return courseTitle;
+	}
+	public void setCourseTitle(String courseTitle) {
+		this.courseTitle = courseTitle;
+	}
+	public String getPrice() {
+		return price;
+	}
+	public void setPrice(String price) {
+		this.price = price;
+	}
+	@Override
+	public String toString() {
+		return "CourseDetails [courseTitle=" + courseTitle + ", price=" + price + "]";
+	}
+	
+}
+
+package com.alchemist.pojo;
+
+import java.util.List;
+
+public class Courses {
+	private List<WebAutomationCourseDetails> webAutomation;
+	private List<ApiCourseDetails> api;
+	private List<MobileCourseDetails> mobile;
+	public List<WebAutomationCourseDetails> getWebAutomation() {
+		return webAutomation;
+	}
+	public void setWebAutomation(List<WebAutomationCourseDetails> webAutomation) {
+		this.webAutomation = webAutomation;
+	}
+	public List<ApiCourseDetails> getApi() {
+		return api;
+	}
+	public void setApi(List<ApiCourseDetails> api) {
+		this.api = api;
+	}
+	public List<MobileCourseDetails> getMobile() {
+		return mobile;
+	}
+	public void setMobile(List<MobileCourseDetails> mobile) {
+		this.mobile = mobile;
+	}
+	@Override
+	public String toString() {
+		return "Courses [webAutomation=" + webAutomation + ", api=" + api + ", mobile=" + mobile + "]";
+	}
+}
+
+package com.alchemist.pojo;
+
+public class ResponseForCourseDetails {
+	private String instructor;
+	private String url;
+	private String services;
+	private String expertise;
+	private Courses courses;
+	private String linkedIn;
+	public String getInstructor() {
+		return instructor;
+	}
+	public void setInstructor(String instructor) {
+		this.instructor = instructor;
+	}
+	public String getUrl() {
+		return url;
+	}
+	public void setUrl(String url) {
+		this.url = url;
+	}
+	public String getServices() {
+		return services;
+	}
+	public void setServices(String services) {
+		this.services = services;
+	}
+	public String getExpertise() {
+		return expertise;
+	}
+	public void setExpertise(String expertise) {
+		this.expertise = expertise;
+	}
+	public Courses getCourses() {
+		return courses;
+	}
+	public void setCourses(Courses courses) {
+		this.courses = courses;
+	}
+	public String getLinkedIn() {
+		return linkedIn;
+	}
+	public void setLinkedIn(String linkedIn) {
+		this.linkedIn = linkedIn;
+	}
+	@Override
+	public String toString() {
+		return "ResponseForCourseDetails [instructor=" + instructor + ", url=" + url + ", services=" + services
+				+ ", expertise=" + expertise + ", courses=" + courses + ", linkedIn=" + linkedIn + "]";
+	}
+	
+}
+
+package com.alchemist.utils;
+
+public class Resources {
+	public static final String GET_TOKEN = "/oauth2/resourceOwner/token";
+	public static final String GET_COURSE = "/getCourseDetails";
+}
+
+package com.alchemist.utils;
+
+import io.restassured.path.json.JsonPath;
+
+public class JsonUtility {
+	public static String getValueAsString(String response,String key) {
+		return new JsonPath(response).getString(key);
+	}
+	
+	public static Integer getValueAsInt(String response,String key) {
+		return new JsonPath(response).getInt(key);
+	}
+}
+
+
+package com.alchemist.utils;
+
+import io.restassured.specification.RequestSpecification;
+import static io.restassured.RestAssured.*;
+
+public class BaseRequest {
+	public static RequestSpecification reqSpec() {
+		return given()
+		  .baseUri("https://rahulshettyacademy.com/oauthapi");
+	}
+}
+
+package com.alchemist.tests;
+
+import com.alchemist.utils.BaseRequest;
+import com.alchemist.utils.JsonUtility;
+import com.alchemist.utils.Resources;
+
+public class BaseTest {
+	public static String accessToken() {
+		String tokenResponse = BaseRequest.reqSpec()
+		      .header("Content-Type","application/x-www-form-urlencoded")
+		      .formParam("client_id", "692183103107-p0m7ent2hk7suguv4vq22hjcfhcr43pj.apps.googleusercontent.com")
+		      .formParam("client_secret", "erZOWM9g3UtwNRj340YYaK_W")
+		      .formParam("grant_type", "client_credentials")
+		      .formParam("scope", "trust")
+		 .when()
+		      .post(Resources.GET_TOKEN)
+		 .then().log().all()
+		      .assertThat().statusCode(200).extract().asString();
+		
+		String access_token = JsonUtility.getValueAsString(tokenResponse, "access_token");
+		return access_token;
+	}
+}
+
+package com.alchemist.tests;
+
+import java.util.List;
+
+import org.testng.annotations.Test;
+
+import com.alchemist.pojo.ApiCourseDetails;
+import com.alchemist.pojo.ResponseForCourseDetails;
+import com.alchemist.utils.BaseRequest;
+import com.alchemist.utils.Resources;
+
+import io.restassured.parsing.Parser;
+
+public class OAuthTest extends BaseTest{
+	String token = accessToken();
+	
+	@Test
+	public void client_cred_Test() {
+		ResponseForCourseDetails courses = BaseRequest.reqSpec()
+		    .queryParam("access_token", token)
+		    .expect().defaultParser(Parser.JSON)  //we can avoid if your response header is JSON(In our case, text/html:charset=UTF-8)
+		.when()
+		    .get(Resources.GET_COURSE).as(ResponseForCourseDetails.class);
+		//All Json values will be carried by variables in ResponseForCourseDetails class.
+		//we can get value by calling getter method while deserializing everything created to Java object
+		System.out.println(courses);
+		System.out.println(courses.getInstructor());
+		System.out.println(courses.getCourses());
+		//Get Price of Course-->SOAP UI Webservices Testing 
+		List<ApiCourseDetails> api = courses.getCourses().getApi();
+		for(int i=0;i<api.size();i++) {
+			ApiCourseDetails course = api.get(i);
+			if(course.getCourseTitle().equals("SoapUI Webservices testing")) {
+				System.out.println(course.getPrice());
+				break;
+			}
+		}
+	}
+}
+
 
 --OAuth 2.0 Automation with client credentials grant-type:
+----------------------------------------------------------
 WHEN TO USE .contentType(ContentType.URLENC)  (application/x-www-form-urlencoded)--> .contentType(ContentType.URLENC)   //similar to .header("Content-Type", "application/x-www-form-urlencoded")
 USE URLENC WHEN:
 1) OAuth token APIs (most common)
