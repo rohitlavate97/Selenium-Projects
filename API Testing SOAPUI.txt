@@ -178,4 +178,4 @@ do same for deleteEmployee
 
 Go to newly added test step-->click on insert step-->Property transfer-->ok
 window will open-->click on +-->namePropertyTransfer(example name of value transfer)
-Under window select source ex: getEmployeeDetails, Property=Response, Path Language=Xpath
+Under window select source ex: getEmployeeDetails, Property=Response, Path Language=Xpath   -->To pull something from response

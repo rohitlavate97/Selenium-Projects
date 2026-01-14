@@ -1,0 +1,951 @@
+Selenium
+--------
+-Flavors of Selenium: Selenium Core, Selenium IDE(Support only Mozilla firefox),Selenium RC, Selenium WebDriver
+
+-What Selenium cannot solve alone
+CAPTCHA (you should not bypass it in real apps)
+True performance testing (use JMeter/LoadRunner)
+Full network mocking like Playwright (Selenium is improving but not same
+
+What “enterprise Selenium framework” typically includes (checklist)
+✅ POM + BaseTest + DriverFactory
+✅ ConfigReader (properties/yaml)
+✅ Wait & Actions wrapper methods
+✅ Retry + flaky test control (limited + monitored)
+✅ Logging + screenshots + reports
+✅ Parallel execution + ThreadLocal
+✅ CI pipeline + artifacts (reports/screenshots)
+✅ Grid/cloud execution support
+✅ Coding standards + folder structure + documentation
+
+Selenium WebDriver Architecture:
+--------------------------------
+Java test code acts as the client, and Selenium language bindings act as the client library.
+When the test is triggered, Selenium converts the WebDriver commands into HTTP requests formatted according to the W3C WebDriver protocol (earlier it was JSON Wire Protocol).
+These HTTP requests are sent to the browser driver (like ChromeDriver or GeckoDriver), which acts as the server.
+The browser driver interprets the request and communicates with the actual browser using browser-specific mechanisms to execute the command (click, type, navigate, etc.).
+After execution, the browser sends the result back to the browser driver, which converts it into an HTTP response and sends it back to the Selenium client library.
+Finally, the response is returned to the Java test code as success or an exception.
+
++----------------------------+
+|  Selenium Client Libraries |
+| (Java / Python / Ruby etc) |
++----------------------------+
+              |
+              |  WebDriver API Calls
+              v
++----------------------------+
+|        W3C Protocol        |
+|   (HTTP / JSON commands)   |
++----------------------------+
+              |
+              |  HTTP Request
+              v
++----------------------------+        HTTP        +----------------------+
+|       Browser Drivers      | <----------------> |    Real Browsers     |
+| (ChromeDriver, GeckoDriver)|                    | (Chrome, Firefox...) |
++----------------------------+                    +----------------------+
+              ^
+              |  HTTP Response (JSON)
+              |
++----------------------------+
+|  Selenium Client Libraries |
++----------------------------+
+              ^
+              |
++----------------------------+
+|        Java Test Code      |
++----------------------------+
+
+Java Selenium Architecture:
+---------------------------
+
+                    +------------------+
+                    |  SearchContext   |
+                    +------------------+
+                             ▲
+                             |
+                      +----------------+
+                      |   WebDriver    |
+                      +----------------+
+            ▲                 ▲                  ▲
+            |                 |                  |
++------------------+   -----------------   +------------------+
+| JavaScriptExecutor|        (interface)   |  TakesScreenshot |
++------------------+                       +------------------+
+
+            ---------------------------------------------------
+                         (implemented by)
+            ---------------------------------------------------
+
+                      +------------------+
+                      | RemoteWebDriver |
+                      +------------------+
+                               ▲
+                               |
+        -------------------------------------------------
+        |                    |                         |
++------------------+  +------------------+   +---------------------------+
+|   ChromeDriver   |  |  FirefoxDriver  |   | InternetExplorerDriver     |
++------------------+  +------------------+   +---------------------------+
+
+-SearchContext is the super most interface present in Selenium WebDriver. An interface called WebDriver extends SearchContext interface. A total 13 interfaces available in Selenium, which implemented by Supermost class
+RemoteWebDriver. RemoteWebDriver is again extended by few browser specific child classes such as ChromeDriver Class, FirefoxDriver etc
+-13 interfaces from selenium:
+SearchContext, WebDriver,TakesScreenshot,JavaScriptExecutor,WebElement,Alert,Action,ExpectedCondtions,TimeOuts
+TargetLocator,Options,OutputTye,Navigation
+Note : All above Interfaces and classes present in package "org.openqa.SELENIUM"
+       All these interfaces has abstract and non-static methods
+
+-Why we upcast the browser related child class to WebDriver, and not RemoteWebDriver class(as it is supermost class)
+ 
+
+--Methods present in interfaces:
+-SearchContext-->findElement,findElements
+-WebDriver --> close(),quit()
+               get(),getTitle(),getPageSource(),getCurrentUrl(),getWindowHandle(),getWindowHandles()
+			   manage(),navigate(),switchTo()
+-TakesScreenshot--> getScreenshotAs(args)
+-JavascriptExecutor--> executeScript(), executeAsyncScript()
+-WebElement--> clear(),click(),submit()  ----> these methods returns void
+               sendKeys() -->used to enter value
+               getAttribute(), getText(), getCssValue()  --> returns String
+			   getLocation() --> returns Point class, which has getX() and getY() methods(return int)
+			   getSize() ---> Returns Dimension class, , which has getHeight() and getWidth() methods
+			   getTagName() -->return tagName, no args required
+			   isDisplayed(),isEnabled(),isSelected() -->returns true or false
+Note: In order to use submit(), element should be present inside 'form' tag and element has attribute type="submit"(Both conditions should have satisfied)
+       getAttribute(String)--> if specified attribute is not found, it returns an empty string object,doesn't throw any exception. same for getText()
+
+-By using setProperty() method of System class, which takes two arguments in key-value fromat(pass predefined key by selenium)
+  System.setProperty("webdriver.chrome.driver","path");
+Note: For Firefox-->webdriver.gecko.driver
+       IllegalStateException --> When selenium tries to communicate with the browser without using relevant driver excecutables
+	   
+-Method chaining -->calling a method on a reference of either a class or an interface, whose instance is returned by the immediate previous method
+                    navigate().to()
+					navigate()-->present in webdriver interface, returns instance or reference of Navigation interface
+					to()-->used to enter url, present in Navigation interface
+					
+					driver.manage().window().maximize();
+					WebDriver.Options opt = driver.manage();
+                    WebDriver.Window win = opt.window();
+                    win.maximize();
+
+--Capturing Screenshot:
+    public static void takeScreenshot(WebDriver driver, String destPath) throws IOException {
+        TakesScreenshot ts = (TakesScreenshot) driver;               // cast WebDriver to TakesScreenshot
+        File src = ts.getScreenshotAs(OutputType.FILE);             // capture screenshot (temp file)
+        File dest = new File(destPath);                             // destination file
+        Files.copy(src.toPath(), dest.toPath(), StandardCopyOption.REPLACE_EXISTING); // copy to dest using static method from Files class or We can use FileUtils class copyFile(src,dest) method
+    }
+Note: Their is no such method which return the instance of TakesScreenshot interface, so we typecast our driver object to TakesScreenshot interface. and using that reference we call getScreenshotAs() method which store screenshot at temp location
+      We can use 
+	  Date d = new Date();
+	  String date = d.toString().replaceAll(":","_");
+	  File dest = new File("path"+date+".png");
+	  
+--Navigation in browser:
+navaigate() -->return instance of Navaigation interface
+  driver.navaigate().to(url)
+  driver.navigate().back()
+  driver.navaigate().forward()
+  driver.navigate().refresh()
+
+Aspect                          driver.get("url")                                  driver.navigate().to("url")
+--------------------------------------------------------------------------------------------------------------
+Belongs to                       WebDriver interface                                WebDriver.Navigation interface (via driver.navigate())
+Call style                       Direct, single call                                Method chaining through navigate()
+Primary use                      Open a URL (most common)                           Part of navigation operations (with back/forward/refresh)
+Accepted parameter type          String                                             String (and often java.net.URL overload in Java bindings)
+Functional behavior              Loads the URL                                      Loads the URL (effectively similar to get())
+Brower history                   not maintained                                     Maintains
+Wait                             waits till page loaded                             need to explicitly delay(Thread.sleep())
+
+--Mouse and KeyBoard Actions:Robot class in java.awt package using keyPress(),keyRelease() methods we press keys present in class called KeyEvent class which has static and final variables(int type represent key)
+  Robot r = new Robot();
+  WebElement uName = driver.findelement(By.xpath("id"));
+  uName.sendKeys("admin");
+  r.keyPress(KeyEvent.VK_CONTROL);
+  r.keyPress(KeyEvent.VK_A);
+  r.keyPress(KeyEvent.VK_DELETE);
+  r.keyRelease(KeyEvent.VK_CONTROL);
+  r.keyRelease(KeyEvent.VK_A);
+  r.keyRelease(KeyEvent.VK_DELETE);
+  
+  Mouse Movement: handled by mouseMove() of Robot class
+  
+--Identification of WebElement using Locator: Any element present on the WebPage is called WebElement
+  -------------------------------------------
+-Locators: To identify or locate web elements on web page using findElement() and findElements() -->these method starts traversing form root node of html tree and moment it finds the matching elements, it returns the address of the same element.
+---------
+8 types of locator: id(fastest),name,tagName,className,linkText(),partialLinkText(),xpath(),cssSelector()
+
+Factory methods: A method which returns the instance of same class in which it is present is called Factory method. e.g--> locators
+Note: If the specified locators matches none of the element, then findElement() throws an exception called "NoSuchElementException".
+      Multiple elements on web page can have same tag or belong to same class --> so className and tagName locator is not used mostly
+	  linkText(), partialLinkText()--> used with 'a' tag, first used when text of link is constant, and second when link text partially changes
+	  
+-cssSelector:
+-------------
+CSS Selector quick summary (Selenium)
+
+#id                 -> element with id
+.class              -> element with class
+tag                 -> by tag name
+tag.class           -> tag with class
+tag#id              -> tag with id
+
+tag[attr='value']   -> exact attribute match
+tag[attr*='val']    -> attribute contains
+tag[attr^='val']    -> attribute starts with
+tag[attr$='val']    -> attribute ends with
+
+A B                 -> B inside A (descendant)
+A > B               -> B direct child of A
+A + B               -> B immediately after A (adjacent sibling)
+A ~ B               -> B after A (general sibling)
+
+:nth-child(n)       -> nth child (counts all child nodes)
+:nth-of-type(n)     -> nth element of same tag type
+
+Examples:
+#username
+input[name='email']
+button.btn.primary
+form#login input[type='password']
+div[id^
+::contentReference[oaicite:0]{index=0}
+Note: cssSelector doesn't support backward traversing,text and indexing
+
+-xpath: path of element on html tree.
+------
+XPath quick summary (Selenium)
+Absolute xpath: refers to the path of element right from root node to destination element, we use '/' while writing xpath
+Relative xpath: path of element any node(any descendent),we use '//' while writing xpath
+
+Basic:
+ //tag                    -> all matching tags anywhere
+ //*                       -> any tag
+ //tag[@attr='value']      -> attribute equals
+ //tag[text()='value']     -> exact text match
+ //tag[contains(text(),'x')]-> text contains
+
+Attribute contains/starts-with:
+ //tag[contains(@attr,'x')]    -> attribute contains
+ //tag[starts-with(@attr,'x')] -> attribute starts with
+
+Indexing:
+ (//tag)[1]               -> first match (1-based index)
+ //tag[@x='y'][2]          -> 2nd matching sibling at same level
+
+Logical operators:
+ //tag[@a='1' and @b='2']  -> AND
+ //tag[@a='1' or  @b='2']  -> OR
+ //tag[not(@disabled)]     -> NOT
+
+Axes (very useful):
+ //a/b                     -> direct child b of a
+ //a//b                    -> any descendant b of a
+ //tag/parent::p           -> parent
+ //tag/ancestor::div       -> any ancestor div
+ //tag/child::span         -> direct child span
+ //tag/following-sibling::td -> following sibling td
+ //tag/preceding-sibling::td -> preceding sibling td
+
+Common stable patterns:
+ //*[@id='username']
+ //input[@name='email']
+ //button[contains(@class,'submit')]
+ //label[.='Email']/following-sibling::input
+ //div[@data-testid='login-button']
+
+Notes:
+ - XPath index starts at 1.
+ - Use parentheses for global indexing: (//div[@class='x'])[2]
+ - we can join xpath using | (pipeline operator), to identify more than one element in different node of html tree
+ - Group index in xpath --> Retrieving one element from a group of matching elements by using index.
+
+-Advanced xpath:
+-starts-with() --> replacement for conatins() -->//[starts-with(text(),'actiTime')]
+contains()     -> matches if the text/attribute contains the substring anywhere
+starts-with()  -> matches only if the text/attribute begins with the substring
+
+Independent & Dependent XPath
+-----------------------------
+Concept:
+- Used to build stable locators when:
+  1) A unique/identifiable element is nearby (Independent / Anchor)
+  2) The element you want is related to it (Dependent / Target)
+- Find the independent element first, then move to the dependent element using XPath axes:
+  following-sibling, preceding-sibling, ancestor, descendant, etc.
+
+Independent XPath (Anchor):
+- Stable reference element (ex: name/label that rarely changes)
+  //td[text()='John']
+
+Dependent XPath (Target):
+- Locate target element relative to the anchor
+
+Example: Checkbox for a specific row
+- Independent: cell containing the name
+  //td[text()='John']
+
+- Dependent: checkbox in the same row (relative to the name cell)
+  //td[text()='John']/preceding-sibling::td//input[@type='checkbox']
+
+When ".." is used in XPath:
+
+- ".." means parent of the current node.
+
+Examples:
+1) Child -> Parent
+   //input[@id='username']/..
+
+2) Move up multiple levels
+   //input[@id='username']/../../..
+
+3) Go up, then down to related element
+   //label[text()='Username']/../input
+
+4) Independent -> parent row -> target element in same row
+   //td[text()='John']/..//input[@type='checkbox']
+
+Note:
+- /.. is same as /parent::*
+
+-XPath last() 
+
+Meaning:
+- last() returns the position of the last node in the current node set.
+- Used to select the last (or relative-to-last) matching element.
+
+Syntax:
+  (//tag[condition])[last()]
+  (//tag[condition])[last()-1]   -> second last
+  (//tag[condition])[position() < last()] -> all except last
+
+Examples:
+1) Last row of a table
+   (//table/tbody/tr)[last()]
+
+2) Last button on the page
+   (//button)[last()]
+
+3) Last checkbox in a list
+   (//input[@type='checkbox'])[last()]  -->braces ie first internally it executes xpath first then sotre the result in xpath array, then using last() function we retrieve last element present in xpath array.
+
+4) Second last element
+   (//a[contains(text(),'Edit')])[last()-1]
+
+Note:
+- last() works with the CURRENT matched set (after applying your conditions).
+- XPath index starts at 1.
+
+-XPath position()
+
+Meaning:
+- position() returns the index (1-based) of the current node within the selected node set.
+- Used for selecting elements by order, ranges, or patterns (odd/even).
+
+Common uses:
+
+1) Select a specific index (same effect as [n])
+   (//button)[position()=3]
+
+2) Select first 3 elements
+   (//tr)[position()<=3]
+
+3) Select elements from 2 to 5
+   (//tr)[position()>=2 and position()<=5]
+
+4) Select all except first
+   (//li)[position()>1]
+
+5) Select odd/even elements
+   (//li)[position() mod 2 = 1]   -> odd
+   (//li)[position() mod 2 = 0]   -> even
+
+Notes:
+- position() is 1-based (first element is position()=1).
+- It works on the CURRENT node set produced by your XPath.
+- [3] is shorthand for [position()=3].
+
+-XPath Axes
+
+Meaning:
+- Axes define the direction to navigate in the DOM relative to the current node.
+
+Most-used axes with syntax + example:
+
+1) child::        -> direct children -->immediate child element, represented with /(used in deriving absolute xpath)
+   //div[@id='box']/child::input
+
+2) descendant::   -> any level inside (children, grand-children...) --> traverses any child, using //(relative xpath)
+   //div[@id='box']/descendant::a
+
+3) parent::       -> direct parent -->traverses to immediate parent element --> /.. (shortcut)
+   //input[@id='username']/parent::div
+
+4) ancestor::     -> any parent up the tree
+   //input[@id='username']/ancestor::form
+
+5) following-sibling:: -> next siblings (same parent) after current node (downward direction)
+   //td[text()='John']/following-sibling::td
+
+6) preceding-sibling:: -> previous siblings (same parent) before current node (upward direction)
+   //td[text()='John']/preceding-sibling::td
+
+7) following::    -> all nodes after current node in document order
+   //h2[text()='Users']/following::a[1]
+
+8) preceding::    -> all nodes before current node in document order
+   //input[@id='pwd']/preceding::label[1]
+
+9) self::         -> current node itself
+   //button[@id='save']/self::button
+
+10) descendant-or-self:: -> current node + all descendants
+    //div[@id='menu']/descendant-or-self::a
+
+Quick notes:
+- sibling axes stay on the same level (same parent).
+- following/preceding can cross levels (broader than siblings).
+- Use axes for Independent(Anchor) + Dependent(Target) XPath.
+
+--Why CssSelector is faster than xpath-->CssSelector traverse in html tree only in the downward direction, but xpath traverse in both direction.
+--Priority of using locators: id>name>linktext>cssSelector>xpath
+--Functions of xpath: contains(),text(),last(),position(),starts-with(),ends-with()
+  Notes: check the starts-with() work with which version of selenium
+  
+--activeElement() in WebElement: return address of active element on the webpage, if not it throws NoSuchElementException
+
+--driver.findElement(By.xpath("id")).sendKeys(Keys.CONTROL+"a"+Keys.DELETE);  //delete value if no space in text entered
+--driver.findElement(By.xpath("id")).sendKeys(Keys.CONTROL+"a");
+  driver.findElement(By.xpath("id")).sendKeys(Keys.DELETE);
+--clear()
+
+--JavaScriptExecutor: --> executeScript(),executeAsyncScript()
+  ------------------
+JavascriptExecutor js = (JavascriptExecutor) driver;
+js.executeScript("arguments[0].scrollIntoView(true);", ele);
+js.executeScript("window.scrollBy(0,500)");
+WebElement username = driver.findElement(By.id("username"));
+j.executeScript("arguments[0].setAttribute('style','background: green;border: solid 2px red');", username);  //Highlighting web element
+username.sendKeys("venkat");
+WebElement name = driver.findElement(By.xpath("//input[@name='name']"));
+WebElement inter = driver.findElement(By.xpath("//button[@aria-controls='collapseFive']"));
+WebElement login = driver.findElement(By.xpath("//input[@type='submit']"));
+js.executeScript("arguments[0].click()", inter);
+js.executeScript("arguments[0].setAttribute('style','background-color: yellow;')", name);
+js.executeScript("arguments[0].setAttribute('value','rohit')", name);
+js.executeScript("document.getElementById('un123').value='admin'");
+
+Note: If we try to enter text using sendKeys() in disabled box or greyed out, it give InvalidElementsStateException, so we will use JavaScriptExecutor.
+
+--Handling Frames:
+  ---------------
+-WebPage present inside another webpage called embedded webpage, for this developer use 'iframe' tag. In order to perform operation, we have to first switch the control to frame.
+  driver.switchTo().frame(arg);
+-frame() is overloaded method which accepts--> frame(index)  --> return type of frame() is WebDriver as frame is nothing but html page.
+                                               frame(id)
+											   frame(name)
+											   frame(WebElement)
+-driver.switchTo().defaultContent() --> it will take you to main page
+-driver.switchTo().parentFrame() --> it will take you to the immediate parent frame
+Note: NoSuchElementException, if specified frame is not present.
+      return type of frame(),parentframe(),defaultContent() is WebDriver as frame is html content, and page is always referred by driver object in selenium.
+	  return type of window() is WebDriver, as this method is used to swith to a particular browser window, a browser window is nothing but a webpage.
+	  NoSuchFrameException  --> if frame doen't exist or id/name/index doesn't match.
+	  
+--Actions class: (package org.openqa.Selenium.interactions) --> Used to handle mouse and keyboard related operations
+  --------------
+  It has non-static methods, to access those we require object of the Action class(pass driver object as argument-->to instruct to perform action on particular page)
+  Methods: moveToElement(element),contextClick(element),dragAndDrop(src_element,dest_element),doubleClick(element),build()
+  Note: build() is used to combine multiple individual actions in one single composite action
+        perform() is need to call explicitly, otherwise Actions Class methods will not perform any action 
+  Actions actions = new Actions(driver);
+  actions.moveToElement(ele).perform();
+  actions.contextClick(link).perform();
+  Robot r = new Robot();
+  r.keyPress(KeyEvent.VK_W);  //for opening link in new page
+  r.keyRelease(KeyEvent.VK_W);
+  //actions.moveToElement(areaOfExpertise).moveToElement(cloudApp).click().perform();
+  
+--Handling popup:
+  --------------
+ -JavaScript popup
+ -Hidden division popup
+ -File Upload/download popoup
+ -Child browser popup
+ -Window popup
+
+-1)JavaScript popup: Alert pop up, Confirmation pop up, prompt pop up
+ ----------------
+ -Alert pop up -->can't inspect,can't move,white color background with black color font, Only 'OK' button
+                  To handle --> Alert alert = driver.switchTo().alert();
+				  getText(),accept()/dismiss()
+ -Confirmation pop up -->can't inspect,can't move,white color background with black font, have 'Ok','Cancel' button
+                         To handle --> Alert alert = driver.switchTo().alert();
+						 getText(),sendKeys(),accept(),dismiss()
+ Note: NoAlertPresentException: when alert is physically not available on page, and we try to swith or perform action 
+       UnhandledAlertException: when we perform action on webpage, without handling the alert popup
+	   
+-2)Hidden Division popup: As soon as we navigate to page, and perform action this popup appears eg-->Calendar pop up/geo location/notification
+ ------------------------
+  To handle it -->driver.findElement(By.xpath("....")).click()
+  or 
+  we use ChromeOptions
+  ChromeOptions options = new ChromeOptions()
+  options.addArguments("--disable-notifications");
+  options.addArguments("--disable-geolocation");
+  options.addArguments("--ignore-certificate-errors");
+
+(Jump directly to 778 while revising)
+========================================
+CHROMEOPTIONS – SELENIUM NOTES (ONE SNAP)
+========================================
+WHAT IS CHROMEOPTIONS?
+---------------------
+ChromeOptions is a Selenium class used to customize how the Chrome browser is launched.
+It helps in:
+- Running browser in headless mode
+- Disabling notifications
+- Running in incognito
+- Setting download preferences
+- Handling SSL errors
+- Adding extensions
+- Passing Chrome arguments
+----------------------------------------
+BASIC SYNTAX
+----------------------------------------
+ChromeOptions options = new ChromeOptions();
+WebDriver driver = new ChromeDriver(options);
+----------------------------------------
+COMMONLY USED OPTIONS (IMPORTANT)
+----------------------------------------
+1) HEADLESS MODE
+----------------
+Runs browser without UI (used in CI/CD)
+options.addArguments("--headless=new");
+----------------------------------------
+2) MAXIMIZE BROWSER
+-------------------
+options.addArguments("--start-maximized");
+----------------------------------------
+3) INCOGNITO MODE
+-----------------
+options.addArguments("--incognito");
+----------------------------------------
+4) DISABLE NOTIFICATIONS
+------------------------
+options.addArguments("--disable-notifications");
+----------------------------------------
+5) DISABLE INFOBARS
+-------------------
+options.addArguments("--disable-infobars");
+----------------------------------------
+6) DISABLE EXTENSIONS
+---------------------
+options.addArguments("--disable-extensions");
+----------------------------------------
+7) IGNORE SSL CERTIFICATE ERRORS
+--------------------------------
+options.addArguments("--ignore-certificate-errors");
+----------------------------------------
+8) DISABLE POPUPS
+-----------------
+options.addArguments("--disable-popup-blocking");
+----------------------------------------
+SETTING DOWNLOAD PATH
+----------------------------------------
+Map<String, Object> prefs = new HashMap<>();
+prefs.put("download.default_directory", "D:\\Downloads");
+prefs.put("download.prompt_for_download", false);
+
+options.setExperimentalOption("prefs", prefs);
+----------------------------------------
+ADDING CHROME EXTENSION
+----------------------------------------
+options.addExtensions(
+    new File("D:\\Extensions\\extension.crx")
+);
+----------------------------------------
+COMPLETE WORKING EXAMPLE
+----------------------------------------
+ChromeOptions options = new ChromeOptions();
+options.addArguments("--start-maximized");
+options.addArguments("--incognito");
+options.addArguments("--disable-notifications");
+
+WebDriver driver = new ChromeDriver(options);
+driver.get("https://www.google.com");
+----------------------------------------
+CHROMEOPTIONS vs DESIREDCAPABILITIES
+----------------------------------------
+- ChromeOptions is browser specific
+- DesiredCapabilities is deprecated
+- ChromeOptions internally handles capabilities
+----------------------------------------
+INTERVIEW ONE-LINER
+----------------------------------------
+ChromeOptions is used to customize Chrome browser behavior by passing arguments, preferences, and experimental options.
+----------------------------------------
+WHEN TO USE CHROMEOPTIONS
+----------------------------------------
+- Headless execution
+- CI/CD pipelines
+- Browser customization
+- Performance optimization
+- Handling browser popups
+========================================
+========================================
+DESIREDCAPABILITIES – WORKING EXAMPLE
+========================================
+NOTE:
+-----
+DesiredCapabilities is DEPRECATED in Selenium 4,but still important for interviews and legacy projects.
+----------------------------------------
+MOST COMMONLY USED METHODS
+----------------------------------------
+1) setBrowserName()
+2) setPlatform()
+3) setAcceptInsecureCerts()
+4) setCapability()
+----------------------------------------
+EXAMPLE 1: BASIC CHROME DESIREDCAPABILITIES
+----------------------------------------
+DesiredCapabilities caps = DesiredCapabilities.chrome();
+
+caps.setBrowserName("chrome");
+caps.setAcceptInsecureCerts(true);
+
+WebDriver driver = new ChromeDriver(caps);
+driver.get("https://www.google.com");
+----------------------------------------
+EXAMPLE 2: DESIREDCAPABILITIES WITH SELENIUM GRID
+----------------------------------------
+
+import java.net.URL;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.remote.DesiredCapabilities;
+import org.openqa.selenium.remote.RemoteWebDriver;
+
+public class GridExample {
+
+    public static void main(String[] args) throws Exception {
+
+        DesiredCapabilities caps = new DesiredCapabilities();
+
+        caps.setBrowserName("chrome");
+        caps.setPlatform(org.openqa.selenium.Platform.WINDOWS);
+        caps.setAcceptInsecureCerts(true);
+
+        WebDriver driver = new RemoteWebDriver(
+                new URL("http://localhost:4444/wd/hub"),
+                caps
+        );
+
+        driver.get("https://www.google.com");
+        driver.quit();
+    }
+}
+----------------------------------------
+EXAMPLE 3: DESIREDCAPABILITIES + CHROMEOPTIONS
+----------------------------------------
+(MOST COMMON INTERVIEW SCENARIO)
+
+ChromeOptions options = new ChromeOptions();
+options.addArguments("--disable-notifications");
+
+DesiredCapabilities caps = DesiredCapabilities.chrome();
+caps.setCapability(ChromeOptions.CAPABILITY, options);
+caps.setAcceptInsecureCerts(true);
+
+WebDriver driver = new ChromeDriver(options);
+driver.get("https://www.google.com");
+----------------------------------------
+IMPORTANT COMMON METHODS EXPLAINED
+----------------------------------------
+setBrowserName("chrome")→ Tells Selenium which browser to launch
+
+setPlatform(Platform.WINDOWS)→ Tells Selenium OS for Grid execution
+
+setAcceptInsecureCerts(true)→ Accepts SSL / HTTPS certificate issues
+
+setCapability(key, value)→ Adds custom browser or grid capabilities
+----------------------------------------
+WHY DESIREDCAPABILITIES IS DEPRECATED
+----------------------------------------
+- Selenium 4 uses browser-specific Options
+- ChromeOptions, FirefoxOptions handle capabilities
+- DesiredCapabilities is kept only for backward compatibility
+----------------------------------------
+INTERVIEW ONE-LINER (MEMORIZE)
+----------------------------------------
+DesiredCapabilities was used to define browser and platform properties in Selenium 3.In Selenium 4, it is deprecated and replaced by browser-specific Options like ChromeOptions.
+========================================
+========================================
+METHODS IN DESIREDCAPABILITIES (ONE SNAP)
+========================================
+NOTE:
+-----
+DesiredCapabilities is DEPRECATED in Selenium 4,but still asked in interviews for legacy knowledge.
+----------------------------------------
+MOST COMMONLY USED METHODS
+----------------------------------------
+1) setBrowserName(String browserName)
+-------------------------------------
+Sets the browser type.
+Example:caps.setBrowserName("chrome");
+----------------------------------------
+2) getBrowserName()
+-------------------
+Returns the browser name set in capabilities.
+Example:String browser = caps.getBrowserName();
+----------------------------------------
+3) setPlatform(Platform platform)
+---------------------------------
+Sets the operating system for execution(mainly used in Selenium Grid).
+Example:caps.setPlatform(Platform.WINDOWS);
+----------------------------------------
+4) getPlatform()
+----------------
+Returns the platform set.
+Example:Platform p = caps.getPlatform();
+----------------------------------------
+5) setAcceptInsecureCerts(boolean value)
+----------------------------------------
+Accepts insecure SSL certificates.
+Example:caps.setAcceptInsecureCerts(true);
+----------------------------------------
+6) isAcceptInsecureCerts()
+--------------------------
+Returns whether insecure certs are accepted.
+Example:boolean flag = caps.isAcceptInsecureCerts();
+----------------------------------------
+7) setCapability(String key, Object value)
+------------------------------------------
+Adds custom capability.
+Example:caps.setCapability("browserVersion", "latest");
+----------------------------------------
+8) getCapability(String key)
+----------------------------
+Fetches a capability value.
+Example:Object version = caps.getCapability("browserVersion");
+----------------------------------------
+9) asMap()
+----------
+Returns all capabilities as a Map.
+Example:Map<String, Object> map = caps.asMap();
+----------------------------------------
+10) merge(Capabilities extraCaps)
+---------------------------------
+Merges one capability object into another.
+Example:caps.merge(otherCaps);
+----------------------------------------
+COMMONLY USED STATIC METHODS
+----------------------------------------
+1) DesiredCapabilities.chrome()
+--------------------------------
+Creates Chrome capabilities.
+Example:DesiredCapabilities caps = DesiredCapabilities.chrome();
+----------------------------------------
+2) DesiredCapabilities.firefox()
+---------------------------------
+Creates Firefox capabilities.
+----------------------------------------
+3) DesiredCapabilities.edge()
+------------------------------
+Creates Edge capabilities.
+----------------------------------------
+4) DesiredCapabilities.safari()
+--------------------------------
+Creates Safari capabilities.
+----------------------------------------
+----------------------------------------
+IMPORTANT INTERVIEW POINTS
+----------------------------------------
+• DesiredCapabilities was heavily used in Selenium 3
+• Mainly used with RemoteWebDriver and Selenium Grid
+• Replaced by ChromeOptions / FirefoxOptions in Selenium 4
+• Options internally use Capabilities concept
+
+----------------------------------------
+INTERVIEW ONE-LINER (MEMORIZE)
+----------------------------------------
+DesiredCapabilities provides methods to set browser name, platform, SSL handling, and custom capabilities, but it is deprecated in Selenium 4 and replaced by browser-specific Options classes.
+========================================
+
+--Resize browser window
+-Using Dimension
+  Dimension dimension = new Dimension(int,int);
+  driver.manage().window().setSize();
+-Using DesiredCapabilities class
+  ChromeOptions options = new ChromeOptions();
+  options.addArguments("window-size=int,int");
+  DesiredCapabilities cap = DesiredCapabilities.chrome();
+  cap.setCapability(ChromeOptions.CAPABILITY,options);
+  WebDriver driver = new ChromeDriver(cap);
+  
+--To handle geo location and notification in Firefox browser:
+  DesiredCapabilities cap = DesiredCapabilities.firefox();
+  FirefoxProfile profile = new FirefoxProfile();
+  profile.setPreference("geo.enabled",false);
+  cap.setCapability(FirefoxDriver.PROFILE,profile);
+  WebDriver driver = new FirefoxDriver(cap);
+  
+3)File Upload Popup: Uploading file from local to destination server
+ ------------------
+ -To handle--> Third party tool(like AutoIT)
+               sendKeys()  --> can use only if html source code of upload button/browse button have attribute called TYPE = "FILE"
+			   Using Robot class (don't tell in interview)
+			   
+4)File Download Popup (Open with / Save File):
+ --------------------------------------------
+Problem:
+- This popup is a browser/OS dialog (not HTML).
+- Selenium cannot inspect or control it directly.
+Solution:
+- Configure browser to auto-download / auto-save using:
+  1) ChromeOptions (Chrome)
+  2) FirefoxProfile + FirefoxOptions (Firefox)
+----------------------------------------
+CHROME (Java) - ChromeOptions
+----------------------------------------
+- Set download folder
+- Disable download prompt
+- Allow automatic downloads
+- Optional: force PDF to download instead of opening in browser
+Code:
+Map<String, Object> prefs = new HashMap<>();
+prefs.put("download.default_directory", "C:\\Downloads");
+prefs.put("download.prompt_for_download", false);
+prefs.put("download.directory_upgrade", true);
+prefs.put("safebrowsing.enabled", true);
+prefs.put("profile.default_content_setting_values.automatic_downloads", 1);
+// Optional (PDF):
+prefs.put("plugins.always_open_pdf_externally", true);
+
+ChromeOptions options = new ChromeOptions();
+options.setExperimentalOption("prefs", prefs);
+
+WebDriver driver = new ChromeDriver(options);
+----------------------------------------
+FIREFOX (Java) - FirefoxProfile / FirefoxOptions
+----------------------------------------
+- Force "Save File" behavior
+- Set download folder
+- Skip “Open with/Save” dialog by providing MIME types
+Code:
+FirefoxProfile profile = new FirefoxProfile();
+profile.setPreference("browser.download.folderList", 2);          // 2 = custom location
+profile.setPreference("browser.download.dir", "C:\\Downloads");
+profile.setPreference("browser.download.useDownloadDir", true);
+profile.setPreference("browser.download.manager.showWhenStarting", false);
+profile.setPreference("pdfjs.disabled", true);                   // Optional: disable built-in PDF viewer
+
+// IMPORTANT: set MIME types you want to auto-save (comma-separated)
+profile.setPreference("browser.helperApps.neverAsk.saveToDisk",
+    "application/pdf,application/vnd.ms-excel,application/octet-stream,text/csv,application/zip");
+
+FirefoxOptions options = new FirefoxOptions();
+options.setProfile(profile);
+
+WebDriver driver = new FirefoxDriver(options);
+----------------------------------------
+NOTES / INTERVIEW POINTS
+----------------------------------------
+- “neverAsk.saveToDisk” MUST match the server’s actual Content-Type (MIME).
+- If MIME type is unknown, include "application/octet-stream".
+- This approach avoids the uninspectable popup entirely.
+
+5)child browser popup/multiple browser windwos/popup: -->We can move, inspect it, colorful,minimize or maximize
+  ---------------------------------------------------------
+  -Handle multiple browser windows using getWindowHandles() of WebDriver interface --> returns Set of String (ie window handle id)
+  -To perform action we have to switch to particular window. ---> driver.switchTo().window(String winodw_id)
+  -NoSuchSessionException--> when we are trying to switch to a window by using windwowHandle id of browser window and all the windows are already been closed by quit()/ also if window hadle id does not match while trying to switch
+  -getWindowHandle() --> return the window handle id of current browser window.
+  
+6)Window popup:If it doesn't belong to other category then it is window popup --> some of them can move,can't inspect -->AUTO IT to handle it
+  ------------
+--Handling WebTables:
+  ------------------
+<table id="employeeTable" border="1">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Role</th>
+            <th>Salary</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        <tr>
+            <td>101</td>
+            <td>Rahul</td>
+            <td>QA</td>
+            <td>50000</td>
+            <td><button>Edit</button></td>
+        </tr>
+        <tr>
+            <td>102</td>
+            <td>Priya</td>
+            <td>Developer</td>
+            <td>70000</td>
+            <td><button>Edit</button></td>
+        </tr>
+        <tr>
+            <td>103</td>
+            <td>Amit</td>
+            <td>Manager</td>
+            <td>90000</td>
+            <td><button>Edit</button></td>
+        </tr>
+    </tbody>
+</table>
+
+public class WebTableHandler {
+
+    // Print all rows (ID, Name, Role, Salary)
+    public static void printAllEmployees(WebDriver driver) {
+        List<WebElement> rows = driver.findElements(By.cssSelector("#employeeTable tbody tr"));
+
+        for (WebElement row : rows) {
+            List<WebElement> cols = row.findElements(By.tagName("td"));
+
+            String id = cols.get(0).getText();
+            String name = cols.get(1).getText();
+            String role = cols.get(2).getText();
+            String salary = cols.get(3).getText();
+
+            System.out.println(id + " | " + name + " | " + role + " | " + salary);
+        }
+    }
+
+    // Get salary by employee name
+    public static String getSalaryByName(WebDriver driver, String empName) {
+        String xpath = "//table[@id='employeeTable']//tbody//tr[td[2][normalize-space()='" + empName + "']]/td[4]";
+        return driver.findElement(By.xpath(xpath)).getText();
+    }
+
+    // Click Edit button by employee ID
+    public static void clickEditById(WebDriver driver, String empId) {
+        String xpath = "//table[@id='employeeTable']//tbody//tr[td[1][normalize-space()='" + empId + "']]//button[normalize-space()='Edit']";
+        driver.findElement(By.xpath(xpath)).click();
+    }
+
+    // Click Edit button by employee Name
+    public static void clickEditByName(WebDriver driver, String empName) {
+        String xpath = "//table[@id='employeeTable']//tbody//tr[td[2][normalize-space()='" + empName + "']]//button[normalize-space()='Edit']";
+        driver.findElement(By.xpath(xpath)).click();
+    }
+}
+
+--Handling AutoSuggestions: use xpath with contains() and then findElements, then loop all element filter using if statement, then click only which matches expected value
+  -------------------------
+  
+--Handle List box/Dropdown:
+  ------------------------
