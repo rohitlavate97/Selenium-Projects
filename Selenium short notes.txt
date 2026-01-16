@@ -2056,6 +2056,14 @@ public class GridTest {
 | Grid UI       | http://localhost:4444/grid/console                         | http://localhost:4444/ui/                              |
 */
 
+| Feature           | Selenium 3                           | Selenium 4                    |
+| ----------------- | ------------------------------------ | ----------------------------- |
+| Hub & Node        | Separate processes                   | Can run in standalone mode    |
+| Hub UI            | `http://localhost:4444/grid/console` | `http://localhost:4444/ui/`   |
+| Starting Node     | `-role node -hub <hub URL>`          | `node --detect-drivers`       |
+| Browser detection | Manual / specified                   | Auto-detect installed drivers |
+
+
 /*
 7️⃣ Best Practices
 - Always use RemoteWebDriver for Grid tests
@@ -2075,3 +2083,214 @@ public class GridTest {
 - Benefits = Faster execution, multiple browsers/OS
 - Check nodes = http://localhost:4444/ui/
 */
+
+Note: If not run try following method
+- java -jar selenium-server-4.39.0.jar node --detect-drivers true
+- http://localhost:4444/ui/
+ You should see: The Hub at the top
+                 Your Node listed
+				 Browsers available on the Node (Chrome, Firefox, Edge)
+-Optional: Run Multiple Nodes
+java -jar selenium-server-4.39.0.jar node --detect-drivers true --port 5556
+java -jar selenium-server-4.39.0.jar node --detect-drivers true --port 5557
+
+Note: If memory issues
+cd "D:\Testing Prep\Selenium Practice\Jars"
+java -Xms256m -Xmx1024m -jar selenium-server-4.39.0.jar hub
+http://localhost:4444/ui/
+#start NODE in new cmd
+java -Xms128m -Xmx512m -jar selenium-server-4.39.0.jar node --detect-drivers true --hub http://localhost:4444
+
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
+import org.openqa.selenium.firefox.FirefoxOptions;
+import org.openqa.selenium.edge.EdgeOptions;
+import org.openqa.selenium.remote.RemoteWebDriver;
+import org.testng.annotations.*;
+
+import java.net.URL;
+
+public class GridTest {
+
+    WebDriver driver;
+
+    @Parameters("browser")
+    @BeforeMethod
+    public void setup(String browser) throws Exception {
+
+        if (browser.equalsIgnoreCase("chrome")) {
+            ChromeOptions options = new ChromeOptions();
+            driver = new RemoteWebDriver(
+                    new URL("http://localhost:4444/wd/hub"), options);
+        }
+        else if (browser.equalsIgnoreCase("firefox")) {
+            FirefoxOptions options = new FirefoxOptions();
+            driver = new RemoteWebDriver(
+                    new URL("http://localhost:4444/wd/hub"), options);
+        }
+        else if (browser.equalsIgnoreCase("edge")) {
+            EdgeOptions options = new EdgeOptions();
+            driver = new RemoteWebDriver(
+                    new URL("http://localhost:4444/wd/hub"), options);
+        }
+    }
+
+    @Test
+    public void openGoogle() {
+        driver.get("https://www.google.com");
+        System.out.println("Title: " + driver.getTitle());
+    }
+
+    @AfterMethod
+    public void tearDown() {
+        driver.quit();
+    }
+}
+
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd" >
+<suite name="Grid Suite" parallel="tests" thread-count="3">
+
+    <test name="Chrome Test">
+        <parameter name="browser" value="chrome"/>
+        <classes>
+            <class name="GridTest"/>
+        </classes>
+    </test>
+
+    <test name="Firefox Test">
+        <parameter name="browser" value="firefox"/>
+        <classes>
+            <class name="GridTest"/>
+        </classes>
+    </test>
+
+    <test name="Edge Test">
+        <parameter name="browser" value="edge"/>
+        <classes>
+            <class name="GridTest"/>
+        </classes>
+    </test>
+
+</suite>
+
+-Run as TestNG Suite
+
+package gridTests;
+
+import java.net.MalformedURLException;
+import java.net.URL;
+
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.remote.DesiredCapabilities;
+import org.openqa.selenium.remote.RemoteWebDriver;
+import org.testng.annotations.Parameters;
+import org.testng.annotations.Test;
+
+public class SeleniumGridDemo {
+	@Test
+	@Parameters({"node","browser"})
+	public void LaunchBrowsers(String node, String browser) throws MalformedURLException {
+		System.out.println(browser);
+		URL whichSystem = new URL(node);
+		DesiredCapabilities whichBrowser = new DesiredCapabilities();
+		whichBrowser.setBrowserName(browser);
+		WebDriver driver = new RemoteWebDriver(whichSystem,whichBrowser);
+		System.out.println("Launched :"+browser);
+		driver.quit();
+	}
+}
+
+<suite name="Grid Suite" parallel="tests" thread-count="3">
+
+    <parameter name="node" value="http://localhost:4444/wd/hub"/>
+
+    <test name="Chrome Test">
+        <parameter name="browser" value="chrome"/>
+        <classes>
+            <class name="gridTests.SeleniumGridDemo"/>
+        </classes>
+    </test>
+
+    <test name="Firefox Test">
+        <parameter name="browser" value="firefox"/>
+        <classes>
+            <class name="gridTests.SeleniumGridDemo"/>
+        </classes>
+    </test>
+
+    <test name="Edge Test">
+        <parameter name="browser" value="MicrosoftEdge"/>
+        <classes>
+            <class name="gridTests.SeleniumGridDemo"/>
+        </classes>
+    </test>
+
+</suite>
+
+--Selenium framework: Framework is set of instructions or guidelines which should be followed by automation engineers.
+  ==================
+  1)Automation Framework Design
+  2)Automation Framework Implementaion
+  3)Automation Framework Execution
+  
+-Which Framework you developed/Implemented in your project?
+ ----------------------------------------------------------
+ Hybrid driven framework -->combination of POM driven framework + TestNG framework + Data Driven framework + Method driven framework
+ -POM Driven framework: created POM classes for all pages (eg-> 20 pages, 20 POM in single package), declared all elements on page using @FindBy, and initialize elements using
+                        PageFactory.initElements(driver,this) -->this is current class object. When object of this pom class created from another class, it will invoke the constructor
+						and initialize all the elements which are declared in the pom class. Once elements declared and initialized, we utilize all elements by creating respecitve 
+						setter methods.
+ -TestNG framework: Based on number of test cases, we will create that many number of TestNg classes. In test method, we create the object of respective POM class and call relevant
+                    method of POM class (Total 678 regression test cases)
+ -Data Driven Framework: Executing the same scripts with multiple set of data(data parameterization)-->Excel file to get data and utilize in script(apache poi)
+ -Modular Driven Framework: Module wise execution of test scripts, we tag test scripts to some group based on module name
+ -Method Driven Framework: A Method Driven Framework is a test automation design approach where reusable generic methods are created to perform common operations such as:Reading data from Excel,Reading values from config files,Performing common Selenium actions (click, sendKeys, waits, alerts, etc.)
+                           ,Test cases call these methods instead of writing logic repeatedly.
+							| Area        | Examples                       |
+							| ----------- | ------------------------------ |
+							| Config File | `getProperty("url")`           |
+							| Excel       | `getCellData(sheet, row, col)` |
+							| Browser     | `launchBrowser()`              |
+							| Elements    | `clickElement()`, `sendText()` |
+							| Waits       | `waitForElement()`             |
+							| Utilities   | Screenshot, alerts, windows    |
+
+-Project Structure:
+AutomationProject
+│
+├── src
+│   ├── generic
+│   │   ├── BaseTest.java
+│   │   ├── IAutoConstant.java
+│   │   └── Lib.java
+│   │
+│   ├── pompages
+│   │   └── LoginPage.java
+│   │
+│   └── scripts
+│       └── TestLogin.java
+│
+├── driver
+│   ├── chromedriver.exe
+│   └── geckodriver.exe
+│
+├── testdata
+│   ├── data.xlsx
+│   └── config.properties
+│
+├── testng.xml
+│
+├── jar
+│   └── (external jars if not using Maven)
+│
+├── reports
+│   └── TestNG_Report.html
+│
+├── logs
+│   └── execution.log
+│
+└── README.md
+
+URL: https://online.actitime.com/mstar/login.do
+Email: lavatero92@gmail.com
+Password: admin@123
