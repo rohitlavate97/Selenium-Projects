@@ -1027,7 +1027,7 @@ Matching speed of selenium with the speed of application is called as synchroniz
 				  driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));    //Preffered
                   When Selenium encounters findElement() or findElements(), it first checks element presence. If implicit wait is defined, it keeps polling the DOM every 500ms until the timeout expires; otherwise, 
                   it immediately throws an exception or returns an empty list
---Explicit Wait : used to handle synchronization of any methods including findElement() and findElements(),WebDriverWait class is called as explicit wait which takes 2 arguments of type WebDriver and long,
+--Explicit Wait : also known as WebDriver wait, used to handle synchronization of any methods including findElement() and findElements(),WebDriverWait class is called as explicit wait which takes 2 arguments of type WebDriver and long,
                   default time unit is seconds.During runtime, Explicit Wait continuously checks the specified condition at regular intervals of 500 millisecondsuntil the condition becomes true or the timeout expires, 
                   after which Selenium throws a TimeoutException.All the methods present in ExpectedConditions class are called as Predicates
 				  WebDriverWait wait = new WebDriverWait(driver,Duration.ofSeconds(10));
@@ -2227,6 +2227,28 @@ public class SeleniumGridDemo {
 
 </suite>
 
+--Exception handled in Selenium:
+  -----------------------------
+| #  | Exception Name                   | Type (Checked/Unchecked) | Scenario / Description                                                                                      |
+| -- | -------------------------------- | ------------------------ | ----------------------------------------------------------------------------------------------------------- |
+| 1  | `IllegalStateException`          | Checked                  | Driver executable path not set; Selenium server cannot communicate with browser.                            |
+| 2  | `InterruptedException`           | Checked                  | Thread interrupted, e.g., using `Thread.sleep()`.                                                           |
+| 3  | `IOException`                    | Checked                  | File handling issues (read/write operations fail).                                                          |
+| 4  | `NoSuchElementException`         | Unchecked                | `findElement()` fails to find an element (locator mismatch or element absent).                              |
+| 5  | `JavascriptException`            | Unchecked                | Clicking/interacting with elements via JS where normal Selenium actions fail (e.g., button without submit). |
+| 6  | `InvalidElementStateException`   | Unchecked                | Trying `sendKeys()`, `click()`, or `clear()` on a disabled element.                                         |
+| 7  | `NoSuchFrameException`           | Unchecked                | Specified frame not present when switching frames.                                                          |
+| 8  | `NoSuchWindowException`          | Unchecked                | Target window already closed or invalid when trying to switch.                                              |
+| 9  | `NoAlertPresentException`        | Unchecked                | Attempted to switch to alert when no alert is present.                                                      |
+| 10 | `NoSuchSessionException`         | Unchecked                | Session ID is null; occurs if `driver.quit()` called and then accessed.                                     |
+| 11 | `ElementNotVisibleException`     | Unchecked                | Element exists in DOM but is not visible to the user.                                                       |
+| 12 | `WebDriverException`             | Unchecked                | General exception; occurs if WebDriver tries to act on a browser that’s already closed.                     |
+| 13 | `StaleElementReferenceException` | Unchecked                | Element was present in DOM but removed/changed before action performed.                                     |
+| 14 | `UnhandledAlertException`        | Unchecked                | Trying to perform actions on main page while an alert is present.                                           |
+| 15 | `UnexpectedTagNameException`     | Unchecked                | Using `Select` class on non-`<select>` element (custom dropdown).                                           |
+| 16 | `UnsupportedOperationException`  | Unchecked                | Attempted to deselect option on a single-select dropdown.                                                   |
+
+
 --Selenium framework: Framework is set of instructions or guidelines which should be followed by automation engineers.
   ==================
   1)Automation Framework Design
@@ -2294,3 +2316,280 @@ AutomationProject
 URL: https://online.actitime.com/mstar/login.do
 Email: lavatero92@gmail.com
 Password: admin@123
+
+# Maven:
+-------
+## What is Maven?
+Apache Maven is a **project management and build automation tool** used in Java/Selenium frameworks.  
+It helps in **dependency management, build execution, and project standardization**.
+
+## Key Features of Maven
+1. **Central Repository**
+   - Automatically downloads required dependencies (e.g., Selenium, TestNG).
+   - No need to manually manage JAR files.  
+2. **Standardized Project Structure**
+   - Enforces a common folder structure across projects.
+   - Example:
+     ```
+     project-root
+     ├─ src/main/java
+     ├─ src/test/java
+     ├─ pom.xml
+     └─ target
+     ```   
+3. **Dependency Management**
+   - Manages different versions of libraries centrally.
+   - Reduces conflicts and manual version handling.
+4. **Plugins for Test Execution**
+   - Executes tests using plugins like:
+     - `maven-surefire-plugin` → for TestNG/JUnit
+     - `maven-compiler-plugin` → for compiling Java code
+     - `maven-jar-plugin` → for creating executable JARs
+5. **Integration with CI/CD Tools**
+   - Works with Jenkins, GitLab CI, Bamboo, etc.
+   - Supports automated build, test, and reporting pipelines.
+6. **Flexibility & Scalability**
+   - Supports multi-module projects for large frameworks.
+   - Easy to manage and extend projects over time.
+
+## Common Maven Commands
+
+| Command                          | Purpose                                           |
+|---------------------------------|--------------------------------------------------|
+| `mvn clean`                       | Deletes the target folder                        |
+| `mvn compile`                     | Compiles the source code                         |
+| `mvn test`                        | Executes test cases                              |
+| `mvn package`                     | Packages code into JAR/WAR                        |
+| `mvn install`                     | Installs artifact in local repository           |
+| `mvn dependency:tree`             | Shows dependency hierarchy                       |
+
+## Common Issues & Fixes:
+   ---------------------
+1. **No Compiler / MojoFailureException**
+   - Cause: Using JRE instead of JDK
+   - Fix:
+     ```bash
+     javac -version
+     export JAVA_HOME=/path/to/jdk
+     ```
+     Configure `maven-compiler-plugin` in pom.xml.
+2. **Dependency Download Failure**
+   - Cause: Wrong coordinates or network
+   - Fix:
+     ```bash
+     mvn clean install -U
+     ```
+     Configure proxy in `~/.m2/settings.xml`.
+3. **Version Conflicts (Dependency Hell)**
+   - Fix: Use `mvn dependency:tree`, exclude conflicting dependencies, manage via `<dependencyManagement>`.
+4. **Plugin Execution Failures**
+   - Fix: Define proper plugin version, run with debug:
+     ```bash
+     mvn clean test -X
+     ```
+5. **Build Failure / Compilation Errors**
+   - Fix: Match JDK & `maven-compiler-plugin` version, delete `target`, run:
+     ```bash
+     mvn clean install
+     ```
+6. **Local Repository Corruption**
+   - Fix: Delete corrupted folders in `~/.m2/repository`, rebuild project.
+7. **Snapshot Version Issues**
+   - Fix:
+     ```bash
+     mvn clean install -U
+     ```
+8. **Proxy / Network Issues**
+   - Fix: Configure proxy in `~/.m2/settings.xml`.
+9. **Multi-Module Build Failures**
+   - Fix:
+     ```bash
+     mvn clean install -pl module-name
+     ```
+10. **Tests Not Running**
+    - Fix: Use proper naming (`*Test.java`), check surefire plugin config, verify annotations.
+
+## Tips for Smooth Maven Usage
+- Always use **JDK**, not JRE.
+- Keep **Maven updated**.
+- Check dependency tree to resolve conflicts.
+- Use **parent POM** in multi-module projects.
+- Force updates when snapshots or corrupted dependencies cause errors.
+
+Note:-Compiler plugin is responsible for building the maven project, utilizes all the files to build the project.(first check .m2 -->not present -->download from website into .m2)
+     -Using Maven-Surefire-plugin, we execute maven project/test suite.
+	 -Command to execute the maven project -->clean install compile test
+	  clean -->command/goal used to clean previous history/reports
+	  install -->command used to install any resources required to build the project
+	  compile -->responsible to build the project
+	  test -->used to trigger execution of maven project
+
+--Log4j: Logging for debugging scripts
+  -----
+-Advantages: complete understanding of test suite execution, store logs externally to post scritiny, application health can be ascertained with logs
+-3 main components that constitute the implementation of Log4j: Loggers,Appenders,Layouts
+1)Loggers: To implemen Loggers steps:
+           Creating an instance of logger class --> Defining the log level(ie Priniting methods -->error(),warn(),info(),debug(),log())-->call any of them using logger instance
+2)Appenders: used to specify the data source/medium where the log should be generated(like console,GUI,text files etc)
+3)Layouts: Layouts are a utility that allows the user to opt for a desired format in which the logs would be rendered. Appenders and Layout have tight coupling between them.
+           So we are required to map each of the appender with specific layout
+-Log Levels Explained
+TRACE – Detailed execution flow
+DEBUG – Debugging info
+INFO – Application flow info
+WARN – Potential issues
+ERROR – Errors
+FATAL – Critical failure
+         
+-Download latest jar and configure to build path.
+-Log4j can be implemented in two ways : Programmatically via script
+                                        Manually via Configuration files
+-Configuration File:
+<Configuration status="WARN">
+    <!-- 
+        status="WARN": This controls internal Log4j logging.
+        It will only show warnings or errors if Log4j itself has problems initializing.
+    -->
+
+    <Appenders>
+        <!-- Console Appender: logs output to the console (terminal) -->
+        <Console name="Console" target="SYSTEM_OUT">
+            <!-- PatternLayout defines the format of the log messages -->
+            <PatternLayout pattern="%d{dd-MMM-yyyy HH:mm:ss} %5p %c{1} - %m%n"/>
+            <!--
+                %d{dd-MMM-yyyy HH:mm:ss} → Timestamp in day-Month-Year HH:mm:ss format
+                %5p → Log level (INFO, WARN, ERROR), padded to 5 characters
+                %c{1} → Logger name (last part of class name)
+                %m → Actual log message
+                %n → New line
+            -->
+        </Console>
+
+        <!-- File Appender: logs output to a file -->
+        <File name="File" fileName="logs/app.log">
+            <PatternLayout pattern="%d{dd-MMM-yyyy HH:mm:ss} %5p %c{1} - %m%n"/>
+            <!--
+                Same pattern as console for consistent log formatting
+                fileName="logs/app.log" → The log file path (relative to project directory)
+                By default, it will overwrite the file on each run. Use RollingFileAppender for rotation.
+            -->
+        </File>
+    </Appenders>
+
+    <Loggers>
+        <!-- Root Logger: base logger for all logging in the application -->
+        <Root level="info">
+            <!--
+                level="info": Only logs INFO, WARN, ERROR, and FATAL messages.
+                DEBUG and TRACE messages will be ignored.
+            -->
+            <AppenderRef ref="Console"/>
+            <AppenderRef ref="File"/>
+            <!--
+                AppenderRef tells the logger where to send log messages.
+                Here, logs will go both to console and file.
+            -->
+        </Root>
+    </Loggers>
+</Configuration>
+-upgrade this further to use a daily rolling log file
+<Configuration status="WARN">
+    <!--
+        status="WARN": Log4j internal logging level (WARN or ERROR during initialization)
+    -->
+
+    <Appenders>
+        <!-- Console Appender: logs output to the console -->
+        <Console name="Console" target="SYSTEM_OUT">
+            <PatternLayout pattern="%d{dd-MMM-yyyy HH:mm:ss} %5p %c{1} - %m%n"/>
+            <!--
+                %d{dd-MMM-yyyy HH:mm:ss} → Timestamp
+                %5p → Log level padded to 5 characters
+                %c{1} → Logger name (last part of class)
+                %m → Log message
+                %n → Newline
+            -->
+        </Console>
+
+        <!-- Daily Rolling File Appender: logs to a file and rolls over daily -->
+        <RollingFile name="DailyFile" fileName="logs/app.log"
+                     filePattern="logs/app-%d{yyyy-MM-dd}.log.gz">
+            <!--
+                fileName="logs/app.log" → Current active log file
+                filePattern="logs/app-YYYY-MM-DD.log.gz" → Archived files compressed as .gz
+            -->
+            <PatternLayout pattern="%d{dd-MMM-yyyy HH:mm:ss} %5p %c{1} - %m%n"/>
+            <Policies>
+                <!-- Rollover policy: roll file daily -->
+                <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
+                <!--
+                    interval="1" → rollover every 1 day
+                    modulate="true" → ensures rollover happens at midnight
+                -->
+            </Policies>
+            <DefaultRolloverStrategy max="30"/>
+            <!--
+                max="30" → keep last 30 rolled-over log files, older ones deleted automatically
+            -->
+        </RollingFile>
+    </Appenders>
+
+    <Loggers>
+        <!-- Root Logger: base logger for the entire application -->
+        <Root level="info">
+            <AppenderRef ref="Console"/>
+            <AppenderRef ref="DailyFile"/>
+            <!--
+                Logs will go both to console and daily rolling file
+            -->
+        </Root>
+    </Loggers>
+</Configuration>
+
+project/
+│
+├─ src/main/java/com/example/LoggingDemo.java
+├─ resources/
+│   └─ log4j2.xml  <-- Put the configuration we created here
+└─ logs/           <-- Log files will be created here automatically
+
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+public class LoggingDemo {
+
+    // Create a logger for this class
+    private static final Logger logger = LogManager.getLogger(LoggingDemo.class);
+
+    public static void main(String[] args) {
+
+        // Example log messages at different levels
+        logger.trace("This is a TRACE message (very detailed, usually not enabled).");
+        logger.debug("This is a DEBUG message (for development troubleshooting).");
+        logger.info("This is an INFO message (normal application flow).");
+        logger.warn("This is a WARN message (something might be wrong).");
+        logger.error("This is an ERROR message (something went wrong).");
+        logger.fatal("This is a FATAL message (critical error, often leads to shutdown).");
+
+        // Simulate some application logic
+        try {
+            int result = divide(10, 0);
+            logger.info("Result is: " + result);
+        } catch (Exception e) {
+            logger.error("Exception occurred: ", e);
+        }
+
+        logger.info("Application finished execution.");
+    }
+
+    // Example method to generate an exception
+    private static int divide(int a, int b) {
+        logger.debug("Inside divide method: a=" + a + ", b=" + b);
+        return a / b; // will throw ArithmeticException if b=0
+    }
+}
+
+
+--Jenkins: It is continuous integration tool widely used by software project
+  -------
