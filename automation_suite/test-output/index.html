@@ -92,7 +92,7 @@
               <div class="suite-section-content">
                 <ul>
                   <li>
-                    <span class="method-stats">3 methods,  2 skipped,  1 passed</span>
+                    <span class="method-stats">3 methods,  1 skipped,  2 passed</span>
                   </li>
                   <li>
                     <span class="method-list-title skipped">Skipped methods</span>
@@ -101,11 +101,6 @@
                       <a href="#" panel-name="suite-CrossBrowserSuite" class="show-methods skipped suite-CrossBrowserSuite"> (show)</a> <!-- show-methods skipped suite-CrossBrowserSuite -->
                     </span>
                     <div class="method-list-content skipped suite-CrossBrowserSuite">
-                      <span>
-                        <img src="skipped.png" width="3%"/>
-                        <a href="#" panel-name="suite-CrossBrowserSuite" title="com.alchemist.tests.LoginTest" class="method navigator-link" hash-for-method="validLoginTest">validLoginTest</a> <!-- method navigator-link -->
-                      </span>
-                      <br/>
                       <span>
                         <img src="skipped.png" width="3%"/>
                         <a href="#" panel-name="suite-CrossBrowserSuite" title="com.alchemist.tests.LoginTest" class="method navigator-link" hash-for-method="validLoginTest">validLoginTest</a> <!-- method navigator-link -->
@@ -120,6 +115,11 @@
                       <a href="#" panel-name="suite-CrossBrowserSuite" class="show-methods passed suite-CrossBrowserSuite"> (show)</a> <!-- show-methods passed suite-CrossBrowserSuite -->
                     </span>
                     <div class="method-list-content passed suite-CrossBrowserSuite">
+                      <span>
+                        <img src="passed.png" width="3%"/>
+                        <a href="#" panel-name="suite-CrossBrowserSuite" title="com.alchemist.tests.LoginTest" class="method navigator-link" hash-for-method="validLoginTest">validLoginTest</a> <!-- method navigator-link -->
+                      </span>
+                      <br/>
                       <span>
                         <img src="passed.png" width="3%"/>
                         <a href="#" panel-name="suite-CrossBrowserSuite" title="com.alchemist.tests.LoginTest" class="method navigator-link" hash-for-method="validLoginTest">validLoginTest</a> <!-- method navigator-link -->
@@ -148,78 +148,13 @@
                   <a name="validLoginTest">
                   </a> <!-- validLoginTest -->
                   <span class="method-name">validLoginTest</span>
-                  <div class="stack-trace">io.github.bonigarcia.wdm.config.WebDriverManagerException: io.github.bonigarcia.wdm.config.WebDriverManagerException: java.net.UnknownHostException: msedgedriver.azureedge.net
-	at io.github.bonigarcia.wdm.WebDriverManager.handleException(WebDriverManager.java:1445)
-	at io.github.bonigarcia.wdm.WebDriverManager.manage(WebDriverManager.java:1205)
-	at io.github.bonigarcia.wdm.WebDriverManager.fallback(WebDriverManager.java:1461)
-	at io.github.bonigarcia.wdm.WebDriverManager.handleException(WebDriverManager.java:1442)
-	at io.github.bonigarcia.wdm.WebDriverManager.manage(WebDriverManager.java:1205)
-	at io.github.bonigarcia.wdm.WebDriverManager.handleException(WebDriverManager.java:1435)
-	at io.github.bonigarcia.wdm.WebDriverManager.manage(WebDriverManager.java:1205)
-	at io.github.bonigarcia.wdm.WebDriverManager.setup(WebDriverManager.java:427)
-	at com.alchemist.base.DriverFactory.initDriver(DriverFactory.java:25)
-	at com.alchemist.base.BaseTest.setup(BaseTest.java:17)
-	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
-	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:264)
-	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1136)
-	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:635)
-	at java.base/java.lang.Thread.run(Thread.java:840)
-Caused by: io.github.bonigarcia.wdm.config.WebDriverManagerException: java.net.UnknownHostException: msedgedriver.azureedge.net
-	at io.github.bonigarcia.wdm.WebDriverManager.getDriversFromXml(WebDriverManager.java:1596)
-	at io.github.bonigarcia.wdm.managers.EdgeDriverManager.getDriverUrls(EdgeDriverManager.java:115)
-	at io.github.bonigarcia.wdm.WebDriverManager.createUrlHandler(WebDriverManager.java:1466)
-	at io.github.bonigarcia.wdm.WebDriverManager.download(WebDriverManager.java:1287)
-	at io.github.bonigarcia.wdm.WebDriverManager.manage(WebDriverManager.java:1199)
-	... 34 more
-Caused by: java.net.UnknownHostException: msedgedriver.azureedge.net
-	at java.base/java.net.InetAddress$CachedAddresses.get(InetAddress.java:801)
-	at java.base/java.net.InetAddress.getAllByName0(InetAddress.java:1533)
-	at java.base/java.net.InetAddress.getAllByName(InetAddress.java:1385)
-	at java.base/java.net.InetAddress.getAllByName(InetAddress.java:1306)
-	at org.apache.hc.client5.http.SystemDefaultDnsResolver.resolve(SystemDefaultDnsResolver.java:43)
-	at org.apache.hc.client5.http.impl.io.DefaultHttpClientConnectionOperator.connect(DefaultHttpClientConnectionOperator.java:141)
-	at org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManager.connect(PoolingHttpClientConnectionManager.java:447)
-	at org.apache.hc.client5.http.impl.classic.InternalExecRuntime.connectEndpoint(InternalExecRuntime.java:162)
-	at org.apache.hc.client5.http.impl.classic.InternalExecRuntime.connectEndpoint(InternalExecRuntime.java:172)
-	at org.apache.hc.client5.http.impl.classic.ConnectExec.execute(ConnectExec.java:142)
-	at org.apache.hc.client5.http.impl.classic.ExecChainElement.execute(ExecChainElement.java:51)
-	at org.apache.hc.client5.http.impl.classic.ProtocolExec.execute(ProtocolExec.java:192)
-	at org.apache.hc.client5.http.impl.classic.ExecChainElement.execute(ExecChainElement.java:51)
-	at org.apache.hc.client5.http.impl.classic.HttpRequestRetryExec.execute(HttpRequestRetryExec.java:96)
-	at org.apache.hc.client5.http.impl.classic.ExecChainElement.execute(ExecChainElement.java:51)
-	at org.apache.hc.client5.http.impl.classic.ContentCompressionExec.execute(ContentCompressionExec.java:152)
-	at org.apache.hc.client5.http.impl.classic.ExecChainElement.execute(ExecChainElement.java:51)
-	at org.apache.hc.client5.http.impl.classic.RedirectExec.execute(RedirectExec.java:115)
-	at org.apache.hc.client5.http.impl.classic.ExecChainElement.execute(ExecChainElement.java:51)
-	at org.apache.hc.client5.http.impl.classic.InternalHttpClient.doExecute(InternalHttpClient.java:170)
-	at org.apache.hc.client5.http.impl.classic.CloseableHttpClient.execute(CloseableHttpClient.java:87)
-	at org.apache.hc.client5.http.impl.classic.CloseableHttpClient.execute(CloseableHttpClient.java:55)
-	at org.apache.hc.client5.http.classic.HttpClient.executeOpen(HttpClient.java:183)
-	at io.github.bonigarcia.wdm.online.HttpClient.execute(HttpClient.java:157)
-	at io.github.bonigarcia.wdm.WebDriverManager.getDriversFromXml(WebDriverManager.java:1581)
-	... 38 more
-... Removed 21 stack frames
-</div> <!-- stack-trace -->
-                </div> <!-- method-content -->
-              </div> <!-- method -->
-              <div class="method">
-                <div class="method-content">
-                  <a name="validLoginTest">
-                  </a> <!-- validLoginTest -->
-                  <span class="method-name">validLoginTest</span>
-                  <div class="stack-trace">org.openqa.selenium.SessionNotCreatedException: Could not start a new session. Response code 500. Message: Expected browser binary location, but unable to find binary in default location, no &apos;moz:firefoxOptions.binary&apos; capability provided, and no binary flag set on the command line 
+                  <div class="stack-trace">org.openqa.selenium.SessionNotCreatedException: Could not start a new session. Possible causes are invalid address of the remote server or browser start-up failure. 
 Host info: host: &apos;DESKTOP-E361VM0&apos;, ip: &apos;192.168.1.36&apos;
 Build info: version: &apos;4.16.1&apos;, revision: &apos;9b4c83354e&apos;
 System info: os.name: &apos;Windows 11&apos;, os.arch: &apos;amd64&apos;, os.version: &apos;10.0&apos;, java.version: &apos;17.0.16&apos;
 Driver info: org.openqa.selenium.firefox.FirefoxDriver
 Command: [null, newSession {capabilities=[Capabilities {acceptInsecureCerts: true, browserName: firefox, moz:debuggerAddress: true, moz:firefoxOptions: {}}]}]
-	at org.openqa.selenium.remote.ProtocolHandshake.createSession(ProtocolHandshake.java:140)
-	at org.openqa.selenium.remote.ProtocolHandshake.createSession(ProtocolHandshake.java:96)
-	at org.openqa.selenium.remote.ProtocolHandshake.createSession(ProtocolHandshake.java:68)
-	at org.openqa.selenium.remote.HttpCommandExecutor.execute(HttpCommandExecutor.java:163)
-	at org.openqa.selenium.remote.service.DriverCommandExecutor.invokeExecute(DriverCommandExecutor.java:200)
-	at org.openqa.selenium.remote.service.DriverCommandExecutor.execute(DriverCommandExecutor.java:175)
-	at org.openqa.selenium.remote.RemoteWebDriver.execute(RemoteWebDriver.java:523)
+	at org.openqa.selenium.remote.RemoteWebDriver.execute(RemoteWebDriver.java:541)
 	at org.openqa.selenium.remote.RemoteWebDriver.startSession(RemoteWebDriver.java:237)
 	at org.openqa.selenium.remote.RemoteWebDriver.&lt;init&gt;(RemoteWebDriver.java:164)
 	at org.openqa.selenium.firefox.FirefoxDriver.&lt;init&gt;(FirefoxDriver.java:157)
@@ -228,13 +163,30 @@ Command: [null, newSession {capabilities=[Capabilities {acceptInsecureCerts: tru
 	at org.openqa.selenium.firefox.FirefoxDriver.&lt;init&gt;(FirefoxDriver.java:128)
 	at org.openqa.selenium.firefox.FirefoxDriver.&lt;init&gt;(FirefoxDriver.java:113)
 	at org.openqa.selenium.firefox.FirefoxDriver.&lt;init&gt;(FirefoxDriver.java:103)
-	at com.alchemist.base.DriverFactory.initDriver(DriverFactory.java:22)
+	at com.alchemist.base.DriverFactory.initDriver(DriverFactory.java:69)
 	at com.alchemist.base.BaseTest.setup(BaseTest.java:17)
 	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
 	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:264)
 	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1136)
 	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:635)
 	at java.base/java.lang.Thread.run(Thread.java:840)
+Caused by: java.io.UncheckedIOException: java.io.IOException: Cannot run program &quot;drivers/geckodriver.exe&quot;: CreateProcess error=216, This version of %1 is not compatible with the version of Windows you&apos;re running. Check your computer&apos;s system information and then contact the software publisher
+	at org.openqa.selenium.os.ExternalProcess$Builder.start(ExternalProcess.java:193)
+	at org.openqa.selenium.remote.service.DriverService.start(DriverService.java:208)
+	at org.openqa.selenium.remote.service.DriverCommandExecutor.execute(DriverCommandExecutor.java:119)
+	at org.openqa.selenium.remote.RemoteWebDriver.execute(RemoteWebDriver.java:523)
+	... 36 more
+Caused by: java.io.IOException: Cannot run program &quot;drivers/geckodriver.exe&quot;: CreateProcess error=216, This version of %1 is not compatible with the version of Windows you&apos;re running. Check your computer&apos;s system information and then contact the software publisher
+	at java.base/java.lang.ProcessBuilder.start(ProcessBuilder.java:1143)
+	at java.base/java.lang.ProcessBuilder.start(ProcessBuilder.java:1073)
+	at org.openqa.selenium.os.ExternalProcess$Builder.start(ExternalProcess.java:191)
+	... 39 more
+Caused by: java.io.IOException: CreateProcess error=216, This version of %1 is not compatible with the version of Windows you&apos;re running. Check your computer&apos;s system information and then contact the software publisher
+	at java.base/java.lang.ProcessImpl.create(Native Method)
+	at java.base/java.lang.ProcessImpl.&lt;init&gt;(ProcessImpl.java:505)
+	at java.base/java.lang.ProcessImpl.start(ProcessImpl.java:158)
+	at java.base/java.lang.ProcessBuilder.start(ProcessBuilder.java:1110)
+	... 41 more
 ... Removed 21 stack frames
 </div> <!-- stack-trace -->
                 </div> <!-- method-content -->
@@ -247,6 +199,13 @@ Command: [null, newSession {capabilities=[Capabilities {acceptInsecureCerts: tru
               <span class="class-name">com.alchemist.tests.LoginTest</span>
             </div> <!-- main-panel-header rounded-window-top -->
             <div class="main-panel-content rounded-window-bottom">
+              <div class="method">
+                <div class="method-content">
+                  <a name="validLoginTest">
+                  </a> <!-- validLoginTest -->
+                  <span class="method-name">validLoginTest</span>
+                </div> <!-- method-content -->
+              </div> <!-- method -->
               <div class="method">
                 <div class="method-content">
                   <a name="validLoginTest">
@@ -334,11 +293,11 @@ data.addRows(3);
 data.setCell(0, 0, 0)
 data.setCell(0, 1, 'validLoginTest')
 data.setCell(0, 2, 'com.alchemist.tests.LoginTest')
-data.setCell(0, 3, 2000);
+data.setCell(0, 3, 1058);
 data.setCell(1, 0, 1)
 data.setCell(1, 1, 'validLoginTest')
 data.setCell(1, 2, 'com.alchemist.tests.LoginTest')
-data.setCell(1, 3, 1);
+data.setCell(1, 3, 471);
 data.setCell(2, 0, 2)
 data.setCell(2, 1, 'validLoginTest')
 data.setCell(2, 2, 'com.alchemist.tests.LoginTest')
@@ -347,7 +306,7 @@ window.suiteTableData['CrossBrowserSuite']= { tableData: data, tableDiv: 'times-
 return data;
 }
               </script>
-              <span class="suite-total-time">Total running time: 17 seconds</span>
+              <span class="suite-total-time">Total running time: 7 seconds</span>
               <div id="times-div-CrossBrowserSuite">
               </div> <!-- times-div-CrossBrowserSuite -->
             </div> <!-- times-div -->
@@ -385,26 +344,28 @@ return data;
                 <span class="method-start">0 ms</span>
               </div> <!-- configuration-method before -->
               <div class="configuration-method before">
-                <img src="failed.png">
-                </img>
                 <span class="method-name">setup(edge, prod)</span>
                 <span class="method-start">0 ms</span>
               </div> <!-- configuration-method before -->
               <div class="configuration-method after">
                 <span class="method-name">tearDown</span>
-                <span class="method-start">1374 ms</span>
-              </div> <!-- configuration-method after -->
-              <div class="configuration-method after">
-                <span class="method-name">tearDown</span>
-                <span class="method-start">2214 ms</span>
+                <span class="method-start">2219 ms</span>
               </div> <!-- configuration-method after -->
               <div class="test-method">
                 <span class="method-name">validLoginTest</span>
-                <span class="method-start">14936 ms</span>
+                <span class="method-start">5761 ms</span>
               </div> <!-- test-method -->
               <div class="configuration-method after">
                 <span class="method-name">tearDown</span>
-                <span class="method-start">16942 ms</span>
+                <span class="method-start">6823 ms</span>
+              </div> <!-- configuration-method after -->
+              <div class="test-method">
+                <span class="method-name">validLoginTest</span>
+                <span class="method-start">7078 ms</span>
+              </div> <!-- test-method -->
+              <div class="configuration-method after">
+                <span class="method-name">tearDown</span>
+                <span class="method-start">7551 ms</span>
               </div> <!-- configuration-method after -->
           </div> <!-- main-panel-content rounded-window-bottom -->
         </div> <!-- panel -->
