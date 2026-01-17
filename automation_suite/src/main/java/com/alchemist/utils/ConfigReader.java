@@ -3,21 +3,26 @@ package com.alchemist.utils;
 import java.io.FileInputStream;
 import java.util.Properties;
 import com.alchemist.constants.FrameworkConstants;
+import com.alchemist.exceptions.FrameworkException;
 
 public class ConfigReader {
 
     private static Properties prop;
 
-    static {
+    public static void loadEnv(String env) {
         try {
             prop = new Properties();
-            prop.load(new FileInputStream(FrameworkConstants.CONFIG_PATH));
+            String path = "src/main/resources/config-" + env.toLowerCase() + ".properties";
+            prop.load(new FileInputStream(path));
         } catch (Exception e) {
-            throw new RuntimeException("Failed to load config file");
+            throw new FrameworkException("Failed to load config for environment: " + env, e);
         }
     }
 
     public static String get(String key) {
+        if(prop == null) {
+            throw new FrameworkException("Config not loaded. Call loadEnv(env) first!");
+        }
         return prop.getProperty(key);
     }
 }

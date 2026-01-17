@@ -1,0 +1,455 @@
+automation-framework/
+│
+├─ src/main/java/com/alchemist/base
+│   ├─ BaseTest.java
+│   └─ DriverFactory.java
+│
+├─ src/main/java/com/alchemist/constants
+│   └─ FrameworkConstants.java
+│
+├─ src/main/java/com/alchemist/listeners
+│   └─ TestListener.java
+│
+├─ src/main/java/com/alchemist/pages
+│   └─ LoginPage.java
+│
+├─ src/main/java/com/alchemist/retry
+│   └─ RetryAnalyzer.java
+│
+├─ src/main/java/com/alchemist/utils
+│   ├─ ConfigReader.java
+│   ├─ ExcelUtil.java
+│   ├─ ExtentManager.java
+│   ├─ ScreenshotUtil.java
+│   ├─ SeleniumUtil.java
+│   └─ WaitUtil.java
+│
+├─ src/main/java/com/alchemist/exceptions
+│   └─ FrameworkException.java
+│
+├─ src/test/java/com/alchemist/tests
+│   └─ LoginTest.java
+│
+├─ src/main/resources
+│   ├─ config-qa.properties
+│   ├─ config-uat.properties
+│   └─ config-prod.properties
+│
+├─ screenshots/
+├─ reports/
+├─ pom.xml
+└─ testng.xml
+
+Core Code:
+---------
+// ------------------------- DriverFactory.java -------------------------
+package com.alchemist.base;
+
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.firefox.FirefoxDriver;
+import io.github.bonigarcia.wdm.WebDriverManager;
+import com.alchemist.utils.ConfigReader;
+
+public class DriverFactory {
+
+    private static ThreadLocal<WebDriver> driver = new ThreadLocal<>();
+
+    public static void initDriver() {
+        String browser = ConfigReader.get("BROWSER").toLowerCase();
+        switch (browser) {
+            case "chrome":
+                WebDriverManager.chromedriver().setup();
+                driver.set(new ChromeDriver());
+                break;
+            case "firefox":
+                WebDriverManager.firefoxdriver().setup();
+                driver.set(new FirefoxDriver());
+                break;
+            default:
+                throw new RuntimeException("Browser not supported: " + browser);
+        }
+    }
+
+    public static WebDriver getDriver() {
+        return driver.get();
+    }
+
+    public static void quitDriver() {
+        if (driver.get() != null) {
+            driver.get().quit();
+            driver.remove();
+        }
+    }
+}
+
+// ------------------------- BaseTest.java -------------------------
+package com.alchemist.base;
+
+import org.testng.annotations.*;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import com.alchemist.utils.ConfigReader;
+
+public class BaseTest {
+
+    protected static final Logger log = LogManager.getLogger(BaseTest.class);
+
+    @BeforeMethod
+    @Parameters("env")
+    public void setup(@Optional("qa") String env) {
+        log.info("========== Test Setup Started ==========");
+        ConfigReader.loadEnv(env);                 // Load environment config
+        DriverFactory.initDriver();                // Launch browser
+        DriverFactory.getDriver().manage().window().maximize();
+        DriverFactory.getDriver().get(ConfigReader.get("URL"));
+        log.info("Navigated to URL: {}", ConfigReader.get("URL"));
+    }
+
+    @AfterMethod(alwaysRun = true)
+    public void tearDown() {
+        log.info("========== Test Teardown ==========");
+        DriverFactory.quitDriver();
+    }
+}
+
+// ------------------------- FrameworkConstants.java -------------------------
+package com.alchemist.constants;
+
+public final class FrameworkConstants {
+
+    private FrameworkConstants() {}
+
+    public static final int EXPLICIT_WAIT = 10;
+    public static final int RETRY_COUNT = 2;
+    public static final String SCREENSHOT_PATH = "screenshots/";
+    public static final String EXCEL_PATH = "src/main/resources/data.xlsx";
+}
+
+// ------------------------- TestListener.java -------------------------
+package com.alchemist.listeners;
+
+import org.testng.*;
+import com.aventstack.extentreports.*;
+import com.alchemist.utils.*;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+public class TestListener implements ITestListener {
+
+    private static final Logger log = LogManager.getLogger(TestListener.class);
+    private static ExtentReports extent = ExtentManager.getReport();
+    private static ThreadLocal<ExtentTest> test = new ThreadLocal<>();
+
+    @Override
+    public void onTestStart(ITestResult result) {
+        log.info("TEST STARTED: {}", result.getName());
+        test.set(extent.createTest(result.getName()));
+    }
+
+    @Override
+    public void onTestSuccess(ITestResult result) {
+        log.info("TEST PASSED: {}", result.getName());
+        test.get().pass("Test Passed");
+    }
+
+    @Override
+    public void onTestFailure(ITestResult result) {
+        log.error("TEST FAILED: {}", result.getName(), result.getThrowable());
+        String path = ScreenshotUtil.capture(result.getName());
+        test.get().fail(result.getThrowable())
+                  .addScreenCaptureFromPath(path);
+    }
+
+    @Override
+    public void onFinish(ITestContext context) {
+        log.info("TEST SUITE FINISHED: {}", context.getName());
+        extent.flush();
+    }
+}
+
+// ------------------------- RetryAnalyzer.java -------------------------
+package com.alchemist.retry;
+
+import org.testng.IRetryAnalyzer;
+import org.testng.ITestResult;
+import com.alchemist.constants.FrameworkConstants;
+
+public class RetryAnalyzer implements IRetryAnalyzer {
+
+    private int count = 0;
+
+    @Override
+    public boolean retry(ITestResult result) {
+        if (count < FrameworkConstants.RETRY_COUNT) {
+            count++;
+            return true;
+        }
+        return false;
+    }
+}
+
+// ------------------------- LoginPage.java -------------------------
+package com.alchemist.pages;
+
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.*;
+import com.alchemist.base.DriverFactory;
+import com.alchemist.utils.SeleniumUtil;
+
+public class LoginPage {
+
+    @FindBy(id="username")
+    private WebElement username;
+
+    @FindBy(name="pwd")
+    private WebElement password;
+
+    @FindBy(xpath="//div[text()='Login ']")
+    private WebElement loginBtn;
+
+    public LoginPage() {
+        PageFactory.initElements(DriverFactory.getDriver(), this);
+    }
+
+    public void login(String user, String pass) {
+        SeleniumUtil.type(username, user);
+        SeleniumUtil.type(password, pass);
+        SeleniumUtil.click(loginBtn);
+    }
+}
+
+// ------------------------- SeleniumUtil.java -------------------------
+package com.alchemist.utils;
+
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.interactions.Actions;
+import org.openqa.selenium.JavascriptExecutor;
+import com.alchemist.base.DriverFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+public class SeleniumUtil {
+
+    private static final Logger log = LogManager.getLogger(SeleniumUtil.class);
+
+    public static void click(WebElement element) {
+        log.info("Clicking element: {}", element);
+        WaitUtil.waitForClickable(element).click();
+    }
+
+    public static void type(WebElement element, String value) {
+        log.info("Typing '{}' into element: {}", value, element);
+        WebElement el = WaitUtil.waitForVisible(element);
+        el.clear();
+        el.sendKeys(value);
+    }
+
+    public static void jsClick(WebElement element) {
+        log.warn("JS click on element: {}", element);
+        JavascriptExecutor js = (JavascriptExecutor) DriverFactory.getDriver();
+        js.executeScript("arguments[0].click();", element);
+    }
+
+    public static void moveTo(WebElement element) {
+        log.info("Mouse over element: {}", element);
+        new Actions(DriverFactory.getDriver()).moveToElement(element).perform();
+    }
+}
+
+// ------------------------- WaitUtil.java -------------------------
+package com.alchemist.utils;
+
+import java.time.Duration;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.*;
+import com.alchemist.base.DriverFactory;
+import com.alchemist.constants.FrameworkConstants;
+
+public class WaitUtil {
+
+    public static WebElement waitForVisible(WebElement element) {
+        WebDriverWait wait = new WebDriverWait(
+            DriverFactory.getDriver(),
+            Duration.ofSeconds(FrameworkConstants.EXPLICIT_WAIT));
+        return wait.until(ExpectedConditions.visibilityOf(element));
+    }
+
+    public static WebElement waitForClickable(WebElement element) {
+        WebDriverWait wait = new WebDriverWait(
+            DriverFactory.getDriver(),
+            Duration.ofSeconds(FrameworkConstants.EXPLICIT_WAIT));
+        return wait.until(ExpectedConditions.elementToBeClickable(element));
+    }
+}
+
+// ------------------------- ScreenshotUtil.java -------------------------
+package com.alchemist.utils;
+
+import java.io.File;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import org.openqa.selenium.*;
+import org.apache.commons.io.FileUtils;
+import com.alchemist.base.DriverFactory;
+import com.alchemist.constants.FrameworkConstants;
+
+public class ScreenshotUtil {
+
+    public static String capture(String testName) {
+        try {
+            String timestamp = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date());
+            String path = FrameworkConstants.SCREENSHOT_PATH + testName + "_" + timestamp + ".png";
+            File src = ((TakesScreenshot) DriverFactory.getDriver()).getScreenshotAs(OutputType.FILE);
+            FileUtils.copyFile(src, new File(path));
+            return path;
+        } catch (Exception e) {
+            return "";
+        }
+    }
+}
+
+// ------------------------- ConfigReader.java -------------------------
+package com.alchemist.utils;
+
+import java.io.FileInputStream;
+import java.util.Properties;
+import com.alchemist.exceptions.FrameworkException;
+
+public class ConfigReader {
+
+    private static Properties prop;
+
+    public static void loadEnv(String env) {
+        try {
+            prop = new Properties();
+            FileInputStream fis = new FileInputStream("src/main/resources/config-" + env + ".properties");
+            prop.load(fis);
+        } catch (Exception e) {
+            throw new FrameworkException("Failed to load config for environment: " + env, e);
+        }
+    }
+
+    public static String get(String key) {
+        return prop.getProperty(key);
+    }
+}
+
+// ------------------------- FrameworkException.java -------------------------
+package com.alchemist.exceptions;
+
+public class FrameworkException extends RuntimeException {
+    public FrameworkException(String message, Throwable cause) {
+        super(message, cause);
+    }
+}
+
+// ------------------------- ExcelUtil.java -------------------------
+package com.alchemist.utils;
+
+import java.io.FileInputStream;
+import org.apache.poi.ss.usermodel.*;
+import com.alchemist.constants.FrameworkConstants;
+
+public class ExcelUtil {
+
+    public static String getData(String sheet, int row, int col) {
+        try {
+            Workbook wb = WorkbookFactory.create(new FileInputStream(FrameworkConstants.EXCEL_PATH));
+            return wb.getSheet(sheet).getRow(row).getCell(col).toString();
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to read Excel", e);
+        }
+    }
+}
+
+// ------------------------- ExtentManager.java -------------------------
+package com.alchemist.utils;
+
+import com.aventstack.extentreports.ExtentReports;
+import com.aventstack.extentreports.reporter.ExtentSparkReporter;
+
+public class ExtentManager {
+
+    private static ExtentReports extent;
+
+    public static ExtentReports getReport() {
+        if (extent == null) {
+            ExtentSparkReporter reporter = new ExtentSparkReporter("reports/ExtentReport.html");
+            reporter.config().setReportName("Automation Execution Report");
+            reporter.config().setDocumentTitle("Test Results");
+            extent = new ExtentReports();
+            extent.attachReporter(reporter);
+        }
+        return extent;
+    }
+}
+
+// ------------------------- LoginTest.java -------------------------
+package com.alchemist.tests;
+
+import org.testng.Assert;
+import org.testng.annotations.Test;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import com.alchemist.base.*;
+import com.alchemist.pages.LoginPage;
+import com.alchemist.retry.RetryAnalyzer;
+import com.alchemist.utils.ExcelUtil;
+
+public class LoginTest extends BaseTest {
+
+    private static final Logger log = LogManager.getLogger(LoginTest.class);
+
+    @Test(retryAnalyzer = RetryAnalyzer.class)
+    public void validLoginTest() {
+
+        log.info("Starting Login Test");
+
+        LoginPage page = new LoginPage();
+
+        String user = ExcelUtil.getData("ValidLogin",1,0);
+        String pass = ExcelUtil.getData("ValidLogin",1,1);
+        String expectedTitle = ExcelUtil.getData("ValidLogin",1,2);
+
+        log.info("Attempting login with user: {}", user);
+        page.login(user, pass);
+
+        String actualTitle = DriverFactory.getDriver().getTitle();
+        log.info("Validating page title");
+
+        Assert.assertEquals(actualTitle, expectedTitle);
+
+        log.info("Login Test Completed Successfully");
+    }
+}
+
+testng.xml:
+<suite name="Automation Suite">
+    <parameter name="env" value="qa"/>
+    <listeners>
+        <listener class-name="com.alchemist.listeners.TestListener"/>
+    </listeners>
+    <test name="Login Tests" thread-count="2">
+        <classes>
+            <class name="com.alchemist.tests.LoginTest"/>
+        </classes>
+    </test>
+</suite>
+
+Execution Flow:
+4️⃣ Execution Flow
+
+Step 1: TestNG suite starts → reads <parameter name="env" value="qa"/>.
+
+Step 2: BaseTest.setup() loads config-qa.properties via ConfigReader.
+
+Step 3: DriverFactory.initDriver() launches browser based on BROWSER in config.
+
+Step 4: Test executes → uses LoginPage with SeleniumUtil (click/type/wait).
+
+Step 5: RetryAnalyzer retries failed tests up to 2 times.
+
+Step 6: TestListener captures screenshots on failure + ExtentReports logs results.
+
+Step 7: After test → BaseTest.tearDown() closes browser.

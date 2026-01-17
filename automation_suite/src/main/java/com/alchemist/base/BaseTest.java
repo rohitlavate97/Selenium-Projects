@@ -7,17 +7,16 @@ import com.alchemist.utils.ConfigReader;
 
 public class BaseTest {
 
-    protected static final Logger log =
-            LogManager.getLogger(BaseTest.class);
+    protected static final Logger log = LogManager.getLogger(BaseTest.class);
 
+    @Parameters({"browser","env"})
     @BeforeMethod
-    public void setup() {
+    public void setup(String browser, String env) {
         log.info("========== Test Setup Started ==========");
-        DriverFactory.initDriver();
-        DriverFactory.getDriver().manage().window().maximize();
-        String url = ConfigReader.get("URL");
-        DriverFactory.getDriver().get(url);
-        log.info("Navigated to URL: {}", url);
+        ConfigReader.loadEnv(env);  // Load env: QA/UAT/PROD
+        DriverFactory.initDriver(browser);  // Cross-browser
+        DriverFactory.getDriver().get(ConfigReader.get("URL"));
+        log.info("Navigated to URL: " + ConfigReader.get("URL"));
     }
 
     @AfterMethod(alwaysRun = true)

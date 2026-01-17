@@ -1,28 +1,23 @@
-<suite name="AutomationSuite"
-       parallel="tests"
-       thread-count="5"
-       verbose="1">
-
-    <!-- ================= LISTENERS ================= -->
-    <listeners>
-        <!-- Extent Report + Screenshot + Log4j Listener -->
-        <listener class-name="com.alchemist.listeners.TestListener"/>
-    </listeners>
-
-    <!-- ================= TEST CONFIG ================= -->
-    <test name="Login Regression Tests">
-
-        <!-- Optional: groups can be added later -->
-        <!-- <groups>
-            <run>
-                <include name="smoke"/>
-            </run>
-        </groups> -->
-
+<suite name="CrossBrowserSuite" parallel="tests" thread-count="3">
+    <test name="Chrome_QA">
+        <parameter name="browser" value="chrome"/>
+        <parameter name="env" value="qa"/>
         <classes>
             <class name="com.alchemist.tests.LoginTest"/>
         </classes>
-
     </test>
-
+    <test name="Firefox_UAT">
+        <parameter name="browser" value="firefox"/>
+        <parameter name="env" value="uat"/>
+        <classes>
+            <class name="com.alchemist.tests.LoginTest"/>
+        </classes>
+    </test>
+    <test name="Edge_PROD">
+        <parameter name="browser" value="edge"/>
+        <parameter name="env" value="prod"/>
+        <classes>
+            <class name="com.alchemist.tests.LoginTest"/>
+        </classes>
+    </test>
 </suite>
