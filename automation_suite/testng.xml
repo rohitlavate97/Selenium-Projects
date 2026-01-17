@@ -1,0 +1,28 @@
+<suite name="AutomationSuite"
+       parallel="tests"
+       thread-count="5"
+       verbose="1">
+
+    <!-- ================= LISTENERS ================= -->
+    <listeners>
+        <!-- Extent Report + Screenshot + Log4j Listener -->
+        <listener class-name="com.alchemist.listeners.TestListener"/>
+    </listeners>
+
+    <!-- ================= TEST CONFIG ================= -->
+    <test name="Login Regression Tests">
+
+        <!-- Optional: groups can be added later -->
+        <!-- <groups>
+            <run>
+                <include name="smoke"/>
+            </run>
+        </groups> -->
+
+        <classes>
+            <class name="com.alchemist.tests.LoginTest"/>
+        </classes>
+
+    </test>
+
+</suite>

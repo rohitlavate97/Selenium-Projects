@@ -459,3 +459,5 @@ In select dropdown,Value and visible text are case sensitive.If we pass any inva
 In single select list box, we can not deselect the option. If we try to deselect the option, it will throw UnsupportedOperationException
 In multi-select list box, if the specified option is duplicate then it will select all the matching options.We can handle duplicates by using index.
 
+Tagging / Grouping Strategy
+Selenium Grid / Docker (ADVANCED)
