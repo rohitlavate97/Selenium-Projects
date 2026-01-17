@@ -2227,6 +2227,15 @@ public class SeleniumGridDemo {
 
 </suite>
 
+| Feature                | Selenium Server | Selenium Grid               |
+| ---------------------- | --------------- | --------------------------- |
+| Ready to run           | ✅               | ❌                           |
+| CLI / Docker support   | ✅               | ❌                           |
+| Standalone mode        | ✅               | ❌                           |
+| Used for tests         | ✅               | ❌                           |
+| Infrastructure library | ❌               | ✅                           |
+| Typical users          | QA / Automation | Framework & infra engineers |
+
 --Exception handled in Selenium:
   -----------------------------
 | #  | Exception Name                   | Type (Checked/Unchecked) | Scenario / Description                                                                                      |
@@ -2593,3 +2602,75 @@ public class LoggingDemo {
 
 --Jenkins: It is continuous integration tool widely used by software project
   -------
+-Download Generic Java Package(.war): https://jenkins.io/download/
+-open cmd as admin and run 
+ command: java -jar jenkins.war --httpPort=9090
+-Go to localhost:9090 in browser and setup username and password(root,adm!n)
+-Go to Jenkins Dashboard, select New Item
+-Freestyle project
+-On Configuration page-->Build triggers tab-->Build steps-->Execute windows batch command(For windows)/Execute shell(For Mac or linux)-->Paste commands
+-manage-->Tools-->JDK installations-->Name: jdk-21.0.9.10-hotspot
+                                      JAVA_HOME: C:\Program Files\Eclipse Adoptium\jdk-21.0.9.10-hotspot
+									  Select checkbox install automatically. -->click on save
+			   -->Maven-->Name:
+			              MAVEN_HOME:C:\apache-maven-3.9.11
+-Copy project folder path:D:\Testing Prep\Testing Fulll Frameworks\ActiTimeAutomationSuite
+-create new job -->click on New Item -->FreeStyle project-->ActiTimeAutomationSuite
+               Dashboard will open-->General tab -->Advanced-->Use custom workspace -->Dirctory:D:\Testing Prep\Testing Fulll Frameworks\ActiTimeAutomationSuite
+			                                                                           Display Name: Automation Project
+												 -->Triggers-->select Build Periodically-->schedule-->30 23 * * *
+							      -->Build Steps-->Add Build Step-->Invoke top level maven targets-->Maven version:apache-maven-3.9.12
+								                                                                     Goals:clean install compile test -->Click on Save
+-click on manage jenkins-->plugins-->Install TestNg results plugin
+-Click on same job from jenkins main page-->configure-->Build tab-->post-build Actions-->select Publish TestNg results--> **/testng-results.xml-->Save
+-Click on Build Now and go to build console output --> we can see testng results on project dashboard
+Note: 
+				<plugin>
+					<artifactId>maven-surefire-plugin</artifactId>
+					<version>3.3.0</version>
+					<configuration>
+						<suiteXmlFiles>
+							<suiteXmlFile>testng.xml</suiteXmlFile>
+						</suiteXmlFiles>
+					</configuration>
+				</plugin>
+-Send TestNG report via email: Install Email Extension plugin-->Click on Manage Jenkins(Add gmail server info to Jenkins.)-->click on System-->Go to Extended Email notification (from dropdown system^)
+                                                        --> SMTP server:smtp.gmail.com
+														    SMTP Port:587
+															Credentials (THIS IS AUTHENTICATION)Click Add → Jenkins Credentials and use:Kind: Username with password-->Username: your Gmail address,Password:Gmail App Password (NOT normal Gmail password)
+															📌 Do NOT leave credentials as - none -
+															ID (Optional but Recommended): gmail-smtp-credential
+															paste following in Advanced Email Properties:
+															mail.smtp.auth=true
+															mail.smtp.starttls.enable=true
+															mail.smtp.starttls.required=true
+
+Now go to 👉 https://myaccount.google.com/security -->Enable 2 step verification-->https://myaccount.google.com/apppasswords-->Step 3: Create App Password(Select app → Mail->Select device → Other->Enter name → Jenkins->Click Generate)
+-Jenkins → Configure System → E-mail Notification
+Set:
+SMTP server: smtp.gmail.com
+Use SMTP Authentication: ☑
+User Name: rohit.lavate287@gmail.com
+Password: APP PASSWORD
+Use TLS: ☑
+SMTP Port: 587
+
+--Now to to project related job-->Configure-->Post build Actions-->Set Editable Email Notification-->Project Recipient List:lavatero92@gmail.com
+                                                                                                     Content Type:HTML(text/html)
+																									 Default Content:
+<h2>Selenium Automation Execution Report</h2>
+<p>Please find the TestNG report attached.</p>
+<p>Build: ${BUILD_NUMBER}</p>
+<p>Status: ${BUILD_STATUS}</p>
+<p>Workspace: ${WORKSPACE}</p>
+
+																									 Attach Build Log:select Attach Build Log
+																									 Attachments:test-output/emailable-report.html
+																									 Content Token Reference-->click on advanced-->Pre-send Script
+def reportFile = new File(env.WORKSPACE + "/test-output/emailable-report.html")
+msg.setContent(reportFile.text, "text/html")
+
+                                                                                                     Click on Add Trigger-->Always
+																									 Go to dashboard-->click on Build now
+																									 
+Note:clear Pre-send Script if face issues
