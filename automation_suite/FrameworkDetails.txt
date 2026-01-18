@@ -443,3 +443,206 @@ Step 5: RetryAnalyzer retries failed tests up to 2 times.
 Step 6: TestListener captures screenshots on failure + ExtentReports logs results.
 
 Step 7: After test → BaseTest.tearDown() closes browser.
+
+========================================
+CLEAN UP REPORTS & SCREENSHOTS AT SUITE START
+(Selenium + TestNG Framework)
+========================================
+
+GOAL:
+-----
+Before every test suite execution:
+- Delete old screenshots
+- Delete old ExtentReports
+- Start execution with a clean workspace
+
+This avoids:
+- Old failure screenshots mixing with new runs
+- Confusing reports in CI/Jenkins
+- Incorrect test evidence
+
+----------------------------------------
+STEP 1: Decide What to Clean
+----------------------------------------
+Typical folders to clean:
+
+1. reports/
+   - ExtentReport.html
+2. screenshots/
+   - *.png
+3. logs/
+   - automation.log (optional)
+
+----------------------------------------
+STEP 2: Create a Cleanup Utility Class
+----------------------------------------
+
+Create a utility class to delete folders/files.
+
+File:
+src/main/java/com/alchemist/utils/CleanupUtil.java
+
+CODE:
+-----
+
+package com.alchemist.utils;
+
+import java.io.File;
+
+public class CleanupUtil {
+
+    public static void cleanDirectory(String path) {
+        File dir = new File(path);
+
+        if (!dir.exists()) {
+            return;
+        }
+
+        File[] files = dir.listFiles();
+        if (files == null) {
+            return;
+        }
+
+        for (File file : files) {
+            if (file.isDirectory()) {
+                cleanDirectory(file.getAbsolutePath());
+            }
+            file.delete();
+        }
+    }
+
+    public static void cleanAll() {
+        cleanDirectory("reports");
+        cleanDirectory("screenshots");
+        cleanDirectory("logs");
+    }
+}
+
+----------------------------------------
+STEP 3: Trigger Cleanup Before Suite
+----------------------------------------
+
+You must clean folders BEFORE any test starts.
+
+Best places:
+1. @BeforeSuite in BaseTest
+OR
+2. TestNG Listener → onStart()
+
+RECOMMENDED: @BeforeSuite
+
+----------------------------------------
+STEP 4: Update BaseTest.java
+----------------------------------------
+
+File:
+src/main/java/com/alchemist/base/BaseTest.java
+
+CODE:
+-----
+
+package com.alchemist.base;
+
+import org.testng.annotations.BeforeSuite;
+import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.AfterMethod;
+import org.testng.annotations.Optional;
+import org.testng.annotations.Parameters;
+
+import com.alchemist.utils.CleanupUtil;
+import com.alchemist.utils.ConfigReader;
+
+public class BaseTest {
+
+    @BeforeSuite(alwaysRun = true)
+    public void cleanUpBeforeSuite() {
+        System.out.println("===== Cleaning old reports & screenshots =====");
+        CleanupUtil.cleanAll();
+    }
+
+    @Parameters({ "browser", "env" })
+    @BeforeMethod
+    public void setup(@Optional("chrome") String browser,
+                      @Optional("qa") String env) {
+
+        ConfigReader.loadEnv(env);
+        DriverFactory.initDriver(browser);
+        DriverFactory.getDriver().get(ConfigReader.get("URL"));
+    }
+
+    @AfterMethod(alwaysRun = true)
+    public void tearDown() {
+        DriverFactory.quitDriver();
+    }
+}
+
+----------------------------------------
+STEP 5: Alternative (Listener-Based Cleanup)
+----------------------------------------
+
+If you prefer cleanup via TestNG Listener:
+
+File:
+src/main/java/com/alchemist/listeners/TestListener.java
+
+Add this method:
+
+CODE:
+-----
+
+@Override
+public void onStart(ITestContext context) {
+    System.out.println("===== Cleaning old execution artifacts =====");
+    CleanupUtil.cleanAll();
+}
+
+----------------------------------------
+STEP 6: Register Listener
+----------------------------------------
+
+Option 1: testng.xml
+
+<listeners>
+    <listener class-name="com.alchemist.listeners.TestListener"/>
+</listeners>
+
+Option 2: Using @Listeners annotation
+
+@Listeners(TestListener.class)
+public class LoginTest extends BaseTest {
+}
+
+----------------------------------------
+STEP 7: Jenkins Compatibility
+----------------------------------------
+
+This cleanup works automatically in Jenkins because:
+- Jenkins workspace runs fresh per build (optional)
+- Cleanup happens at suite start
+- No extra Jenkins configuration needed
+
+Optional Jenkins setting:
+- Enable "Delete workspace before build starts"
+
+----------------------------------------
+FINAL RESULT
+----------------------------------------
+
+✔ Old screenshots deleted
+✔ Old ExtentReports removed
+✔ Clean execution every run
+✔ CI-friendly (Jenkins)
+✔ No manual cleanup needed
+
+----------------------------------------
+BEST PRACTICE NOTES
+----------------------------------------
+
+1. Always clean reports at @BeforeSuite (not @BeforeMethod)
+2. Never delete files during test execution
+3. Archive reports in Jenkins AFTER execution
+4. Keep cleanup logic centralized in a utility class
+
+========================================
+END
+========================================
