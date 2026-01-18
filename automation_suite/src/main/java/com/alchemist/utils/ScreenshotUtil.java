@@ -25,7 +25,9 @@ public class ScreenshotUtil {
             return path;
 
         } catch (Exception e) {
-            return "";
+            LogUtil.error("Screenshot failed", e);
+            return null;
         }
+
     }
 }
