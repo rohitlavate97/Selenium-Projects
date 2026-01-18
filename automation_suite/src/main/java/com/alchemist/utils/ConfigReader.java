@@ -8,7 +8,9 @@ import com.alchemist.exceptions.FrameworkException;
 public class ConfigReader {
 
     private static Properties prop;
-
+    
+    private ConfigReader() {}
+    
     public static void loadEnv(String env) {
         try {
             prop = new Properties();

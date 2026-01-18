@@ -1,24 +1,55 @@
-Skip to content
-Chat history
-
-
-
-You said:
-I will give you code, i will keep pasting, please wait until I say 'Proceed' 
-ChatGPT said:
-Got it! I’ll wait for you to say “Proceed” before taking any action. Go ahead and start pasting the code.
-
-You said:
-# Default environment (can override with env param)
-URL=https://online.actitime.com/mstar/login.do
-BROWSER=chrome
-GRID=false
-GRID_URL=http://localhost:4444
-EMAIL_FROM=rohit.lavate287@gmail.com
-EMAIL_PASSWORD=app-password
-EMAIL_TO=rohitlavate97@gmail.com,lavatero92@gmail.com
-SMTP_HOST=smtp.gmail.com
-SMTP_PORT=587
+selenium-testng-framework
+│
+├── pom.xml
+│
+├── src/main/java
+│   └── com/alchemist
+│       ├── base
+│       │   ├── BaseTest.java
+│       │   └── DriverFactory.java
+│       │
+│       ├── constants
+│       │   └── FrameworkConstants.java
+│       │
+│       ├── exceptions
+│       │   └── FrameworkException.java
+│       │
+│       ├── listeners
+│       │   └── TestListener.java
+│       │
+│       ├── pages
+│       │   └── LoginPage.java
+│       │
+│       ├── retry
+│       │   └── RetryAnalyzer.java
+│       │
+│       └── utils
+│           ├── AssertUtil.java
+│           ├── AttachmentUtil.java
+│           ├── CleanupUtil.java
+│           ├── ConfigReader.java
+│           ├── EmailContentBuilder.java
+│           ├── EmailUtil.java
+│           ├── ExcelUtil.java
+│           ├── ExtentManager.java
+│           ├── LogUtil.java
+│           ├── ScreenshotUtil.java
+│           └── SeleniumUtil.java
+│
+├── src/test/java
+│   └── com/alchemist/tests
+│       └── LoginTest.java
+│
+├── src/main/resources
+│   ├── config-qa.properties
+│   ├── config-prod.properties
+│   ├── log4j2.xml
+│   └── data.xlsx
+│
+├── reports
+├── screenshots
+├── logs
+└── testng.xml
 
 package com.alchemist.base;
 
@@ -149,18 +180,20 @@ public class DriverFactory {
 	}
 }
 
+
 package com.alchemist.constants;
 
 public final class FrameworkConstants {
 
     private FrameworkConstants() {}
 
-    public static final String CONFIG_PATH = "src/main/resources/config.properties";
     public static final String EXCEL_PATH = "src/main/resources/data.xlsx";
+    public static final String REPORT_PATH = "reports/ExtentReport.html";
     public static final String SCREENSHOT_PATH = "screenshots/";
-    public static final int EXPLICIT_WAIT = 10;
+    public static final int EXPLICIT_WAIT = 15;
     public static final int RETRY_COUNT = 2;
 }
+
 
 package com.alchemist.exceptions;
 
@@ -176,14 +209,6 @@ public class FrameworkException extends RuntimeException {
 }
 
 
-
-
-
-
-ChatGPT said:
-Got it, I’ve received the first batch of code. You can continue pasting the next parts whenever you’re ready. I’ll keep waiting until you say “Proceed.”
-
-You said:
 package com.alchemist.listeners;
 
 import java.io.File;
@@ -287,31 +312,38 @@ public class TestListener implements ITestListener {
     }
 
 }
-ChatGPT said:
-Got it, I’ve received the second part of the code. You can continue pasting the next parts. I’m still waiting until you say “Proceed.”
 
-You said:
+
+package com.alchemist.pages;
+
+import org.openqa.selenium.WebDriver;
+import com.alchemist.base.DriverFactory;
+
+public abstract class BasePage {
+    protected WebDriver driver = DriverFactory.getDriver();
+}
+
+
+
 package com.alchemist.pages;
 
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.*;
-import com.alchemist.base.DriverFactory;
 import com.alchemist.utils.SeleniumUtil;
 
-public class LoginPage {
+public class LoginPage extends BasePage {
 
-    @FindBy(id="username")
+    @FindBy(id = "username")
     private WebElement username;
 
-    @FindBy(name="pwd")
+    @FindBy(name = "pwd")
     private WebElement password;
 
-    @FindBy(xpath="//div[text()='Login ']")
+    @FindBy(xpath = "//div[text()='Login ']")
     private WebElement loginBtn;
 
     public LoginPage() {
-        PageFactory.initElements(
-            DriverFactory.getDriver(), this);
+        PageFactory.initElements(driver, this);
     }
 
     public void login(String user, String pass) {
@@ -321,45 +353,7 @@ public class LoginPage {
     }
 }
 
-package com.alchemist.tests;
 
-import org.testng.annotations.Test;
-import org.testng.Assert;
-import com.alchemist.base.BaseTest;
-import com.alchemist.pages.LoginPage;
-import com.alchemist.retry.RetryAnalyzer;
-import com.alchemist.utils.ExcelUtil;
-import com.alchemist.utils.AssertUtil;
-import com.alchemist.base.DriverFactory;
-
-public class LoginTest extends BaseTest {
-
-    @Test(retryAnalyzer = RetryAnalyzer.class)
-    public void validLoginTest() {
-        LoginPage page = new LoginPage();
-        AssertUtil assertUtil = new AssertUtil();
-
-        String user = ExcelUtil.getData("ValidLogin",1,0);
-        String pass = ExcelUtil.getData("ValidLogin",1,1);
-        String expectedTitle = ExcelUtil.getData("ValidLogin",1,2);
-
-        page.login(user, pass);
-
-        String actualTitle = DriverFactory.getDriver().getTitle();
-
-        // Soft assertion
-        assertUtil.assertEqualsSoft(actualTitle, expectedTitle, "Page title validation");
-        assertUtil.assertAll();
-
-        // Hard assertion example
-        Assert.assertEquals(actualTitle, expectedTitle, "Final check on page title");
-    }
-}
-
-ChatGPT said:
-Got it, I’ve received this third part of the code. You can continue pasting the next parts. I’m still waiting until you say “Proceed.”
-
-You said:
 package com.alchemist.retry;
 
 import org.testng.IRetryAnalyzer;
@@ -379,10 +373,8 @@ public class RetryAnalyzer implements IRetryAnalyzer {
         return false;
     }
 }
-ChatGPT said:
-Got it, I’ve received the retry analyzer code. You can continue pasting the next parts. I’m still waiting until you say “Proceed.”
 
-You said:
+
 package com.alchemist.utils;
 
 import org.testng.asserts.SoftAssert;
@@ -403,6 +395,7 @@ public class AssertUtil {
         softAssert.assertAll();
     }
 }
+
 
 package com.alchemist.utils;
 
@@ -437,6 +430,7 @@ public class AttachmentUtil {
     }
 }
 
+
 package com.alchemist.utils;
 
 import java.io.File;
@@ -468,7 +462,8 @@ public class CleanupUtil {
         cleanDirectory("screenshots");
         cleanDirectory("logs");
     }
-} 
+}
+
 
 package com.alchemist.utils;
 
@@ -480,7 +475,9 @@ import com.alchemist.exceptions.FrameworkException;
 public class ConfigReader {
 
     private static Properties prop;
-
+    
+    private ConfigReader() {}
+    
     public static void loadEnv(String env) {
         try {
             prop = new Properties();
@@ -498,6 +495,8 @@ public class ConfigReader {
         return prop.getProperty(key);
     }
 }
+
+
 
 package com.alchemist.utils;
 
@@ -537,10 +536,7 @@ public class EmailContentBuilder {
     }
 }
 
-ChatGPT said:
-Got it, I’ve received this batch of utility classes. You can continue pasting the next parts. I’m still waiting until you say “Proceed.”
 
-You said:
 package com.alchemist.utils;
 
 import javax.mail.*;
@@ -604,10 +600,8 @@ public class EmailUtil {
         }
     }
 }
-ChatGPT said:
-Got it, I’ve received the EmailUtil class. You can continue pasting the next parts. I’m still waiting until you say “Proceed.”
 
-You said:
+
 package com.alchemist.utils;
 
 import java.io.FileInputStream;
@@ -626,6 +620,7 @@ public class ExcelUtil {
         }
     }
 }
+
 
 package com.alchemist.utils;
 
@@ -650,6 +645,7 @@ public class ExtentManager {
     }
 }
 
+
 package com.alchemist.utils;
 
 public class LogUtil {
@@ -664,10 +660,6 @@ public class LogUtil {
 }
 
 
-ChatGPT said:
-Got it, I’ve received the ExcelUtil, ExtentManager, and LogUtil classes. You can continue pasting the next parts. I’m still waiting until you say “Proceed.”
-
-You said:
 package com.alchemist.utils;
 
 import java.io.File;
@@ -700,143 +692,202 @@ public class ScreenshotUtil {
     }
 }
 
+
 package com.alchemist.utils;
 
 import java.awt.Robot;
 import java.awt.event.KeyEvent;
 import java.time.Duration;
+
 import org.openqa.selenium.*;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.locators.RelativeLocator;
 import org.openqa.selenium.support.ui.*;
+
 import com.alchemist.base.DriverFactory;
+import com.alchemist.constants.FrameworkConstants;
 
-public class SeleniumUtil {
+public final class SeleniumUtil {
 
-    private static WebDriver driver = DriverFactory.getDriver();
-    private static WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(15));
-    private static JavascriptExecutor js = (JavascriptExecutor) driver;
+    private SeleniumUtil() {}
 
-    // Basic Actions
+    // ===== Core Accessors (Thread Safe) =====
+
+    private static WebDriver driver() {
+        WebDriver driver = DriverFactory.getDriver();
+        if (driver == null) {
+            throw new IllegalStateException(
+                "WebDriver is null. Ensure DriverFactory.initDriver() is called before using SeleniumUtil."
+            );
+        }
+        return driver;
+    }
+
+    private static WebDriverWait explicitWait() {
+        return new WebDriverWait(
+                driver(),
+                Duration.ofSeconds(FrameworkConstants.EXPLICIT_WAIT));
+    }
+
+    private static Wait<WebDriver> fluentWait(int timeout, int polling) {
+        return new FluentWait<>(driver())
+                .withTimeout(Duration.ofSeconds(timeout))
+                .pollingEvery(Duration.ofSeconds(polling))
+                .ignoring(NoSuchElementException.class)
+                .ignoring(StaleElementReferenceException.class);
+    }
+
+    private static JavascriptExecutor js() {
+        return (JavascriptExecutor) driver();
+    }
+
+    private static Actions actions() {
+        return new Actions(driver());
+    }
+
+    // ===== Basic Actions =====
+
     public static void click(WebElement element) {
-        wait.until(ExpectedConditions.elementToBeClickable(element)).click();
+        explicitWait()
+                .until(ExpectedConditions.elementToBeClickable(element))
+                .click();
     }
 
     public static void type(WebElement element, String text) {
-        wait.until(ExpectedConditions.visibilityOf(element));
+        explicitWait()
+                .until(ExpectedConditions.visibilityOf(element));
         element.clear();
         element.sendKeys(text);
     }
 
     public static String getText(WebElement element) {
-        return wait.until(ExpectedConditions.visibilityOf(element)).getText();
+        return explicitWait()
+                .until(ExpectedConditions.visibilityOf(element))
+                .getText();
     }
 
-    // Fluent Wait
+    // ===== Fluent Wait =====
+
     public static void fluentWait(By locator, int timeout, int polling) {
-        new FluentWait<>(driver)
-            .withTimeout(Duration.ofSeconds(timeout))
-            .pollingEvery(Duration.ofSeconds(polling))
-            .ignoring(NoSuchElementException.class)
-            .ignoring(StaleElementReferenceException.class)
-            .until(ExpectedConditions.visibilityOfElementLocated(locator));
+        fluentWait(timeout, polling)
+                .until(ExpectedConditions.visibilityOfElementLocated(locator));
     }
 
-    // Alerts
+    // ===== Alerts =====
+
     public static void acceptAlert() {
-        wait.until(ExpectedConditions.alertIsPresent()).accept();
+        explicitWait()
+                .until(ExpectedConditions.alertIsPresent())
+                .accept();
     }
 
     public static void dismissAlert() {
-        wait.until(ExpectedConditions.alertIsPresent()).dismiss();
+        explicitWait()
+                .until(ExpectedConditions.alertIsPresent())
+                .dismiss();
     }
 
-    // Frames
+    // ===== Frames =====
+
     public static void switchToFrame(WebElement frame) {
-        wait.until(ExpectedConditions.frameToBeAvailableAndSwitchToIt(frame));
+        explicitWait()
+                .until(ExpectedConditions.frameToBeAvailableAndSwitchToIt(frame));
     }
 
     public static void switchToDefaultContent() {
-        driver.switchTo().defaultContent();
+        driver().switchTo().defaultContent();
     }
 
-    // Windows
+    // ===== Windows =====
+
     public static void switchToNewWindow() {
-        String parent = driver.getWindowHandle();
-        for (String w : driver.getWindowHandles())
-            if (!w.equals(parent)) driver.switchTo().window(w);
+        String parent = driver().getWindowHandle();
+        for (String window : driver().getWindowHandles()) {
+            if (!window.equals(parent)) {
+                driver().switchTo().window(window);
+                return;
+            }
+        }
+        throw new NoSuchWindowException("No new window found to switch");
     }
 
-    // JS Actions
+    // ===== JavaScript Actions =====
+
     public static void jsClick(WebElement element) {
-        js.executeScript("arguments[0].click();", element);
+        js().executeScript("arguments[0].click();", element);
     }
 
     public static void scrollIntoView(WebElement element) {
-        js.executeScript("arguments[0].scrollIntoView(true);", element);
+        js().executeScript("arguments[0].scrollIntoView(true);", element);
     }
 
-    // Actions Class
+    // ===== Actions Class =====
+
     public static void hover(WebElement element) {
-        new Actions(driver).moveToElement(element).perform();
+        actions().moveToElement(element).perform();
     }
 
     public static void doubleClick(WebElement element) {
-        new Actions(driver).doubleClick(element).perform();
+        actions().doubleClick(element).perform();
     }
 
     public static void rightClick(WebElement element) {
-        new Actions(driver).contextClick(element).perform();
+        actions().contextClick(element).perform();
     }
 
     public static void dragAndDrop(WebElement src, WebElement target) {
-        new Actions(driver).dragAndDrop(src, target).perform();
+        actions().dragAndDrop(src, target).perform();
     }
 
-    // Robot Class
+    // ===== Robot =====
+
     public static void pressEnterKey() {
         try {
             Robot r = new Robot();
             r.keyPress(KeyEvent.VK_ENTER);
             r.keyRelease(KeyEvent.VK_ENTER);
         } catch (Exception e) {
-            e.printStackTrace();
+            throw new RuntimeException("Robot key press failed", e);
         }
     }
 
-    // File Upload
+    // ===== File Upload =====
+
     public static void uploadFile(WebElement element, String path) {
-        element.sendKeys(path);
+        explicitWait()
+                .until(ExpectedConditions.visibilityOf(element))
+                .sendKeys(path);
     }
 
-    // Browser Navigation & Cookies
+    // ===== Browser Navigation =====
+
     public static void refreshPage() {
-        driver.navigate().refresh();
+        driver().navigate().refresh();
     }
 
     public static void navigateBack() {
-        driver.navigate().back();
+        driver().navigate().back();
     }
 
     public static void addCookie(String name, String value) {
-        driver.manage().addCookie(new Cookie(name, value));
+        driver().manage().addCookie(new Cookie(name, value));
     }
 
-    // Shadow DOM
+    // ===== Shadow DOM (Selenium 4+) =====
+
     public static WebElement getShadowElement(WebElement host, String css) {
         return host.getShadowRoot().findElement(By.cssSelector(css));
     }
 
-    // Relative Locators
+    // ===== Relative Locators =====
+
     public static WebElement findElementBelow(WebElement element, By locator) {
-        return driver.findElement(RelativeLocator.with(locator).below(element));
+        return driver().findElement(
+                RelativeLocator.with(locator).below(element));
     }
 }
 
-ChatGPT said:
-Got it, I’ve received the ScreenshotUtil and SeleniumUtil classes. You can continue pasting the next parts. I’m still waiting until you say “Proceed.”
 
-You said:
 package com.alchemist.utils;
 
 import java.time.Duration;
@@ -861,11 +912,8 @@ public class WaitUtil {
         return wait.until(ExpectedConditions.elementToBeClickable(element));
     }
 }
-ChatGPT said:
-Got it, I’ve received the WaitUtil class. You can continue pasting the next parts. I’m still waiting until you say “Proceed.”
 
-You said:
-config.properties
+-config.properties
 # Default environment (can override with env param)
 URL=https://online.actitime.com/mstar/login.do
 BROWSER=chrome
@@ -877,35 +925,25 @@ EMAIL_TO=rohitlavate97@gmail.com,lavatero92@gmail.com
 SMTP_HOST=smtp.gmail.com
 SMTP_PORT=587
 
-config-qa.properties
-URL=https://online.actitime.com/mstar/login.do
-BROWSER=chrome
-ImplicitTimeOut=10
-
- config-prod.properties
 # config-prod.properties
 URL=https://online.actitime.com/mstar/login.do
 BROWSER=edge
 
+URL=https://online.actitime.com/mstar/login.do
+BROWSER=chrome
+ImplicitTimeOut=10
 
-ChatGPT said:
-Got it, I’ve received the configuration property files (config.properties, config-qa.properties, config-prod.properties). You can continue pasting the next parts. I’m still waiting until you say “Proceed.”
+# config-uat.properties
+URL=https://online.actitime.com/mstar/login.do
+BROWSER=firefox
 
-You said:
-Uploaded image
-Username	Password	ExpectedTitle
-lavatero92@gmail.com	admin@123	actiTIME - Login
-ChatGPT said:
-Got it, I see the Excel data screenshot you uploaded. It contains the login credentials and expected title for your test:
+-data.xlsx
+Username: lavatero92@gmail.com
+Password: admin@123
+ExpectedTitle: actiTIME - Login
 
-Username	Password	ExpectedTitle
-lavatero92@gmail.com	admin@123	actiTIME - Login
-I’ve now received all the code, configs, and test data you’ve pasted/uploaded so far.
 
-You can say “Proceed” whenever you want me to process everything, like generating a complete production-ready framework or providing the consolidated code.
-
-You said:
-log4j2.xml
+-Log4j2.xml(Basic)
 <?xml version="1.0" encoding="UTF-8"?>
 <Configuration status="WARN">
     <Appenders>
@@ -926,20 +964,8 @@ log4j2.xml
         </Root>
     </Loggers>
 </Configuration>
-ChatGPT said:
-Got it, I’ve received the log4j2.xml configuration. It’s set up to log:
 
-Console output: SYSTEM_OUT with pattern %d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n
-
-File output: logs/automation.log with pattern %d{yyyy-MM-dd HH:mm:ss} [%t] %-5level %logger{36} - %msg%n
-
-Root logger level: info
-
-Everything is in place for logging both to console and to the file.
-
-You can now say “Proceed” if you want me to consolidate everything into a complete production-ready Selenium + TestNG framework with all utilities, reporting, email, retry, and logging integrated.
-
-You said:
+-Log4j2.xml(Detailed)
 <?xml version="1.0" encoding="UTF-8"?>
 <Configuration status="WARN">
 
@@ -1004,464 +1030,3 @@ You said:
     </Loggers>
 
 </Configuration>
-
-another log4j detailed modified file 
-ChatGPT said:
-Got it, I’ve received your detailed modified Log4j2 configuration. Key points from this version:
-
-Properties defined:
-
-LOG_PATH → logs
-
-LOG_PATTERN → %d{yyyy-MM-dd HH:mm:ss} [%t] %-5level %c{1} - %msg%n
-
-Appenders:
-
-Console → For Jenkins/console output
-
-InfoFile → RollingFile for info level logs: automation-info.log with daily rollover (.gz)
-
-ErrorFile → RollingFile for error level logs: automation-error.log with daily rollover (.gz)
-
-Filters: Info and Error files accept only their respective levels.
-
-Loggers:
-
-Framework logger → com.alchemist, level info, references console, info, and error appenders.
-
-Root logger → level info, references same appenders.
-
-This version separates info and error logs and adds daily rolling, making it more production-ready compared to the basic log4j2.xml you shared earlier.
-
-You can now say “Proceed” if you want me to consolidate everything you’ve shared into a complete production-ready Selenium + TestNG + Cucumber framework with reporting, retry, email, logging, utilities, and configs.
-
-
-
-
-No file chosenNo file chosen
-ChatGPT can make mistakes. Check important info. See Cookie Preferences.
-
-
-Execution Flow:
-4️⃣ Execution Flow
-
-Step 1: TestNG suite starts → reads <parameter name="env" value="qa"/>.
-
-Step 2: BaseTest.setup() loads config-qa.properties via ConfigReader.
-
-Step 3: DriverFactory.initDriver() launches browser based on BROWSER in config.
-
-Step 4: Test executes → uses LoginPage with SeleniumUtil (click/type/wait).
-
-Step 5: RetryAnalyzer retries failed tests up to 2 times.
-
-Step 6: TestListener captures screenshots on failure + ExtentReports logs results.
-
-Step 7: After test → BaseTest.tearDown() closes browser.
-
-========================================
-CLEAN UP REPORTS & SCREENSHOTS AT SUITE START
-(Selenium + TestNG Framework)
-========================================
-
-GOAL:
------
-Before every test suite execution:
-- Delete old screenshots
-- Delete old ExtentReports
-- Start execution with a clean workspace
-
-This avoids:
-- Old failure screenshots mixing with new runs
-- Confusing reports in CI/Jenkins
-- Incorrect test evidence
-
-----------------------------------------
-STEP 1: Decide What to Clean
-----------------------------------------
-Typical folders to clean:
-
-1. reports/
-   - ExtentReport.html
-2. screenshots/
-   - *.png
-3. logs/
-   - automation.log (optional)
-
-----------------------------------------
-STEP 2: Create a Cleanup Utility Class
-----------------------------------------
-
-Create a utility class to delete folders/files.
-
-File:
-src/main/java/com/alchemist/utils/CleanupUtil.java
-
-CODE:
------
-
-package com.alchemist.utils;
-
-import java.io.File;
-
-public class CleanupUtil {
-
-    public static void cleanDirectory(String path) {
-        File dir = new File(path);
-
-        if (!dir.exists()) {
-            return;
-        }
-
-        File[] files = dir.listFiles();
-        if (files == null) {
-            return;
-        }
-
-        for (File file : files) {
-            if (file.isDirectory()) {
-                cleanDirectory(file.getAbsolutePath());
-            }
-            file.delete();
-        }
-    }
-
-    public static void cleanAll() {
-        cleanDirectory("reports");
-        cleanDirectory("screenshots");
-        cleanDirectory("logs");
-    }
-}
-
-----------------------------------------
-STEP 3: Trigger Cleanup Before Suite
-----------------------------------------
-
-You must clean folders BEFORE any test starts.
-
-Best places:
-1. @BeforeSuite in BaseTest
-OR
-2. TestNG Listener → onStart()
-
-RECOMMENDED: @BeforeSuite
-
-----------------------------------------
-STEP 4: Update BaseTest.java
-----------------------------------------
-
-File:
-src/main/java/com/alchemist/base/BaseTest.java
-
-CODE:
------
-
-package com.alchemist.base;
-
-import org.testng.annotations.BeforeSuite;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.AfterMethod;
-import org.testng.annotations.Optional;
-import org.testng.annotations.Parameters;
-
-import com.alchemist.utils.CleanupUtil;
-import com.alchemist.utils.ConfigReader;
-
-public class BaseTest {
-
-    @BeforeSuite(alwaysRun = true)
-    public void cleanUpBeforeSuite() {
-        System.out.println("===== Cleaning old reports & screenshots =====");
-        CleanupUtil.cleanAll();
-    }
-
-    @Parameters({ "browser", "env" })
-    @BeforeMethod
-    public void setup(@Optional("chrome") String browser,
-                      @Optional("qa") String env) {
-
-        ConfigReader.loadEnv(env);
-        DriverFactory.initDriver(browser);
-        DriverFactory.getDriver().get(ConfigReader.get("URL"));
-    }
-
-    @AfterMethod(alwaysRun = true)
-    public void tearDown() {
-        DriverFactory.quitDriver();
-    }
-}
-
-----------------------------------------
-STEP 5: Alternative (Listener-Based Cleanup)
-----------------------------------------
-
-If you prefer cleanup via TestNG Listener:
-
-File:
-src/main/java/com/alchemist/listeners/TestListener.java
-
-Add this method:
-
-CODE:
------
-
-@Override
-public void onStart(ITestContext context) {
-    System.out.println("===== Cleaning old execution artifacts =====");
-    CleanupUtil.cleanAll();
-}
-
-----------------------------------------
-STEP 6: Register Listener
-----------------------------------------
-
-Option 1: testng.xml
-
-<listeners>
-    <listener class-name="com.alchemist.listeners.TestListener"/>
-</listeners>
-
-Option 2: Using @Listeners annotation
-
-@Listeners(TestListener.class)
-public class LoginTest extends BaseTest {
-}
-
-----------------------------------------
-STEP 7: Jenkins Compatibility
-----------------------------------------
-
-This cleanup works automatically in Jenkins because:
-- Jenkins workspace runs fresh per build (optional)
-- Cleanup happens at suite start
-- No extra Jenkins configuration needed
-
-Optional Jenkins setting:
-- Enable "Delete workspace before build starts"
-
-----------------------------------------
-FINAL RESULT
-----------------------------------------
-
-✔ Old screenshots deleted
-✔ Old ExtentReports removed
-✔ Clean execution every run
-✔ CI-friendly (Jenkins)
-✔ No manual cleanup needed
-
-----------------------------------------
-BEST PRACTICE NOTES
-----------------------------------------
-
-1. Always clean reports at @BeforeSuite (not @BeforeMethod)
-2. Never delete files during test execution
-3. Archive reports in Jenkins AFTER execution
-4. Keep cleanup logic centralized in a utility class
-
-========================================
-END
-========================================
-
-========================================================
-SENDING EMAIL TEST RESULTS – COMPLETE IMPLEMENTATION
-(Selenium + TestNG + Jenkins)
-========================================================
-Goal:
------
-After test execution:
-✔ Send email to recipients
-✔ Include execution summary (PASS / FAIL)
-✔ Optionally attach:
-   - Extent Report
-   - Log files
-   - Screenshots
-
-Triggered from:
---------------
-✔ TestNG Listener (onFinish)
-✔ OR Jenkins Post-build
-
-2️⃣ PREREQUISITES
-2.1 Enable Email Account
-Recommended:
--------------
-Use Gmail with App Password
-(Do NOT use real password)
-
-Steps:
-1. Enable 2-Step Verification in Gmail
-2. Generate App Password
-3. Use that password in code
-
-Add to pom.xml
-<dependency>
-    <groupId>com.sun.mail</groupId>
-    <artifactId>javax.mail</artifactId>
-    <version>1.6.2</version>
-</dependency>
-
--Modify config.properties ->Add
-EMAIL_FROM=automation@gmail.com
-EMAIL_PASSWORD=app-password
-EMAIL_TO=qa.team@gmail.com,dev.team@gmail.com
-SMTP_HOST=smtp.gmail.com
-SMTP_PORT=587
-
-
-package com.alchemist.utils;
-
-import java.io.File;
-import java.util.Properties;
-import javax.mail.*;
-import javax.mail.internet.*;
-
-public class EmailUtil {
-
-    public static void sendEmail(
-            String subject,
-            String body,
-            File attachment) {
-
-        final String from = ConfigReader.get("EMAIL_FROM");
-        final String password = ConfigReader.get("EMAIL_PASSWORD");
-        String to = ConfigReader.get("EMAIL_TO");
-
-        Properties props = new Properties();
-        props.put("mail.smtp.auth", "true");
-        props.put("mail.smtp.starttls.enable", "true");
-        props.put("mail.smtp.host", ConfigReader.get("SMTP_HOST"));
-        props.put("mail.smtp.port", ConfigReader.get("SMTP_PORT"));
-
-        Session session = Session.getInstance(props,
-            new Authenticator() {
-                protected PasswordAuthentication getPasswordAuthentication() {
-                    return new PasswordAuthentication(from, password);
-                }
-            });
-
-        try {
-            Message message = new MimeMessage(session);
-            message.setFrom(new InternetAddress(from));
-            message.setRecipients(
-                    Message.RecipientType.TO,
-                    InternetAddress.parse(to));
-            message.setSubject(subject);
-
-            // Email Body
-            BodyPart messageBodyPart = new MimeBodyPart();
-            messageBodyPart.setText(body);
-
-            Multipart multipart = new MimeMultipart();
-            multipart.addBodyPart(messageBodyPart);
-
-            // Attachment
-            if (attachment != null && attachment.exists()) {
-                MimeBodyPart attachPart = new MimeBodyPart();
-                attachPart.attachFile(attachment);
-                multipart.addBodyPart(attachPart);
-            }
-
-            message.setContent(multipart);
-            Transport.send(message);
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-}
-
-package com.alchemist.utils;
-
-import org.testng.ITestContext;
-
-public class EmailContentBuilder {
-
-    public static String buildHtmlSummary(ITestContext context) {
-
-        int passed = context.getPassedTests().size();
-        int failed = context.getFailedTests().size();
-        int skipped = context.getSkippedTests().size();
-
-        String statusColor = failed > 0 ? "red" : "green";
-        String statusText  = failed > 0 ? "FAILED" : "PASSED";
-
-        return "<html>"
-             + "<body style='font-family: Arial;'>"
-             + "<h2 style='color:" + statusColor + ";'>Automation Execution " + statusText + "</h2>"
-             + "<table border='1' cellpadding='8' cellspacing='0'>"
-             + "<tr><th align='left'>Suite Name</th><td>" + context.getName() + "</td></tr>"
-             + "<tr><th align='left'>Passed</th><td style='color:green;'>" + passed + "</td></tr>"
-             + "<tr><th align='left'>Failed</th><td style='color:red;'>" + failed + "</td></tr>"
-             + "<tr><th align='left'>Skipped</th><td style='color:orange;'>" + skipped + "</td></tr>"
-             + "</table>"
-             + "<br/>"
-             + "<p>Please find attached:</p>"
-             + "<ul>"
-             + "<li>Extent HTML Report</li>"
-             + "<li>Execution Logs</li>"
-             + "<li>Failure Screenshots</li>"
-             + "</ul>"
-             + "<br/>"
-             + "<p><b>Automation Framework</b><br/>Selenium + TestNG + Jenkins</p>"
-             + "</body>"
-             + "</html>";
-    }
-}
-
-
-TRIGGER EMAIL FROM TESTNG LISTENER-->📄 Update TestListener.java
-@Override
-public void onFinish(ITestContext context) {
-
-    log.info("===== TEST SUITE FINISHED =====");
-    log.info("Suite Name   : {}", context.getName());
-    log.info("Passed Tests : {}", context.getPassedTests().size());
-    log.info("Failed Tests : {}", context.getFailedTests().size());
-    log.info("Skipped Tests: {}", context.getSkippedTests().size());
-
-    // Flush Extent Report
-    log.info("Flushing Extent Report");
-    extent.flush();
-
-    // Prepare Email Subject
-    String subject;
-    if (context.getFailedTests().size() > 0) {
-        subject = "❌ Automation FAILED - " + context.getName();
-    } else {
-        subject = "✅ Automation PASSED - " + context.getName();
-    }
-
-    // Prepare Email Body
-    String body =
-            "Automation Execution Summary\n\n"
-          + "Suite Name   : " + context.getName() + "\n"
-          + "Passed Tests : " + context.getPassedTests().size() + "\n"
-          + "Failed Tests : " + context.getFailedTests().size() + "\n"
-          + "Skipped Tests: " + context.getSkippedTests().size() + "\n\n"
-          + "Please find the attached Extent Report.\n";
-
-    // Attach Extent Report
-    File reportFile = new File("reports/ExtentReport.html");
-
-    log.info("Sending execution email notification");
-    EmailUtil.sendEmail(subject, body, reportFile);
-
-    log.info("===== EMAIL NOTIFICATION SENT =====");
-}
-
-JENKINS INTEGRATION (IMPORTANT)
-- Ensure Jenkins allows email
-✔ Internet access enabled
-✔ JavaMail dependency present
-✔ config.properties available
--Archive Reports
-Post-build Actions:
--------------------
-✔ Archive artifacts:
-   reports/**/*.html
-   logs/**/*.log
-   screenshots/**/*.png
--OPTIONAL: SEND EMAIL ONLY ON FAILURE
-if (context.getFailedTests().size() > 0) {
-    EmailUtil.sendEmail(subject, body, extentReport);
-}

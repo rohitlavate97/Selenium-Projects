@@ -2,23 +2,21 @@ package com.alchemist.pages;
 
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.*;
-import com.alchemist.base.DriverFactory;
 import com.alchemist.utils.SeleniumUtil;
 
-public class LoginPage {
+public class LoginPage extends BasePage {
 
-    @FindBy(id="username")
+    @FindBy(id = "username")
     private WebElement username;
 
-    @FindBy(name="pwd")
+    @FindBy(name = "pwd")
     private WebElement password;
 
-    @FindBy(xpath="//div[text()='Login ']")
+    @FindBy(xpath = "//div[text()='Login ']")
     private WebElement loginBtn;
 
     public LoginPage() {
-        PageFactory.initElements(
-            DriverFactory.getDriver(), this);
+        PageFactory.initElements(driver, this);
     }
 
     public void login(String user, String pass) {
