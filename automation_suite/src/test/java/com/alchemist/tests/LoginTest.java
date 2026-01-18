@@ -6,11 +6,21 @@ import com.alchemist.base.BaseTest;
 import com.alchemist.pages.LoginPage;
 import com.alchemist.retry.RetryAnalyzer;
 import com.alchemist.utils.ExcelUtil;
+
+import io.qameta.allure.Epic;
+import io.qameta.allure.Feature;
+import io.qameta.allure.Severity;
+import io.qameta.allure.SeverityLevel;
+import io.qameta.allure.Story;
+
 import com.alchemist.utils.AssertUtil;
 import com.alchemist.base.DriverFactory;
 
 public class LoginTest extends BaseTest {
-
+	@Epic("Authentication")
+	@Feature("Login Feature")
+	@Story("Valid Login")
+	@Severity(SeverityLevel.CRITICAL)
     @Test(retryAnalyzer = RetryAnalyzer.class)
     public void validLoginTest() {
         LoginPage page = new LoginPage();
