@@ -1,5 +1,7 @@
 package com.alchemist.listeners;
 
+import java.io.File;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.testng.*;
@@ -68,7 +70,34 @@ public class TestListener implements ITestListener {
 
     @Override
     public void onFinish(ITestContext context) {
-        log.info("TEST SUITE FINISHED: {}", context.getName());
+
+        log.info("===== TEST SUITE FINISHED =====");
+        log.info("Suite Name   : {}", context.getName());
+        log.info("Passed Tests : {}", context.getPassedTests().size());
+        log.info("Failed Tests : {}", context.getFailedTests().size());
+        log.info("Skipped Tests: {}", context.getSkippedTests().size());
+
+        // Flush Extent
+        log.info("Flushing Extent Report");
         extent.flush();
+
+        // Email Subject
+        String subject = context.getFailedTests().size() > 0
+                ? "❌ Automation FAILED - " + context.getName()
+                : "✅ Automation PASSED - " + context.getName();
+
+        // HTML Email Body
+        String htmlBody =
+                EmailContentBuilder.buildHtmlSummary(context);
+
+        // Collect Attachments
+        File[] attachments =
+                AttachmentUtil.collectAttachments();
+
+        log.info("Sending HTML execution email with attachments");
+        EmailUtil.sendEmail(subject, htmlBody, attachments);
+
+        log.info("===== EMAIL SENT SUCCESSFULLY =====");
     }
+
 }
