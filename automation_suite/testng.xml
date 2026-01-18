@@ -1,4 +1,9 @@
 <suite name="CrossBrowserSuite" parallel="tests" thread-count="3">
+
+    <listeners>
+        <listener class-name="com.alchemist.listeners.TestListener"/>
+    </listeners>
+
     <test name="Chrome_QA">
         <parameter name="browser" value="chrome"/>
         <parameter name="env" value="qa"/>
@@ -6,6 +11,7 @@
             <class name="com.alchemist.tests.LoginTest"/>
         </classes>
     </test>
+
     <test name="Firefox_UAT">
         <parameter name="browser" value="firefox"/>
         <parameter name="env" value="uat"/>
@@ -13,6 +19,7 @@
             <class name="com.alchemist.tests.LoginTest"/>
         </classes>
     </test>
+
     <test name="Edge_PROD">
         <parameter name="browser" value="edge"/>
         <parameter name="env" value="prod"/>
@@ -20,4 +27,5 @@
             <class name="com.alchemist.tests.LoginTest"/>
         </classes>
     </test>
+
 </suite>

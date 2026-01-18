@@ -9,17 +9,17 @@
 <table>
 <tr><th>Test</th><th># Passed</th><th># Skipped</th><th># Retried</th><th># Failed</th><th>Time (ms)</th><th>Included Groups</th><th>Excluded Groups</th></tr>
 <tr><th colspan="8">CrossBrowserSuite</th></tr>
-<tr><td><a href="#t0">Firefox_UAT</a></td><td class="num">0</td><td class="num attn">1</td><td class="num">0</td><td class="num">0</td><td class="num">1,749</td><td></td><td></td></tr>
-<tr class="stripe"><td><a href="#t1">Edge_PROD</a></td><td class="num">1</td><td class="num">0</td><td class="num">0</td><td class="num">0</td><td class="num">7,532</td><td></td><td></td></tr>
-<tr><td><a href="#t2">Chrome_QA</a></td><td class="num">1</td><td class="num">0</td><td class="num">0</td><td class="num">0</td><td class="num">8,136</td><td></td><td></td></tr>
-<tr><th>Total</th><th class="num">2</th><th class="num attn">1</th><th class="num">0</th><th class="num">0</th><th class="num">17,417</th><th colspan="2"></th></tr>
+<tr><td><a href="#t0">Firefox_UAT</a></td><td class="num">0</td><td class="num attn">1</td><td class="num">0</td><td class="num">0</td><td class="num">2,868</td><td></td><td></td></tr>
+<tr class="stripe"><td><a href="#t1">Edge_PROD</a></td><td class="num">1</td><td class="num">0</td><td class="num">0</td><td class="num">0</td><td class="num">10,188</td><td></td><td></td></tr>
+<tr><td><a href="#t2">Chrome_QA</a></td><td class="num">1</td><td class="num">0</td><td class="num">0</td><td class="num">0</td><td class="num">10,888</td><td></td><td></td></tr>
+<tr><th>Total</th><th class="num">2</th><th class="num attn">1</th><th class="num">0</th><th class="num">0</th><th class="num">23,944</th><th colspan="2"></th></tr>
 </table>
-<table id='summary'><thead><tr><th>Class</th><th>Method</th><th>Start</th><th>Time (ms)</th></tr></thead><tbody><tr><th colspan="4">CrossBrowserSuite</th></tr></tbody><tbody id="t0"><tr><th colspan="4">Firefox_UAT &#8212; failed (configuration methods)</th></tr><tr class="failedeven"><td rowspan="1">com.alchemist.tests.LoginTest</td><td><a href="#m0">setup</a></td><td rowspan="1">1768741523425</td><td rowspan="1">1674</td></tr><tr><th colspan="4">Firefox_UAT &#8212; skipped</th></tr><tr class="skippedeven"><td rowspan="1">com.alchemist.tests.LoginTest</td><td><a href="#m1">validLoginTest</a></td><td rowspan="1">1768741525118</td><td rowspan="1">0</td></tr></tbody>
-<tbody id="t1"><tr><th colspan="4">Edge_PROD &#8212; passed</th></tr><tr class="passedeven"><td rowspan="1">com.alchemist.tests.LoginTest</td><td><a href="#m2">validLoginTest</a></td><td rowspan="1">1768741529716</td><td rowspan="1">1071</td></tr></tbody>
-<tbody id="t2"><tr><th colspan="4">Chrome_QA &#8212; passed</th></tr><tr class="passedeven"><td rowspan="1">com.alchemist.tests.LoginTest</td><td><a href="#m3">validLoginTest</a></td><td rowspan="1">1768741530887</td><td rowspan="1">449</td></tr></tbody>
+<table id='summary'><thead><tr><th>Class</th><th>Method</th><th>Start</th><th>Time (ms)</th></tr></thead><tbody><tr><th colspan="4">CrossBrowserSuite</th></tr></tbody><tbody id="t0"><tr><th colspan="4">Firefox_UAT &#8212; failed (configuration methods)</th></tr><tr class="failedeven"><td rowspan="1">com.alchemist.tests.LoginTest</td><td><a href="#m0">setup</a></td><td rowspan="1">1768743285378</td><td rowspan="1">2676</td></tr><tr><th colspan="4">Firefox_UAT &#8212; skipped</th></tr><tr class="skippedeven"><td rowspan="1">com.alchemist.tests.LoginTest</td><td><a href="#m1">validLoginTest</a></td><td rowspan="1">1768743288100</td><td rowspan="1">0</td></tr></tbody>
+<tbody id="t1"><tr><th colspan="4">Edge_PROD &#8212; passed</th></tr><tr class="passedeven"><td rowspan="1">com.alchemist.tests.LoginTest</td><td><a href="#m2">validLoginTest</a></td><td rowspan="1">1768743293348</td><td rowspan="1">1873</td></tr></tbody>
+<tbody id="t2"><tr><th colspan="4">Chrome_QA &#8212; passed</th></tr><tr class="passedeven"><td rowspan="1">com.alchemist.tests.LoginTest</td><td><a href="#m3">validLoginTest</a></td><td rowspan="1">1768743295016</td><td rowspan="1">952</td></tr></tbody>
 </table>
-<h2>Firefox_UAT</h2><h3 id="m0">com.alchemist.tests.LoginTest#setup</h3><table class="result"><tr class="param"><th>Parameter #1</th><th>Parameter #2</th></tr><tr class="param stripe"><td>firefox</td><td>uat</td></tr><tr><th colspan="2">Exception</th></tr><tr><td colspan="2"><div class="stacktrace">java.lang.RuntimeException: Failed to initialize WebDriver
-	at com.alchemist.base.DriverFactory.initDriver(DriverFactory.java:50)
+<h2>Firefox_UAT</h2><h3 id="m0">com.alchemist.tests.LoginTest#setup</h3><table class="result"><tr class="param"><th>Parameter #1</th><th>Parameter #2</th></tr><tr class="param stripe"><td>firefox</td><td>uat</td></tr><tr><th colspan="2">Exception</th></tr><tr><td colspan="2"><div class="stacktrace">java.lang.RuntimeException: Failed to initialize WebDriver for browser: firefox
+	at com.alchemist.base.DriverFactory.initDriver(DriverFactory.java:51)
 	at com.alchemist.base.BaseTest.setup(BaseTest.java:25)
 	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
 	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:264)
@@ -46,12 +46,12 @@ Command: [null, newSession {capabilities=[Capabilities {acceptInsecureCerts: tru
 	at org.openqa.selenium.firefox.FirefoxDriver.&lt;init&gt;(FirefoxDriver.java:133)
 	at org.openqa.selenium.firefox.FirefoxDriver.&lt;init&gt;(FirefoxDriver.java:128)
 	at org.openqa.selenium.firefox.FirefoxDriver.&lt;init&gt;(FirefoxDriver.java:113)
-	at com.alchemist.base.DriverFactory.createLocalDriver(DriverFactory.java:108)
-	at com.alchemist.base.DriverFactory.initDriver(DriverFactory.java:45)
+	at com.alchemist.base.DriverFactory.createLocalDriver(DriverFactory.java:110)
+	at com.alchemist.base.DriverFactory.initDriver(DriverFactory.java:47)
 	... 27 more
 ... Removed 21 stack frames</div></td></tr></table><p class="totop"><a href="#summary">back to summary</a></p>
-<h3 id="m1">com.alchemist.tests.LoginTest#validLoginTest</h3><table class="result"><tr><th>Exception</th></tr><tr><td><div class="stacktrace">java.lang.RuntimeException: Failed to initialize WebDriver
-	at com.alchemist.base.DriverFactory.initDriver(DriverFactory.java:50)
+<h3 id="m1">com.alchemist.tests.LoginTest#validLoginTest</h3><table class="result"><tr><th>Exception</th></tr><tr><td><div class="stacktrace">java.lang.RuntimeException: Failed to initialize WebDriver for browser: firefox
+	at com.alchemist.base.DriverFactory.initDriver(DriverFactory.java:51)
 	at com.alchemist.base.BaseTest.setup(BaseTest.java:25)
 	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
 	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:264)
@@ -78,8 +78,8 @@ Command: [null, newSession {capabilities=[Capabilities {acceptInsecureCerts: tru
 	at org.openqa.selenium.firefox.FirefoxDriver.&lt;init&gt;(FirefoxDriver.java:133)
 	at org.openqa.selenium.firefox.FirefoxDriver.&lt;init&gt;(FirefoxDriver.java:128)
 	at org.openqa.selenium.firefox.FirefoxDriver.&lt;init&gt;(FirefoxDriver.java:113)
-	at com.alchemist.base.DriverFactory.createLocalDriver(DriverFactory.java:108)
-	at com.alchemist.base.DriverFactory.initDriver(DriverFactory.java:45)
+	at com.alchemist.base.DriverFactory.createLocalDriver(DriverFactory.java:110)
+	at com.alchemist.base.DriverFactory.initDriver(DriverFactory.java:47)
 	... 27 more
 ... Removed 21 stack frames</div></td></tr></table><p class="totop"><a href="#summary">back to summary</a></p>
 <h2>Edge_PROD</h2><h3 id="m2">com.alchemist.tests.LoginTest#validLoginTest</h3><table class="result"><tr><th class="invisible"/></tr></table><p class="totop"><a href="#summary">back to summary</a></p>

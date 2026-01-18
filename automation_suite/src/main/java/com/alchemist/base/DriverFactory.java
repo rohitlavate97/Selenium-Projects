@@ -33,10 +33,12 @@ public final class DriverFactory {
         boolean useGrid  = Boolean.parseBoolean(ConfigReader.get("GRID"));
         boolean headless = Boolean.parseBoolean(ConfigReader.get("HEADLESS"));
 
+        log.info("=======================================");
         log.info("Initializing WebDriver");
-        log.info("Browser   : {}", browser);
-        log.info("Use Grid  : {}", useGrid);
-        log.info("Headless  : {}", headless);
+        log.info("Browser  : {}", browser);
+        log.info("Grid     : {}", useGrid);
+        log.info("Headless : {}", headless);
+        log.info("=======================================");
 
         try {
             if (useGrid) {
@@ -44,10 +46,9 @@ public final class DriverFactory {
             } else {
                 drv = createLocalDriver(browser, headless);
             }
-
         } catch (Exception e) {
-            log.error("Failed to initialize WebDriver for browser: " + browser, e);
-            throw new RuntimeException("Failed to initialize WebDriver", e);
+            log.error("Failed to initialize WebDriver for browser: {}", browser, e);
+            throw new RuntimeException("Failed to initialize WebDriver for browser: " + browser, e);
         }
 
         driver.set(drv);
@@ -57,10 +58,9 @@ public final class DriverFactory {
         if (implicit != null) {
             log.info("Setting implicit wait: {} seconds", implicit);
             driver.get().manage().timeouts()
-                  .implicitlyWait(Duration.ofSeconds(Integer.parseInt(implicit)));
+                    .implicitlyWait(Duration.ofSeconds(Integer.parseInt(implicit)));
         }
 
-        // Maximize only when not headless
         if (!headless) {
             driver.get().manage().window().maximize();
         }
@@ -68,7 +68,7 @@ public final class DriverFactory {
         log.info("WebDriver initialized successfully");
     }
 
-    /* ===================== DRIVER CREATION ===================== */
+    /* ===================== GRID ===================== */
 
     private static WebDriver createRemoteDriver(String browser, boolean headless) throws Exception {
 
@@ -89,9 +89,11 @@ public final class DriverFactory {
                 return new RemoteWebDriver(gridUrl, getEdgeOptions(headless));
 
             default:
-                throw new RuntimeException("Unsupported browser for Grid: " + browser);
+                throw new RuntimeException("Unsupported Grid browser: " + browser);
         }
     }
+
+    /* ===================== LOCAL ===================== */
 
     private static WebDriver createLocalDriver(String browser, boolean headless) {
 
@@ -107,18 +109,13 @@ public final class DriverFactory {
                 WebDriverManager.firefoxdriver().setup();
                 return new FirefoxDriver(getFirefoxOptions(headless));
 
-			/*
-			 * case "edge": log.info("Launching Edge locally");
-			 * WebDriverManager.edgedriver().setup(); return new
-			 * EdgeDriver(getEdgeOptions(headless));
-			 */
-            
             case "edge":
                 log.info("Launching Edge locally using manual driver");
-                System.setProperty("webdriver.edge.driver",
-                        System.getProperty("user.dir") + "\\drivers\\msedgedriver.exe");
+                String edgePath = System.getProperty("user.dir") + "\\drivers\\msedgedriver.exe";
+                System.setProperty("webdriver.edge.driver", edgePath);
+                log.info("Edge driver path: {}", edgePath);
                 return new EdgeDriver(getEdgeOptions(headless));
-            
+
             default:
                 throw new RuntimeException("Unsupported local browser: " + browser);
         }
@@ -135,17 +132,14 @@ public final class DriverFactory {
             options.addArguments("--disable-gpu");
             options.addArguments("--window-size=1920,1080");
         }
-
         return options;
     }
 
     private static FirefoxOptions getFirefoxOptions(boolean headless) {
         FirefoxOptions options = new FirefoxOptions();
-
         if (headless) {
             options.addArguments("-headless");
         }
-
         return options;
     }
 
@@ -157,7 +151,6 @@ public final class DriverFactory {
             options.addArguments("--headless=new");
             options.addArguments("--window-size=1920,1080");
         }
-
         return options;
     }
 

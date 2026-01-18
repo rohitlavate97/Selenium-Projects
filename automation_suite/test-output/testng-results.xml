@@ -2,12 +2,12 @@
 <testng-results ignored="0" total="3" passed="2" failed="0" skipped="1">
   <reporter-output>
   </reporter-output>
-  <suite started-at="2026-01-18T18:35:23 IST" name="CrossBrowserSuite" finished-at="2026-01-18T18:35:31 IST" duration-ms="8136">
+  <suite started-at="2026-01-18T19:04:45 IST" name="CrossBrowserSuite" finished-at="2026-01-18T19:04:56 IST" duration-ms="10888">
     <groups>
     </groups>
-    <test started-at="2026-01-18T18:35:23 IST" name="Firefox_UAT" finished-at="2026-01-18T18:35:25 IST" duration-ms="1749">
+    <test started-at="2026-01-18T19:04:45 IST" name="Firefox_UAT" finished-at="2026-01-18T19:04:48 IST" duration-ms="2868">
       <class name="com.alchemist.tests.LoginTest">
-        <test-method is-config="true" signature="setup(java.lang.String,java.lang.String)[pri:0, instance:com.alchemist.tests.LoginTest@55342f40]" started-at="2026-01-18T18:35:23 IST" name="setup" finished-at="2026-01-18T18:35:25 IST" duration-ms="1674" status="FAIL">
+        <test-method is-config="true" signature="setup(java.lang.String,java.lang.String)[pri:0, instance:com.alchemist.tests.LoginTest@544630b7]" started-at="2026-01-18T19:04:45 IST" name="setup" finished-at="2026-01-18T19:04:48 IST" duration-ms="2676" status="FAIL">
           <params>
             <param index="0">
               <value>
@@ -22,11 +22,11 @@
           </params>
           <exception class="java.lang.RuntimeException">
             <message>
-              <![CDATA[Failed to initialize WebDriver]]>
+              <![CDATA[Failed to initialize WebDriver for browser: firefox]]>
             </message>
             <full-stacktrace>
-              <![CDATA[java.lang.RuntimeException: Failed to initialize WebDriver
-at com.alchemist.base.DriverFactory.initDriver(DriverFactory.java:50)
+              <![CDATA[java.lang.RuntimeException: Failed to initialize WebDriver for browser: firefox
+at com.alchemist.base.DriverFactory.initDriver(DriverFactory.java:51)
 at com.alchemist.base.BaseTest.setup(BaseTest.java:25)
 at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
 at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77)
@@ -74,8 +74,8 @@ at org.openqa.selenium.firefox.FirefoxDriver.<init>(FirefoxDriver.java:152)
 at org.openqa.selenium.firefox.FirefoxDriver.<init>(FirefoxDriver.java:133)
 at org.openqa.selenium.firefox.FirefoxDriver.<init>(FirefoxDriver.java:128)
 at org.openqa.selenium.firefox.FirefoxDriver.<init>(FirefoxDriver.java:113)
-at com.alchemist.base.DriverFactory.createLocalDriver(DriverFactory.java:108)
-at com.alchemist.base.DriverFactory.initDriver(DriverFactory.java:45)
+at com.alchemist.base.DriverFactory.createLocalDriver(DriverFactory.java:110)
+at com.alchemist.base.DriverFactory.initDriver(DriverFactory.java:47)
 ... 27 more
 ]]>
             </full-stacktrace>
@@ -83,14 +83,14 @@ at com.alchemist.base.DriverFactory.initDriver(DriverFactory.java:45)
           <reporter-output>
           </reporter-output>
         </test-method> <!-- setup -->
-        <test-method signature="validLoginTest()[pri:0, instance:com.alchemist.tests.LoginTest@55342f40]" started-at="2026-01-18T18:35:25 IST" name="validLoginTest" finished-at="2026-01-18T18:35:25 IST" duration-ms="0" status="SKIP">
+        <test-method signature="validLoginTest()[pri:0, instance:com.alchemist.tests.LoginTest@544630b7]" started-at="2026-01-18T19:04:48 IST" name="validLoginTest" finished-at="2026-01-18T19:04:48 IST" duration-ms="0" status="SKIP">
           <exception class="java.lang.RuntimeException">
             <message>
-              <![CDATA[Failed to initialize WebDriver]]>
+              <![CDATA[Failed to initialize WebDriver for browser: firefox]]>
             </message>
             <full-stacktrace>
-              <![CDATA[java.lang.RuntimeException: Failed to initialize WebDriver
-at com.alchemist.base.DriverFactory.initDriver(DriverFactory.java:50)
+              <![CDATA[java.lang.RuntimeException: Failed to initialize WebDriver for browser: firefox
+at com.alchemist.base.DriverFactory.initDriver(DriverFactory.java:51)
 at com.alchemist.base.BaseTest.setup(BaseTest.java:25)
 at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
 at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77)
@@ -138,8 +138,8 @@ at org.openqa.selenium.firefox.FirefoxDriver.<init>(FirefoxDriver.java:152)
 at org.openqa.selenium.firefox.FirefoxDriver.<init>(FirefoxDriver.java:133)
 at org.openqa.selenium.firefox.FirefoxDriver.<init>(FirefoxDriver.java:128)
 at org.openqa.selenium.firefox.FirefoxDriver.<init>(FirefoxDriver.java:113)
-at com.alchemist.base.DriverFactory.createLocalDriver(DriverFactory.java:108)
-at com.alchemist.base.DriverFactory.initDriver(DriverFactory.java:45)
+at com.alchemist.base.DriverFactory.createLocalDriver(DriverFactory.java:110)
+at com.alchemist.base.DriverFactory.initDriver(DriverFactory.java:47)
 ... 27 more
 ]]>
             </full-stacktrace>
@@ -147,15 +147,15 @@ at com.alchemist.base.DriverFactory.initDriver(DriverFactory.java:45)
           <reporter-output>
           </reporter-output>
         </test-method> <!-- validLoginTest -->
-        <test-method is-config="true" signature="tearDown()[pri:0, instance:com.alchemist.tests.LoginTest@55342f40]" started-at="2026-01-18T18:35:25 IST" name="tearDown" finished-at="2026-01-18T18:35:25 IST" duration-ms="1" status="PASS">
+        <test-method is-config="true" signature="tearDown()[pri:0, instance:com.alchemist.tests.LoginTest@544630b7]" started-at="2026-01-18T19:04:48 IST" name="tearDown" finished-at="2026-01-18T19:04:48 IST" duration-ms="2" status="PASS">
           <reporter-output>
           </reporter-output>
         </test-method> <!-- tearDown -->
       </class> <!-- com.alchemist.tests.LoginTest -->
     </test> <!-- Firefox_UAT -->
-    <test started-at="2026-01-18T18:35:23 IST" name="Edge_PROD" finished-at="2026-01-18T18:35:30 IST" duration-ms="7532">
+    <test started-at="2026-01-18T19:04:45 IST" name="Edge_PROD" finished-at="2026-01-18T19:04:55 IST" duration-ms="10188">
       <class name="com.alchemist.tests.LoginTest">
-        <test-method is-config="true" signature="setup(java.lang.String,java.lang.String)[pri:0, instance:com.alchemist.tests.LoginTest@72ea6193]" started-at="2026-01-18T18:35:23 IST" name="setup" finished-at="2026-01-18T18:35:29 IST" duration-ms="6291" status="PASS">
+        <test-method is-config="true" signature="setup(java.lang.String,java.lang.String)[pri:0, instance:com.alchemist.tests.LoginTest@1095f122]" started-at="2026-01-18T19:04:45 IST" name="setup" finished-at="2026-01-18T19:04:53 IST" duration-ms="7971" status="PASS">
           <params>
             <param index="0">
               <value>
@@ -171,19 +171,19 @@ at com.alchemist.base.DriverFactory.initDriver(DriverFactory.java:45)
           <reporter-output>
           </reporter-output>
         </test-method> <!-- setup -->
-        <test-method signature="validLoginTest()[pri:0, instance:com.alchemist.tests.LoginTest@72ea6193]" started-at="2026-01-18T18:35:29 IST" name="validLoginTest" finished-at="2026-01-18T18:35:30 IST" duration-ms="1071" status="PASS">
+        <test-method signature="validLoginTest()[pri:0, instance:com.alchemist.tests.LoginTest@1095f122]" started-at="2026-01-18T19:04:53 IST" name="validLoginTest" finished-at="2026-01-18T19:04:55 IST" duration-ms="1873" status="PASS">
           <reporter-output>
           </reporter-output>
         </test-method> <!-- validLoginTest -->
-        <test-method is-config="true" signature="tearDown()[pri:0, instance:com.alchemist.tests.LoginTest@72ea6193]" started-at="2026-01-18T18:35:30 IST" name="tearDown" finished-at="2026-01-18T18:35:30 IST" duration-ms="120" status="PASS">
+        <test-method is-config="true" signature="tearDown()[pri:0, instance:com.alchemist.tests.LoginTest@1095f122]" started-at="2026-01-18T19:04:55 IST" name="tearDown" finished-at="2026-01-18T19:04:55 IST" duration-ms="225" status="PASS">
           <reporter-output>
           </reporter-output>
         </test-method> <!-- tearDown -->
       </class> <!-- com.alchemist.tests.LoginTest -->
     </test> <!-- Edge_PROD -->
-    <test started-at="2026-01-18T18:35:23 IST" name="Chrome_QA" finished-at="2026-01-18T18:35:31 IST" duration-ms="8136">
+    <test started-at="2026-01-18T19:04:45 IST" name="Chrome_QA" finished-at="2026-01-18T19:04:56 IST" duration-ms="10888">
       <class name="com.alchemist.tests.LoginTest">
-        <test-method is-config="true" signature="setup(java.lang.String,java.lang.String)[pri:0, instance:com.alchemist.tests.LoginTest@7ac2e39b]" started-at="2026-01-18T18:35:23 IST" name="setup" finished-at="2026-01-18T18:35:30 IST" duration-ms="7462" status="PASS">
+        <test-method is-config="true" signature="setup(java.lang.String,java.lang.String)[pri:0, instance:com.alchemist.tests.LoginTest@60cf80e7]" started-at="2026-01-18T19:04:45 IST" name="setup" finished-at="2026-01-18T19:04:55 IST" duration-ms="9638" status="PASS">
           <params>
             <param index="0">
               <value>
@@ -199,11 +199,11 @@ at com.alchemist.base.DriverFactory.initDriver(DriverFactory.java:45)
           <reporter-output>
           </reporter-output>
         </test-method> <!-- setup -->
-        <test-method signature="validLoginTest()[pri:0, instance:com.alchemist.tests.LoginTest@7ac2e39b]" started-at="2026-01-18T18:35:30 IST" name="validLoginTest" finished-at="2026-01-18T18:35:31 IST" duration-ms="449" status="PASS">
+        <test-method signature="validLoginTest()[pri:0, instance:com.alchemist.tests.LoginTest@60cf80e7]" started-at="2026-01-18T19:04:55 IST" name="validLoginTest" finished-at="2026-01-18T19:04:55 IST" duration-ms="952" status="PASS">
           <reporter-output>
           </reporter-output>
         </test-method> <!-- validLoginTest -->
-        <test-method is-config="true" signature="tearDown()[pri:0, instance:com.alchemist.tests.LoginTest@7ac2e39b]" started-at="2026-01-18T18:35:31 IST" name="tearDown" finished-at="2026-01-18T18:35:31 IST" duration-ms="177" status="PASS">
+        <test-method is-config="true" signature="tearDown()[pri:0, instance:com.alchemist.tests.LoginTest@60cf80e7]" started-at="2026-01-18T19:04:55 IST" name="tearDown" finished-at="2026-01-18T19:04:56 IST" duration-ms="190" status="PASS">
           <reporter-output>
           </reporter-output>
         </test-method> <!-- tearDown -->

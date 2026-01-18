@@ -148,8 +148,8 @@
                   <a name="validLoginTest">
                   </a> <!-- validLoginTest -->
                   <span class="method-name">validLoginTest</span>
-                  <div class="stack-trace">java.lang.RuntimeException: Failed to initialize WebDriver
-	at com.alchemist.base.DriverFactory.initDriver(DriverFactory.java:50)
+                  <div class="stack-trace">java.lang.RuntimeException: Failed to initialize WebDriver for browser: firefox
+	at com.alchemist.base.DriverFactory.initDriver(DriverFactory.java:51)
 	at com.alchemist.base.BaseTest.setup(BaseTest.java:25)
 	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
 	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:264)
@@ -176,8 +176,8 @@ Command: [null, newSession {capabilities=[Capabilities {acceptInsecureCerts: tru
 	at org.openqa.selenium.firefox.FirefoxDriver.&lt;init&gt;(FirefoxDriver.java:133)
 	at org.openqa.selenium.firefox.FirefoxDriver.&lt;init&gt;(FirefoxDriver.java:128)
 	at org.openqa.selenium.firefox.FirefoxDriver.&lt;init&gt;(FirefoxDriver.java:113)
-	at com.alchemist.base.DriverFactory.createLocalDriver(DriverFactory.java:108)
-	at com.alchemist.base.DriverFactory.initDriver(DriverFactory.java:45)
+	at com.alchemist.base.DriverFactory.createLocalDriver(DriverFactory.java:110)
+	at com.alchemist.base.DriverFactory.initDriver(DriverFactory.java:47)
 	... 27 more
 ... Removed 21 stack frames
 </div> <!-- stack-trace -->
@@ -217,6 +217,9 @@ Command: [null, newSession {capabilities=[Capabilities {acceptInsecureCerts: tru
 &lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
 &lt;!DOCTYPE suite SYSTEM &quot;https://testng.org/testng-1.0.dtd&quot;&gt;
 &lt;suite thread-count=&quot;3&quot; parallel=&quot;tests&quot; name=&quot;CrossBrowserSuite&quot;&gt;
+  &lt;listeners&gt;
+    &lt;listener class-name=&quot;com.alchemist.listeners.TestListener&quot;/&gt;
+  &lt;/listeners&gt;
   &lt;test thread-count=&quot;3&quot; parallel=&quot;tests&quot; name=&quot;Chrome_QA&quot;&gt;
     &lt;parameter name=&quot;browser&quot; value=&quot;chrome&quot;/&gt;
     &lt;parameter name=&quot;env&quot; value=&quot;qa&quot;/&gt;
@@ -285,11 +288,11 @@ data.addRows(3);
 data.setCell(0, 0, 0)
 data.setCell(0, 1, 'validLoginTest')
 data.setCell(0, 2, 'com.alchemist.tests.LoginTest')
-data.setCell(0, 3, 1071);
+data.setCell(0, 3, 1873);
 data.setCell(1, 0, 1)
 data.setCell(1, 1, 'validLoginTest')
 data.setCell(1, 2, 'com.alchemist.tests.LoginTest')
-data.setCell(1, 3, 449);
+data.setCell(1, 3, 952);
 data.setCell(2, 0, 2)
 data.setCell(2, 1, 'validLoginTest')
 data.setCell(2, 2, 'com.alchemist.tests.LoginTest')
@@ -298,7 +301,7 @@ window.suiteTableData['CrossBrowserSuite']= { tableData: data, tableDiv: 'times-
 return data;
 }
               </script>
-              <span class="suite-total-time">Total running time: 8 seconds</span>
+              <span class="suite-total-time">Total running time: 10 seconds</span>
               <div id="times-div-CrossBrowserSuite">
               </div> <!-- times-div-CrossBrowserSuite -->
             </div> <!-- times-div -->
@@ -330,34 +333,34 @@ return data;
                 <span class="method-start">0 ms</span>
               </div> <!-- configuration-method before -->
               <div class="configuration-method before">
-                <img src="failed.png">
-                </img>
-                <span class="method-name">setup(firefox, uat)</span>
-                <span class="method-start">0 ms</span>
-              </div> <!-- configuration-method before -->
-              <div class="configuration-method before">
                 <span class="method-name">setup(edge, prod)</span>
                 <span class="method-start">0 ms</span>
               </div> <!-- configuration-method before -->
+              <div class="configuration-method before">
+                <img src="failed.png">
+                </img>
+                <span class="method-name">setup(firefox, uat)</span>
+                <span class="method-start">1 ms</span>
+              </div> <!-- configuration-method before -->
               <div class="configuration-method after">
                 <span class="method-name">tearDown</span>
-                <span class="method-start">1699 ms</span>
+                <span class="method-start">2756 ms</span>
               </div> <!-- configuration-method after -->
               <div class="test-method">
                 <span class="method-name">validLoginTest</span>
-                <span class="method-start">6291 ms</span>
+                <span class="method-start">7971 ms</span>
               </div> <!-- test-method -->
-              <div class="configuration-method after">
-                <span class="method-name">tearDown</span>
-                <span class="method-start">7365 ms</span>
-              </div> <!-- configuration-method after -->
               <div class="test-method">
                 <span class="method-name">validLoginTest</span>
-                <span class="method-start">7462 ms</span>
+                <span class="method-start">9639 ms</span>
               </div> <!-- test-method -->
               <div class="configuration-method after">
                 <span class="method-name">tearDown</span>
-                <span class="method-start">7912 ms</span>
+                <span class="method-start">9859 ms</span>
+              </div> <!-- configuration-method after -->
+              <div class="configuration-method after">
+                <span class="method-name">tearDown</span>
+                <span class="method-start">10594 ms</span>
               </div> <!-- configuration-method after -->
           </div> <!-- main-panel-content rounded-window-bottom -->
         </div> <!-- panel -->
