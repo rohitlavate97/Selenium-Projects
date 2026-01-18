@@ -1210,6 +1210,8 @@ package com.alchemist.base;
 import java.net.URL;
 import java.time.Duration;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
@@ -1224,6 +1226,8 @@ import com.alchemist.utils.ConfigReader;
 
 public final class DriverFactory {
 
+    private static final Logger log = LogManager.getLogger(DriverFactory.class);
+
     private DriverFactory() {}
 
     private static ThreadLocal<WebDriver> driver = new ThreadLocal<>();
@@ -1236,8 +1240,12 @@ public final class DriverFactory {
         boolean useGrid  = Boolean.parseBoolean(ConfigReader.get("GRID"));
         boolean headless = Boolean.parseBoolean(ConfigReader.get("HEADLESS"));
 
-        try {
+        log.info("Initializing WebDriver");
+        log.info("Browser   : {}", browser);
+        log.info("Use Grid  : {}", useGrid);
+        log.info("Headless  : {}", headless);
 
+        try {
             if (useGrid) {
                 drv = createRemoteDriver(browser, headless);
             } else {
@@ -1245,14 +1253,16 @@ public final class DriverFactory {
             }
 
         } catch (Exception e) {
+            log.error("Failed to initialize WebDriver for browser: " + browser, e);
             throw new RuntimeException("Failed to initialize WebDriver", e);
         }
 
         driver.set(drv);
 
-        // Implicit wait (optional, configurable)
+        // Implicit wait
         String implicit = ConfigReader.get("ImplicitTimeOut");
         if (implicit != null) {
+            log.info("Setting implicit wait: {} seconds", implicit);
             driver.get().manage().timeouts()
                   .implicitlyWait(Duration.ofSeconds(Integer.parseInt(implicit)));
         }
@@ -1261,14 +1271,18 @@ public final class DriverFactory {
         if (!headless) {
             driver.get().manage().window().maximize();
         }
+
+        log.info("WebDriver initialized successfully");
     }
 
     /* ===================== DRIVER CREATION ===================== */
 
-    private static WebDriver createRemoteDriver(String browser, boolean headless)
-            throws Exception {
+    private static WebDriver createRemoteDriver(String browser, boolean headless) throws Exception {
 
-        URL gridUrl = new URL(ConfigReader.get("GRID_URL"));
+        String gridUrlStr = ConfigReader.get("GRID_URL");
+        log.info("Connecting to Selenium Grid: {}", gridUrlStr);
+
+        URL gridUrl = new URL(gridUrlStr);
 
         switch (browser) {
 
@@ -1291,17 +1305,27 @@ public final class DriverFactory {
         switch (browser) {
 
             case "chrome":
+                log.info("Launching Chrome locally");
                 WebDriverManager.chromedriver().setup();
                 return new ChromeDriver(getChromeOptions(headless));
 
             case "firefox":
+                log.info("Launching Firefox locally");
                 WebDriverManager.firefoxdriver().setup();
                 return new FirefoxDriver(getFirefoxOptions(headless));
 
+			/*
+			 * case "edge": log.info("Launching Edge locally");
+			 * WebDriverManager.edgedriver().setup(); return new
+			 * EdgeDriver(getEdgeOptions(headless));
+			 */
+            
             case "edge":
-                WebDriverManager.edgedriver().setup();
+                log.info("Launching Edge locally using manual driver");
+                System.setProperty("webdriver.edge.driver",
+                        System.getProperty("user.dir") + "\\drivers\\msedgedriver.exe");
                 return new EdgeDriver(getEdgeOptions(headless));
-
+            
             default:
                 throw new RuntimeException("Unsupported local browser: " + browser);
         }
@@ -1311,28 +1335,36 @@ public final class DriverFactory {
 
     private static ChromeOptions getChromeOptions(boolean headless) {
         ChromeOptions options = new ChromeOptions();
+        options.addArguments("--remote-allow-origins=*");
+
         if (headless) {
             options.addArguments("--headless=new");
             options.addArguments("--disable-gpu");
             options.addArguments("--window-size=1920,1080");
         }
+
         return options;
     }
 
     private static FirefoxOptions getFirefoxOptions(boolean headless) {
         FirefoxOptions options = new FirefoxOptions();
+
         if (headless) {
             options.addArguments("-headless");
         }
+
         return options;
     }
 
     private static EdgeOptions getEdgeOptions(boolean headless) {
         EdgeOptions options = new EdgeOptions();
+        options.addArguments("--remote-allow-origins=*");
+
         if (headless) {
             options.addArguments("--headless=new");
             options.addArguments("--window-size=1920,1080");
         }
+
         return options;
     }
 
@@ -1344,11 +1376,13 @@ public final class DriverFactory {
 
     public static void quitDriver() {
         if (driver.get() != null) {
+            log.info("Quitting WebDriver");
             driver.get().quit();
             driver.remove();
         }
     }
 }
+
 
 --Modify properties for all the environments:
 #config-qa.properties
@@ -1359,3 +1393,9 @@ GRID=false
 GRID_URL=http://localhost:4444/wd/hub
 HEADLESS=false
 ImplicitTimeOut=10
+
+EMAIL_FROM=rohit.lavate287@gmail.com
+EMAIL_PASSWORD=app-password
+EMAIL_TO=rohitlavate97@gmail.com,lavatero92@gmail.com
+SMTP_HOST=smtp.gmail.com
+SMTP_PORT=587

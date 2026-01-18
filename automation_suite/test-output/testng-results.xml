@@ -2,12 +2,12 @@
 <testng-results ignored="0" total="3" passed="2" failed="0" skipped="1">
   <reporter-output>
   </reporter-output>
-  <suite started-at="2026-01-18T18:02:54 IST" name="Grid-CrossBrowser" finished-at="2026-01-18T18:03:03 IST" duration-ms="8429">
+  <suite started-at="2026-01-18T18:35:23 IST" name="CrossBrowserSuite" finished-at="2026-01-18T18:35:31 IST" duration-ms="8136">
     <groups>
     </groups>
-    <test started-at="2026-01-18T18:02:54 IST" name="Firefox" finished-at="2026-01-18T18:02:55 IST" duration-ms="892">
+    <test started-at="2026-01-18T18:35:23 IST" name="Firefox_UAT" finished-at="2026-01-18T18:35:25 IST" duration-ms="1749">
       <class name="com.alchemist.tests.LoginTest">
-        <test-method is-config="true" signature="setup(java.lang.String,java.lang.String)[pri:0, instance:com.alchemist.tests.LoginTest@55342f40]" started-at="2026-01-18T18:02:54 IST" name="setup" finished-at="2026-01-18T18:02:55 IST" duration-ms="829" status="FAIL">
+        <test-method is-config="true" signature="setup(java.lang.String,java.lang.String)[pri:0, instance:com.alchemist.tests.LoginTest@55342f40]" started-at="2026-01-18T18:35:23 IST" name="setup" finished-at="2026-01-18T18:35:25 IST" duration-ms="1674" status="FAIL">
           <params>
             <param index="0">
               <value>
@@ -16,36 +16,17 @@
             </param>
             <param index="1">
               <value>
-                <![CDATA[qa]]>
+                <![CDATA[uat]]>
               </value>
             </param>
           </params>
-          <exception class="org.openqa.selenium.SessionNotCreatedException">
+          <exception class="java.lang.RuntimeException">
             <message>
-              <![CDATA[Could not start a new session. Possible causes are invalid address of the remote server or browser start-up failure. 
-Host info: host: 'DESKTOP-E361VM0', ip: '192.168.1.36'
-Build info: version: '4.16.1', revision: '9b4c83354e'
-System info: os.name: 'Windows 11', os.arch: 'amd64', os.version: '10.0', java.version: '17.0.16'
-Driver info: org.openqa.selenium.firefox.FirefoxDriver
-Command: [null, newSession {capabilities=[Capabilities {acceptInsecureCerts: true, browserName: firefox, moz:debuggerAddress: true, moz:firefoxOptions: {}}]}]]]>
+              <![CDATA[Failed to initialize WebDriver]]>
             </message>
             <full-stacktrace>
-              <![CDATA[org.openqa.selenium.SessionNotCreatedException: Could not start a new session. Possible causes are invalid address of the remote server or browser start-up failure. 
-Host info: host: 'DESKTOP-E361VM0', ip: '192.168.1.36'
-Build info: version: '4.16.1', revision: '9b4c83354e'
-System info: os.name: 'Windows 11', os.arch: 'amd64', os.version: '10.0', java.version: '17.0.16'
-Driver info: org.openqa.selenium.firefox.FirefoxDriver
-Command: [null, newSession {capabilities=[Capabilities {acceptInsecureCerts: true, browserName: firefox, moz:debuggerAddress: true, moz:firefoxOptions: {}}]}]
-at org.openqa.selenium.remote.RemoteWebDriver.execute(RemoteWebDriver.java:541)
-at org.openqa.selenium.remote.RemoteWebDriver.startSession(RemoteWebDriver.java:237)
-at org.openqa.selenium.remote.RemoteWebDriver.<init>(RemoteWebDriver.java:164)
-at org.openqa.selenium.firefox.FirefoxDriver.<init>(FirefoxDriver.java:157)
-at org.openqa.selenium.firefox.FirefoxDriver.<init>(FirefoxDriver.java:152)
-at org.openqa.selenium.firefox.FirefoxDriver.<init>(FirefoxDriver.java:133)
-at org.openqa.selenium.firefox.FirefoxDriver.<init>(FirefoxDriver.java:128)
-at org.openqa.selenium.firefox.FirefoxDriver.<init>(FirefoxDriver.java:113)
-at org.openqa.selenium.firefox.FirefoxDriver.<init>(FirefoxDriver.java:103)
-at com.alchemist.base.DriverFactory.initDriver(DriverFactory.java:69)
+              <![CDATA[java.lang.RuntimeException: Failed to initialize WebDriver
+at com.alchemist.base.DriverFactory.initDriver(DriverFactory.java:50)
 at com.alchemist.base.BaseTest.setup(BaseTest.java:25)
 at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
 at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77)
@@ -73,56 +54,43 @@ at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:264)
 at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1136)
 at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:635)
 at java.base/java.lang.Thread.run(Thread.java:840)
-Caused by: java.io.UncheckedIOException: java.io.IOException: Cannot run program "drivers/geckodriver.exe": CreateProcess error=216, This version of %1 is not compatible with the version of Windows you're running. Check your computer's system information and then contact the software publisher
-at org.openqa.selenium.os.ExternalProcess$Builder.start(ExternalProcess.java:193)
-at org.openqa.selenium.remote.service.DriverService.start(DriverService.java:208)
-at org.openqa.selenium.remote.service.DriverCommandExecutor.execute(DriverCommandExecutor.java:119)
+Caused by: org.openqa.selenium.SessionNotCreatedException: Could not start a new session. Response code 500. Message: Expected browser binary location, but unable to find binary in default location, no 'moz:firefoxOptions.binary' capability provided, and no binary flag set on the command line 
+Host info: host: 'DESKTOP-E361VM0', ip: '192.168.1.36'
+Build info: version: '4.16.1', revision: '9b4c83354e'
+System info: os.name: 'Windows 11', os.arch: 'amd64', os.version: '10.0', java.version: '17.0.16'
+Driver info: org.openqa.selenium.firefox.FirefoxDriver
+Command: [null, newSession {capabilities=[Capabilities {acceptInsecureCerts: true, browserName: firefox, moz:debuggerAddress: true, moz:firefoxOptions: {}}]}]
+at org.openqa.selenium.remote.ProtocolHandshake.createSession(ProtocolHandshake.java:140)
+at org.openqa.selenium.remote.ProtocolHandshake.createSession(ProtocolHandshake.java:96)
+at org.openqa.selenium.remote.ProtocolHandshake.createSession(ProtocolHandshake.java:68)
+at org.openqa.selenium.remote.HttpCommandExecutor.execute(HttpCommandExecutor.java:163)
+at org.openqa.selenium.remote.service.DriverCommandExecutor.invokeExecute(DriverCommandExecutor.java:200)
+at org.openqa.selenium.remote.service.DriverCommandExecutor.execute(DriverCommandExecutor.java:175)
 at org.openqa.selenium.remote.RemoteWebDriver.execute(RemoteWebDriver.java:523)
-... 36 more
-Caused by: java.io.IOException: Cannot run program "drivers/geckodriver.exe": CreateProcess error=216, This version of %1 is not compatible with the version of Windows you're running. Check your computer's system information and then contact the software publisher
-at java.base/java.lang.ProcessBuilder.start(ProcessBuilder.java:1143)
-at java.base/java.lang.ProcessBuilder.start(ProcessBuilder.java:1073)
-at org.openqa.selenium.os.ExternalProcess$Builder.start(ExternalProcess.java:191)
-... 39 more
-Caused by: java.io.IOException: CreateProcess error=216, This version of %1 is not compatible with the version of Windows you're running. Check your computer's system information and then contact the software publisher
-at java.base/java.lang.ProcessImpl.create(Native Method)
-at java.base/java.lang.ProcessImpl.<init>(ProcessImpl.java:505)
-at java.base/java.lang.ProcessImpl.start(ProcessImpl.java:158)
-at java.base/java.lang.ProcessBuilder.start(ProcessBuilder.java:1110)
-... 41 more
+at org.openqa.selenium.remote.RemoteWebDriver.startSession(RemoteWebDriver.java:237)
+at org.openqa.selenium.remote.RemoteWebDriver.<init>(RemoteWebDriver.java:164)
+at org.openqa.selenium.firefox.FirefoxDriver.<init>(FirefoxDriver.java:157)
+at org.openqa.selenium.firefox.FirefoxDriver.<init>(FirefoxDriver.java:152)
+at org.openqa.selenium.firefox.FirefoxDriver.<init>(FirefoxDriver.java:133)
+at org.openqa.selenium.firefox.FirefoxDriver.<init>(FirefoxDriver.java:128)
+at org.openqa.selenium.firefox.FirefoxDriver.<init>(FirefoxDriver.java:113)
+at com.alchemist.base.DriverFactory.createLocalDriver(DriverFactory.java:108)
+at com.alchemist.base.DriverFactory.initDriver(DriverFactory.java:45)
+... 27 more
 ]]>
             </full-stacktrace>
-          </exception> <!-- org.openqa.selenium.SessionNotCreatedException -->
+          </exception> <!-- java.lang.RuntimeException -->
           <reporter-output>
           </reporter-output>
         </test-method> <!-- setup -->
-        <test-method signature="validLoginTest()[pri:0, instance:com.alchemist.tests.LoginTest@55342f40]" started-at="2026-01-18T18:02:55 IST" name="validLoginTest" finished-at="2026-01-18T18:02:55 IST" duration-ms="0" status="SKIP">
-          <exception class="org.openqa.selenium.SessionNotCreatedException">
+        <test-method signature="validLoginTest()[pri:0, instance:com.alchemist.tests.LoginTest@55342f40]" started-at="2026-01-18T18:35:25 IST" name="validLoginTest" finished-at="2026-01-18T18:35:25 IST" duration-ms="0" status="SKIP">
+          <exception class="java.lang.RuntimeException">
             <message>
-              <![CDATA[Could not start a new session. Possible causes are invalid address of the remote server or browser start-up failure. 
-Host info: host: 'DESKTOP-E361VM0', ip: '192.168.1.36'
-Build info: version: '4.16.1', revision: '9b4c83354e'
-System info: os.name: 'Windows 11', os.arch: 'amd64', os.version: '10.0', java.version: '17.0.16'
-Driver info: org.openqa.selenium.firefox.FirefoxDriver
-Command: [null, newSession {capabilities=[Capabilities {acceptInsecureCerts: true, browserName: firefox, moz:debuggerAddress: true, moz:firefoxOptions: {}}]}]]]>
+              <![CDATA[Failed to initialize WebDriver]]>
             </message>
             <full-stacktrace>
-              <![CDATA[org.openqa.selenium.SessionNotCreatedException: Could not start a new session. Possible causes are invalid address of the remote server or browser start-up failure. 
-Host info: host: 'DESKTOP-E361VM0', ip: '192.168.1.36'
-Build info: version: '4.16.1', revision: '9b4c83354e'
-System info: os.name: 'Windows 11', os.arch: 'amd64', os.version: '10.0', java.version: '17.0.16'
-Driver info: org.openqa.selenium.firefox.FirefoxDriver
-Command: [null, newSession {capabilities=[Capabilities {acceptInsecureCerts: true, browserName: firefox, moz:debuggerAddress: true, moz:firefoxOptions: {}}]}]
-at org.openqa.selenium.remote.RemoteWebDriver.execute(RemoteWebDriver.java:541)
-at org.openqa.selenium.remote.RemoteWebDriver.startSession(RemoteWebDriver.java:237)
-at org.openqa.selenium.remote.RemoteWebDriver.<init>(RemoteWebDriver.java:164)
-at org.openqa.selenium.firefox.FirefoxDriver.<init>(FirefoxDriver.java:157)
-at org.openqa.selenium.firefox.FirefoxDriver.<init>(FirefoxDriver.java:152)
-at org.openqa.selenium.firefox.FirefoxDriver.<init>(FirefoxDriver.java:133)
-at org.openqa.selenium.firefox.FirefoxDriver.<init>(FirefoxDriver.java:128)
-at org.openqa.selenium.firefox.FirefoxDriver.<init>(FirefoxDriver.java:113)
-at org.openqa.selenium.firefox.FirefoxDriver.<init>(FirefoxDriver.java:103)
-at com.alchemist.base.DriverFactory.initDriver(DriverFactory.java:69)
+              <![CDATA[java.lang.RuntimeException: Failed to initialize WebDriver
+at com.alchemist.base.DriverFactory.initDriver(DriverFactory.java:50)
 at com.alchemist.base.BaseTest.setup(BaseTest.java:25)
 at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
 at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77)
@@ -150,38 +118,72 @@ at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:264)
 at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1136)
 at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:635)
 at java.base/java.lang.Thread.run(Thread.java:840)
-Caused by: java.io.UncheckedIOException: java.io.IOException: Cannot run program "drivers/geckodriver.exe": CreateProcess error=216, This version of %1 is not compatible with the version of Windows you're running. Check your computer's system information and then contact the software publisher
-at org.openqa.selenium.os.ExternalProcess$Builder.start(ExternalProcess.java:193)
-at org.openqa.selenium.remote.service.DriverService.start(DriverService.java:208)
-at org.openqa.selenium.remote.service.DriverCommandExecutor.execute(DriverCommandExecutor.java:119)
+Caused by: org.openqa.selenium.SessionNotCreatedException: Could not start a new session. Response code 500. Message: Expected browser binary location, but unable to find binary in default location, no 'moz:firefoxOptions.binary' capability provided, and no binary flag set on the command line 
+Host info: host: 'DESKTOP-E361VM0', ip: '192.168.1.36'
+Build info: version: '4.16.1', revision: '9b4c83354e'
+System info: os.name: 'Windows 11', os.arch: 'amd64', os.version: '10.0', java.version: '17.0.16'
+Driver info: org.openqa.selenium.firefox.FirefoxDriver
+Command: [null, newSession {capabilities=[Capabilities {acceptInsecureCerts: true, browserName: firefox, moz:debuggerAddress: true, moz:firefoxOptions: {}}]}]
+at org.openqa.selenium.remote.ProtocolHandshake.createSession(ProtocolHandshake.java:140)
+at org.openqa.selenium.remote.ProtocolHandshake.createSession(ProtocolHandshake.java:96)
+at org.openqa.selenium.remote.ProtocolHandshake.createSession(ProtocolHandshake.java:68)
+at org.openqa.selenium.remote.HttpCommandExecutor.execute(HttpCommandExecutor.java:163)
+at org.openqa.selenium.remote.service.DriverCommandExecutor.invokeExecute(DriverCommandExecutor.java:200)
+at org.openqa.selenium.remote.service.DriverCommandExecutor.execute(DriverCommandExecutor.java:175)
 at org.openqa.selenium.remote.RemoteWebDriver.execute(RemoteWebDriver.java:523)
-... 36 more
-Caused by: java.io.IOException: Cannot run program "drivers/geckodriver.exe": CreateProcess error=216, This version of %1 is not compatible with the version of Windows you're running. Check your computer's system information and then contact the software publisher
-at java.base/java.lang.ProcessBuilder.start(ProcessBuilder.java:1143)
-at java.base/java.lang.ProcessBuilder.start(ProcessBuilder.java:1073)
-at org.openqa.selenium.os.ExternalProcess$Builder.start(ExternalProcess.java:191)
-... 39 more
-Caused by: java.io.IOException: CreateProcess error=216, This version of %1 is not compatible with the version of Windows you're running. Check your computer's system information and then contact the software publisher
-at java.base/java.lang.ProcessImpl.create(Native Method)
-at java.base/java.lang.ProcessImpl.<init>(ProcessImpl.java:505)
-at java.base/java.lang.ProcessImpl.start(ProcessImpl.java:158)
-at java.base/java.lang.ProcessBuilder.start(ProcessBuilder.java:1110)
-... 41 more
+at org.openqa.selenium.remote.RemoteWebDriver.startSession(RemoteWebDriver.java:237)
+at org.openqa.selenium.remote.RemoteWebDriver.<init>(RemoteWebDriver.java:164)
+at org.openqa.selenium.firefox.FirefoxDriver.<init>(FirefoxDriver.java:157)
+at org.openqa.selenium.firefox.FirefoxDriver.<init>(FirefoxDriver.java:152)
+at org.openqa.selenium.firefox.FirefoxDriver.<init>(FirefoxDriver.java:133)
+at org.openqa.selenium.firefox.FirefoxDriver.<init>(FirefoxDriver.java:128)
+at org.openqa.selenium.firefox.FirefoxDriver.<init>(FirefoxDriver.java:113)
+at com.alchemist.base.DriverFactory.createLocalDriver(DriverFactory.java:108)
+at com.alchemist.base.DriverFactory.initDriver(DriverFactory.java:45)
+... 27 more
 ]]>
             </full-stacktrace>
-          </exception> <!-- org.openqa.selenium.SessionNotCreatedException -->
+          </exception> <!-- java.lang.RuntimeException -->
           <reporter-output>
           </reporter-output>
         </test-method> <!-- validLoginTest -->
-        <test-method is-config="true" signature="tearDown()[pri:0, instance:com.alchemist.tests.LoginTest@55342f40]" started-at="2026-01-18T18:02:55 IST" name="tearDown" finished-at="2026-01-18T18:02:55 IST" duration-ms="1" status="PASS">
+        <test-method is-config="true" signature="tearDown()[pri:0, instance:com.alchemist.tests.LoginTest@55342f40]" started-at="2026-01-18T18:35:25 IST" name="tearDown" finished-at="2026-01-18T18:35:25 IST" duration-ms="1" status="PASS">
           <reporter-output>
           </reporter-output>
         </test-method> <!-- tearDown -->
       </class> <!-- com.alchemist.tests.LoginTest -->
-    </test> <!-- Firefox -->
-    <test started-at="2026-01-18T18:02:54 IST" name="Chrome" finished-at="2026-01-18T18:03:03 IST" duration-ms="8132">
+    </test> <!-- Firefox_UAT -->
+    <test started-at="2026-01-18T18:35:23 IST" name="Edge_PROD" finished-at="2026-01-18T18:35:30 IST" duration-ms="7532">
       <class name="com.alchemist.tests.LoginTest">
-        <test-method is-config="true" signature="setup(java.lang.String,java.lang.String)[pri:0, instance:com.alchemist.tests.LoginTest@7ac2e39b]" started-at="2026-01-18T18:02:54 IST" name="setup" finished-at="2026-01-18T18:03:01 IST" duration-ms="6662" status="PASS">
+        <test-method is-config="true" signature="setup(java.lang.String,java.lang.String)[pri:0, instance:com.alchemist.tests.LoginTest@72ea6193]" started-at="2026-01-18T18:35:23 IST" name="setup" finished-at="2026-01-18T18:35:29 IST" duration-ms="6291" status="PASS">
+          <params>
+            <param index="0">
+              <value>
+                <![CDATA[edge]]>
+              </value>
+            </param>
+            <param index="1">
+              <value>
+                <![CDATA[prod]]>
+              </value>
+            </param>
+          </params>
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- setup -->
+        <test-method signature="validLoginTest()[pri:0, instance:com.alchemist.tests.LoginTest@72ea6193]" started-at="2026-01-18T18:35:29 IST" name="validLoginTest" finished-at="2026-01-18T18:35:30 IST" duration-ms="1071" status="PASS">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- validLoginTest -->
+        <test-method is-config="true" signature="tearDown()[pri:0, instance:com.alchemist.tests.LoginTest@72ea6193]" started-at="2026-01-18T18:35:30 IST" name="tearDown" finished-at="2026-01-18T18:35:30 IST" duration-ms="120" status="PASS">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- tearDown -->
+      </class> <!-- com.alchemist.tests.LoginTest -->
+    </test> <!-- Edge_PROD -->
+    <test started-at="2026-01-18T18:35:23 IST" name="Chrome_QA" finished-at="2026-01-18T18:35:31 IST" duration-ms="8136">
+      <class name="com.alchemist.tests.LoginTest">
+        <test-method is-config="true" signature="setup(java.lang.String,java.lang.String)[pri:0, instance:com.alchemist.tests.LoginTest@7ac2e39b]" started-at="2026-01-18T18:35:23 IST" name="setup" finished-at="2026-01-18T18:35:30 IST" duration-ms="7462" status="PASS">
           <params>
             <param index="0">
               <value>
@@ -197,43 +199,15 @@ at java.base/java.lang.ProcessBuilder.start(ProcessBuilder.java:1110)
           <reporter-output>
           </reporter-output>
         </test-method> <!-- setup -->
-        <test-method signature="validLoginTest()[pri:0, instance:com.alchemist.tests.LoginTest@7ac2e39b]" started-at="2026-01-18T18:03:01 IST" name="validLoginTest" finished-at="2026-01-18T18:03:02 IST" duration-ms="1289" status="PASS">
+        <test-method signature="validLoginTest()[pri:0, instance:com.alchemist.tests.LoginTest@7ac2e39b]" started-at="2026-01-18T18:35:30 IST" name="validLoginTest" finished-at="2026-01-18T18:35:31 IST" duration-ms="449" status="PASS">
           <reporter-output>
           </reporter-output>
         </test-method> <!-- validLoginTest -->
-        <test-method is-config="true" signature="tearDown()[pri:0, instance:com.alchemist.tests.LoginTest@7ac2e39b]" started-at="2026-01-18T18:03:02 IST" name="tearDown" finished-at="2026-01-18T18:03:03 IST" duration-ms="134" status="PASS">
+        <test-method is-config="true" signature="tearDown()[pri:0, instance:com.alchemist.tests.LoginTest@7ac2e39b]" started-at="2026-01-18T18:35:31 IST" name="tearDown" finished-at="2026-01-18T18:35:31 IST" duration-ms="177" status="PASS">
           <reporter-output>
           </reporter-output>
         </test-method> <!-- tearDown -->
       </class> <!-- com.alchemist.tests.LoginTest -->
-    </test> <!-- Chrome -->
-    <test started-at="2026-01-18T18:02:54 IST" name="Edge" finished-at="2026-01-18T18:03:03 IST" duration-ms="8429">
-      <class name="com.alchemist.tests.LoginTest">
-        <test-method is-config="true" signature="setup(java.lang.String,java.lang.String)[pri:0, instance:com.alchemist.tests.LoginTest@72ea6193]" started-at="2026-01-18T18:02:54 IST" name="setup" finished-at="2026-01-18T18:03:02 IST" duration-ms="7677" status="PASS">
-          <params>
-            <param index="0">
-              <value>
-                <![CDATA[edge]]>
-              </value>
-            </param>
-            <param index="1">
-              <value>
-                <![CDATA[qa]]>
-              </value>
-            </param>
-          </params>
-          <reporter-output>
-          </reporter-output>
-        </test-method> <!-- setup -->
-        <test-method signature="validLoginTest()[pri:0, instance:com.alchemist.tests.LoginTest@72ea6193]" started-at="2026-01-18T18:03:02 IST" name="validLoginTest" finished-at="2026-01-18T18:03:03 IST" duration-ms="597" status="PASS">
-          <reporter-output>
-          </reporter-output>
-        </test-method> <!-- validLoginTest -->
-        <test-method is-config="true" signature="tearDown()[pri:0, instance:com.alchemist.tests.LoginTest@72ea6193]" started-at="2026-01-18T18:03:03 IST" name="tearDown" finished-at="2026-01-18T18:03:03 IST" duration-ms="110" status="PASS">
-          <reporter-output>
-          </reporter-output>
-        </test-method> <!-- tearDown -->
-      </class> <!-- com.alchemist.tests.LoginTest -->
-    </test> <!-- Edge -->
-  </suite> <!-- Grid-CrossBrowser -->
+    </test> <!-- Chrome_QA -->
+  </suite> <!-- CrossBrowserSuite -->
 </testng-results>
