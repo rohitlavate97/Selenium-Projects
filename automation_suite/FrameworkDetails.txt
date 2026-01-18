@@ -90,6 +90,8 @@ public class BaseTest {
 package com.alchemist.base;
 
 import java.net.URL;
+import java.time.Duration;
+
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
@@ -98,87 +100,127 @@ import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.firefox.FirefoxOptions;
 import org.openqa.selenium.edge.EdgeOptions;
 import org.openqa.selenium.remote.RemoteWebDriver;
+
 import io.github.bonigarcia.wdm.WebDriverManager;
 import com.alchemist.utils.ConfigReader;
 
 public class DriverFactory {
 
-	private static ThreadLocal<WebDriver> driver = new ThreadLocal<>();
+    private static ThreadLocal<WebDriver> driver = new ThreadLocal<>();
 
-	public static void initDriver(String browser) {
-		WebDriver drv = null;
-		browser = browser.toLowerCase();
-		boolean useGrid = Boolean.parseBoolean(ConfigReader.get("GRID"));
+    public static void initDriver(String browser) {
 
-		try {
-			if (useGrid) {
-				URL gridUrl = new URL(ConfigReader.get("GRID_URL"));
-				switch (browser) {
-				case "chrome":
-					drv = new RemoteWebDriver(gridUrl, new ChromeOptions());
-					break;
-				case "firefox":
-					drv = new RemoteWebDriver(gridUrl, new FirefoxOptions());
-					break;
-				case "edge":
-					drv = new RemoteWebDriver(gridUrl, new EdgeOptions());
-					break;
-				default:
-					throw new RuntimeException("Unsupported browser for Grid: " + browser);
-				}
-			} else {
-				// WebDriverManager first
-				switch (browser) {
-				case "chrome":
-					WebDriverManager.chromedriver().setup();
-					drv = new ChromeDriver();
-					break;
-				case "firefox":
-					WebDriverManager.firefoxdriver().setup();
-					drv = new FirefoxDriver();
-					break;
-				case "edge":
-					WebDriverManager.edgedriver().setup();
-					drv = new EdgeDriver();
-					break;
-				default:
-					throw new RuntimeException("Browser not supported: " + browser);
-				}
-			}
-		} catch (Exception e) {
-			System.out.println("WebDriverManager/Grid failed: " + e.getMessage());
-			// Fallback to local drivers in 'drivers/' folder
-			switch (browser) {
-			case "chrome":
-				System.setProperty("webdriver.chrome.driver", "drivers/chromedriver.exe");
-				drv = new ChromeDriver();
-				break;
-			case "firefox":
-				System.setProperty("webdriver.gecko.driver", "drivers/geckodriver.exe");
-				drv = new FirefoxDriver();
-				break;
-			case "edge":
-				System.setProperty("webdriver.edge.driver", "drivers/msedgedriver.exe");
-				drv = new EdgeDriver();
-				break;
-			}
-		}
+        WebDriver drv = null;
+        browser = browser.toLowerCase();
 
-		driver.set(drv);
-		driver.get().manage().window().maximize();
-	}
+        boolean useGrid = Boolean.parseBoolean(ConfigReader.get("GRID"));
+        boolean headless = Boolean.parseBoolean(ConfigReader.get("HEADLESS"));
 
-	public static WebDriver getDriver() {
-		return driver.get();
-	}
+        try {
 
-	public static void quitDriver() {
-		if (driver.get() != null) {
-			driver.get().quit();
-			driver.remove();
-		}
-	}
+            if (useGrid) {
+
+                URL gridUrl = new URL(ConfigReader.get("GRID_URL"));
+
+                switch (browser) {
+
+                    case "chrome":
+                        ChromeOptions chromeOptions = new ChromeOptions();
+                        if (headless) {
+                            chromeOptions.addArguments("--headless=new");
+                            chromeOptions.addArguments("--disable-gpu");
+                            chromeOptions.addArguments("--window-size=1920,1080");
+                        }
+                        drv = new RemoteWebDriver(gridUrl, chromeOptions);
+                        break;
+
+                    case "firefox":
+                        FirefoxOptions firefoxOptions = new FirefoxOptions();
+                        if (headless) {
+                            firefoxOptions.addArguments("-headless");
+                        }
+                        drv = new RemoteWebDriver(gridUrl, firefoxOptions);
+                        break;
+
+                    case "edge":
+                        EdgeOptions edgeOptions = new EdgeOptions();
+                        if (headless) {
+                            edgeOptions.addArguments("--headless=new");
+                            edgeOptions.addArguments("--window-size=1920,1080");
+                        }
+                        drv = new RemoteWebDriver(gridUrl, edgeOptions);
+                        break;
+
+                    default:
+                        throw new RuntimeException("Unsupported browser for Grid: " + browser);
+                }
+
+            } else {
+
+                switch (browser) {
+
+                    case "chrome":
+                        WebDriverManager.chromedriver().setup();
+                        ChromeOptions chromeOptions = new ChromeOptions();
+                        if (headless) {
+                            chromeOptions.addArguments("--headless=new");
+                            chromeOptions.addArguments("--disable-gpu");
+                            chromeOptions.addArguments("--window-size=1920,1080");
+                        }
+                        drv = new ChromeDriver(chromeOptions);
+                        break;
+
+                    case "firefox":
+                        WebDriverManager.firefoxdriver().setup();
+                        FirefoxOptions firefoxOptions = new FirefoxOptions();
+                        if (headless) {
+                            firefoxOptions.addArguments("-headless");
+                        }
+                        drv = new FirefoxDriver(firefoxOptions);
+                        break;
+
+                    case "edge":
+                        WebDriverManager.edgedriver().setup();
+                        EdgeOptions edgeOptions = new EdgeOptions();
+                        if (headless) {
+                            edgeOptions.addArguments("--headless=new");
+                            edgeOptions.addArguments("--window-size=1920,1080");
+                        }
+                        drv = new EdgeDriver(edgeOptions);
+                        break;
+
+                    default:
+                        throw new RuntimeException("Browser not supported: " + browser);
+                }
+            }
+
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to initialize WebDriver", e);
+        }
+
+        driver.set(drv);
+
+        driver.get().manage().timeouts()
+              .implicitlyWait(Duration.ofSeconds(
+                      Integer.parseInt(ConfigReader.get("ImplicitTimeOut"))));
+
+        if (!headless) {
+            driver.get().manage().window().maximize();
+        }
+    }
+
+    public static WebDriver getDriver() {
+        return driver.get();
+    }
+
+    public static void quitDriver() {
+        if (driver.get() != null) {
+            driver.get().quit();
+            driver.remove();
+        }
+    }
 }
+
 
 
 package com.alchemist.constants;
@@ -1051,3 +1093,269 @@ ExpectedTitle: actiTIME - Login
     </Loggers>
 
 </Configuration>
+
+-docker-compose.yml
+version: "3"
+services:
+
+  selenium-hub:
+    image: selenium/hub:4.19.1
+    container_name: selenium-hub
+    ports:
+      - "4444:4444"
+
+  chrome:
+    image: selenium/node-chrome:4.19.1
+    shm_size: 2gb
+    depends_on:
+      - selenium-hub
+    environment:
+      - SE_EVENT_BUS_HOST=selenium-hub
+      - SE_EVENT_BUS_PUBLISH_PORT=4442
+      - SE_EVENT_BUS_SUBSCRIBE_PORT=4443
+
+  firefox:
+    image: selenium/node-firefox:4.19.1
+    shm_size: 2gb
+    depends_on:
+      - selenium-hub
+    environment:
+      - SE_EVENT_BUS_HOST=selenium-hub
+      - SE_EVENT_BUS_PUBLISH_PORT=4442
+      - SE_EVENT_BUS_SUBSCRIBE_PORT=4443
+
+  edge:
+    image: selenium/node-edge:4.19.1
+    shm_size: 2gb
+    depends_on:
+      - selenium-hub
+    environment:
+      - SE_EVENT_BUS_HOST=selenium-hub
+      - SE_EVENT_BUS_PUBLISH_PORT=4442
+      - SE_EVENT_BUS_SUBSCRIBE_PORT=4443
+
+-Start Selenium Grid
+From project root:
+
+docker-compose up -d
+
+Verify Grid:
+👉 http://localhost:4444/ui
+You should see Chrome / Firefox / Edge nodes registered.
+
+# config-qa.properties
+URL=https://online.actitime.com/mstar/login.do
+BROWSER=chrome
+ImplicitTimeOut=10
+GRID=true
+GRID_URL=http://localhost:4444/wd/hub
+
+
+-testng_grid.xml
+<suite name="Grid Suite" parallel="tests" thread-count="3">
+    <test name="Chrome">
+        <parameter name="browser" value="chrome"/>
+        <classes>
+            <class name="com.alchemist.tests.LoginTest"/>
+        </classes>
+    </test>
+
+    <test name="Firefox">
+        <parameter name="browser" value="firefox"/>
+        <classes>
+            <class name="com.alchemist.tests.LoginTest"/>
+        </classes>
+    </test>
+
+    <test name="Edge">
+        <parameter name="browser" value="edge"/>
+        <classes>
+            <class name="com.alchemist.tests.LoginTest"/>
+        </classes>
+    </test>
+</suite>
+
+
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd" >
+
+<suite name="Grid-CrossBrowser" parallel="tests" thread-count="3">
+
+    <parameter name="env" value="qa"/>
+
+    <test name="Chrome">
+        <parameter name="browser" value="chrome"/>
+        <classes>
+            <class name="com.alchemist.tests.LoginTest"/>
+        </classes>
+    </test>
+
+    <test name="Firefox">
+        <parameter name="browser" value="firefox"/>
+        <classes>
+            <class name="com.alchemist.tests.LoginTest"/>
+        </classes>
+    </test>
+
+    <test name="Edge">
+        <parameter name="browser" value="edge"/>
+        <classes>
+            <class name="com.alchemist.tests.LoginTest"/>
+        </classes>
+    </test>
+
+</suite>
+
+package com.alchemist.base;
+
+import java.net.URL;
+import java.time.Duration;
+
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
+import org.openqa.selenium.edge.EdgeDriver;
+import org.openqa.selenium.edge.EdgeOptions;
+import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.firefox.FirefoxOptions;
+import org.openqa.selenium.remote.RemoteWebDriver;
+
+import io.github.bonigarcia.wdm.WebDriverManager;
+import com.alchemist.utils.ConfigReader;
+
+public final class DriverFactory {
+
+    private DriverFactory() {}
+
+    private static ThreadLocal<WebDriver> driver = new ThreadLocal<>();
+
+    public static void initDriver(String browser) {
+
+        WebDriver drv;
+        browser = browser.toLowerCase();
+
+        boolean useGrid  = Boolean.parseBoolean(ConfigReader.get("GRID"));
+        boolean headless = Boolean.parseBoolean(ConfigReader.get("HEADLESS"));
+
+        try {
+
+            if (useGrid) {
+                drv = createRemoteDriver(browser, headless);
+            } else {
+                drv = createLocalDriver(browser, headless);
+            }
+
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to initialize WebDriver", e);
+        }
+
+        driver.set(drv);
+
+        // Implicit wait (optional, configurable)
+        String implicit = ConfigReader.get("ImplicitTimeOut");
+        if (implicit != null) {
+            driver.get().manage().timeouts()
+                  .implicitlyWait(Duration.ofSeconds(Integer.parseInt(implicit)));
+        }
+
+        // Maximize only when not headless
+        if (!headless) {
+            driver.get().manage().window().maximize();
+        }
+    }
+
+    /* ===================== DRIVER CREATION ===================== */
+
+    private static WebDriver createRemoteDriver(String browser, boolean headless)
+            throws Exception {
+
+        URL gridUrl = new URL(ConfigReader.get("GRID_URL"));
+
+        switch (browser) {
+
+            case "chrome":
+                return new RemoteWebDriver(gridUrl, getChromeOptions(headless));
+
+            case "firefox":
+                return new RemoteWebDriver(gridUrl, getFirefoxOptions(headless));
+
+            case "edge":
+                return new RemoteWebDriver(gridUrl, getEdgeOptions(headless));
+
+            default:
+                throw new RuntimeException("Unsupported browser for Grid: " + browser);
+        }
+    }
+
+    private static WebDriver createLocalDriver(String browser, boolean headless) {
+
+        switch (browser) {
+
+            case "chrome":
+                WebDriverManager.chromedriver().setup();
+                return new ChromeDriver(getChromeOptions(headless));
+
+            case "firefox":
+                WebDriverManager.firefoxdriver().setup();
+                return new FirefoxDriver(getFirefoxOptions(headless));
+
+            case "edge":
+                WebDriverManager.edgedriver().setup();
+                return new EdgeDriver(getEdgeOptions(headless));
+
+            default:
+                throw new RuntimeException("Unsupported local browser: " + browser);
+        }
+    }
+
+    /* ===================== OPTIONS ===================== */
+
+    private static ChromeOptions getChromeOptions(boolean headless) {
+        ChromeOptions options = new ChromeOptions();
+        if (headless) {
+            options.addArguments("--headless=new");
+            options.addArguments("--disable-gpu");
+            options.addArguments("--window-size=1920,1080");
+        }
+        return options;
+    }
+
+    private static FirefoxOptions getFirefoxOptions(boolean headless) {
+        FirefoxOptions options = new FirefoxOptions();
+        if (headless) {
+            options.addArguments("-headless");
+        }
+        return options;
+    }
+
+    private static EdgeOptions getEdgeOptions(boolean headless) {
+        EdgeOptions options = new EdgeOptions();
+        if (headless) {
+            options.addArguments("--headless=new");
+            options.addArguments("--window-size=1920,1080");
+        }
+        return options;
+    }
+
+    /* ===================== ACCESSORS ===================== */
+
+    public static WebDriver getDriver() {
+        return driver.get();
+    }
+
+    public static void quitDriver() {
+        if (driver.get() != null) {
+            driver.get().quit();
+            driver.remove();
+        }
+    }
+}
+
+--Modify properties for all the environments:
+#config-qa.properties
+URL=https://online.actitime.com/mstar/login.do
+BROWSER=chrome
+
+GRID=false
+GRID_URL=http://localhost:4444/wd/hub
+HEADLESS=false
+ImplicitTimeOut=10

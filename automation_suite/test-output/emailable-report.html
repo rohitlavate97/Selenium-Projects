@@ -8,17 +8,17 @@
 <body>
 <table>
 <tr><th>Test</th><th># Passed</th><th># Skipped</th><th># Retried</th><th># Failed</th><th>Time (ms)</th><th>Included Groups</th><th>Excluded Groups</th></tr>
-<tr><th colspan="8">CrossBrowserSuite</th></tr>
-<tr><td><a href="#t0">Firefox_UAT</a></td><td class="num">0</td><td class="num attn">1</td><td class="num">0</td><td class="num">0</td><td class="num">2,132</td><td></td><td></td></tr>
-<tr class="stripe"><td><a href="#t1">Edge_PROD</a></td><td class="num">1</td><td class="num">0</td><td class="num">0</td><td class="num">0</td><td class="num">7,996</td><td></td><td></td></tr>
-<tr><td><a href="#t2">Chrome_QA</a></td><td class="num">1</td><td class="num">0</td><td class="num">0</td><td class="num">0</td><td class="num">10,555</td><td></td><td></td></tr>
-<tr><th>Total</th><th class="num">2</th><th class="num attn">1</th><th class="num">0</th><th class="num">0</th><th class="num">20,683</th><th colspan="2"></th></tr>
+<tr><th colspan="8">Grid-CrossBrowser</th></tr>
+<tr><td><a href="#t0">Firefox</a></td><td class="num">0</td><td class="num attn">1</td><td class="num">0</td><td class="num">0</td><td class="num">892</td><td></td><td></td></tr>
+<tr class="stripe"><td><a href="#t1">Chrome</a></td><td class="num">1</td><td class="num">0</td><td class="num">0</td><td class="num">0</td><td class="num">8,132</td><td></td><td></td></tr>
+<tr><td><a href="#t2">Edge</a></td><td class="num">1</td><td class="num">0</td><td class="num">0</td><td class="num">0</td><td class="num">8,429</td><td></td><td></td></tr>
+<tr><th>Total</th><th class="num">2</th><th class="num attn">1</th><th class="num">0</th><th class="num">0</th><th class="num">17,453</th><th colspan="2"></th></tr>
 </table>
-<table id='summary'><thead><tr><th>Class</th><th>Method</th><th>Start</th><th>Time (ms)</th></tr></thead><tbody><tr><th colspan="4">CrossBrowserSuite</th></tr></tbody><tbody id="t0"><tr><th colspan="4">Firefox_UAT &#8212; failed (configuration methods)</th></tr><tr class="failedeven"><td rowspan="1">com.alchemist.tests.LoginTest</td><td><a href="#m0">setup</a></td><td rowspan="1">1768738398431</td><td rowspan="1">2069</td></tr><tr><th colspan="4">Firefox_UAT &#8212; skipped</th></tr><tr class="skippedeven"><td rowspan="1">com.alchemist.tests.LoginTest</td><td><a href="#m1">validLoginTest</a></td><td rowspan="1">1768738400510</td><td rowspan="1">0</td></tr></tbody>
-<tbody id="t1"><tr><th colspan="4">Edge_PROD &#8212; passed</th></tr><tr class="passedeven"><td rowspan="1">com.alchemist.tests.LoginTest</td><td><a href="#m2">validLoginTest</a></td><td rowspan="1">1768738405257</td><td rowspan="1">1005</td></tr></tbody>
-<tbody id="t2"><tr><th colspan="4">Chrome_QA &#8212; passed</th></tr><tr class="passedeven"><td rowspan="1">com.alchemist.tests.LoginTest</td><td><a href="#m3">validLoginTest</a></td><td rowspan="1">1768738408376</td><td rowspan="1">439</td></tr></tbody>
+<table id='summary'><thead><tr><th>Class</th><th>Method</th><th>Start</th><th>Time (ms)</th></tr></thead><tbody><tr><th colspan="4">Grid-CrossBrowser</th></tr></tbody><tbody id="t0"><tr><th colspan="4">Firefox &#8212; failed (configuration methods)</th></tr><tr class="failedeven"><td rowspan="1">com.alchemist.tests.LoginTest</td><td><a href="#m0">setup</a></td><td rowspan="1">1768739574965</td><td rowspan="1">829</td></tr><tr><th colspan="4">Firefox &#8212; skipped</th></tr><tr class="skippedeven"><td rowspan="1">com.alchemist.tests.LoginTest</td><td><a href="#m1">validLoginTest</a></td><td rowspan="1">1768739575804</td><td rowspan="1">0</td></tr></tbody>
+<tbody id="t1"><tr><th colspan="4">Chrome &#8212; passed</th></tr><tr class="passedeven"><td rowspan="1">com.alchemist.tests.LoginTest</td><td><a href="#m2">validLoginTest</a></td><td rowspan="1">1768739581627</td><td rowspan="1">1289</td></tr></tbody>
+<tbody id="t2"><tr><th colspan="4">Edge &#8212; passed</th></tr><tr class="passedeven"><td rowspan="1">com.alchemist.tests.LoginTest</td><td><a href="#m3">validLoginTest</a></td><td rowspan="1">1768739582642</td><td rowspan="1">597</td></tr></tbody>
 </table>
-<h2>Firefox_UAT</h2><h3 id="m0">com.alchemist.tests.LoginTest#setup</h3><table class="result"><tr class="param"><th>Parameter #1</th><th>Parameter #2</th></tr><tr class="param stripe"><td>firefox</td><td>uat</td></tr><tr><th colspan="2">Exception</th></tr><tr><td colspan="2"><div class="stacktrace">org.openqa.selenium.SessionNotCreatedException: Could not start a new session. Possible causes are invalid address of the remote server or browser start-up failure. 
+<h2>Firefox</h2><h3 id="m0">com.alchemist.tests.LoginTest#setup</h3><table class="result"><tr class="param"><th>Parameter #1</th><th>Parameter #2</th></tr><tr class="param stripe"><td>firefox</td><td>qa</td></tr><tr><th colspan="2">Exception</th></tr><tr><td colspan="2"><div class="stacktrace">org.openqa.selenium.SessionNotCreatedException: Could not start a new session. Possible causes are invalid address of the remote server or browser start-up failure. 
 Host info: host: &apos;DESKTOP-E361VM0&apos;, ip: &apos;192.168.1.36&apos;
 Build info: version: &apos;4.16.1&apos;, revision: &apos;9b4c83354e&apos;
 System info: os.name: &apos;Windows 11&apos;, os.arch: &apos;amd64&apos;, os.version: &apos;10.0&apos;, java.version: &apos;17.0.16&apos;
@@ -98,7 +98,7 @@ Caused by: java.io.IOException: CreateProcess error=216, This version of %1 is n
 	at java.base/java.lang.ProcessBuilder.start(ProcessBuilder.java:1110)
 	... 41 more
 ... Removed 21 stack frames</div></td></tr></table><p class="totop"><a href="#summary">back to summary</a></p>
-<h2>Edge_PROD</h2><h3 id="m2">com.alchemist.tests.LoginTest#validLoginTest</h3><table class="result"><tr><th class="invisible"/></tr></table><p class="totop"><a href="#summary">back to summary</a></p>
-<h2>Chrome_QA</h2><h3 id="m3">com.alchemist.tests.LoginTest#validLoginTest</h3><table class="result"><tr><th class="invisible"/></tr></table><p class="totop"><a href="#summary">back to summary</a></p>
+<h2>Chrome</h2><h3 id="m2">com.alchemist.tests.LoginTest#validLoginTest</h3><table class="result"><tr><th class="invisible"/></tr></table><p class="totop"><a href="#summary">back to summary</a></p>
+<h2>Edge</h2><h3 id="m3">com.alchemist.tests.LoginTest#validLoginTest</h3><table class="result"><tr><th class="invisible"/></tr></table><p class="totop"><a href="#summary">back to summary</a></p>
 </body>
 </html>

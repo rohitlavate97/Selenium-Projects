@@ -2,12 +2,12 @@
 <testng-results ignored="0" total="3" passed="2" failed="0" skipped="1">
   <reporter-output>
   </reporter-output>
-  <suite started-at="2026-01-18T17:43:18 IST" name="CrossBrowserSuite" finished-at="2026-01-18T17:43:28 IST" duration-ms="10555">
+  <suite started-at="2026-01-18T18:02:54 IST" name="Grid-CrossBrowser" finished-at="2026-01-18T18:03:03 IST" duration-ms="8429">
     <groups>
     </groups>
-    <test started-at="2026-01-18T17:43:18 IST" name="Firefox_UAT" finished-at="2026-01-18T17:43:20 IST" duration-ms="2132">
+    <test started-at="2026-01-18T18:02:54 IST" name="Firefox" finished-at="2026-01-18T18:02:55 IST" duration-ms="892">
       <class name="com.alchemist.tests.LoginTest">
-        <test-method is-config="true" signature="setup(java.lang.String,java.lang.String)[pri:0, instance:com.alchemist.tests.LoginTest@55342f40]" started-at="2026-01-18T17:43:18 IST" name="setup" finished-at="2026-01-18T17:43:20 IST" duration-ms="2069" status="FAIL">
+        <test-method is-config="true" signature="setup(java.lang.String,java.lang.String)[pri:0, instance:com.alchemist.tests.LoginTest@55342f40]" started-at="2026-01-18T18:02:54 IST" name="setup" finished-at="2026-01-18T18:02:55 IST" duration-ms="829" status="FAIL">
           <params>
             <param index="0">
               <value>
@@ -16,7 +16,7 @@
             </param>
             <param index="1">
               <value>
-                <![CDATA[uat]]>
+                <![CDATA[qa]]>
               </value>
             </param>
           </params>
@@ -96,7 +96,7 @@ at java.base/java.lang.ProcessBuilder.start(ProcessBuilder.java:1110)
           <reporter-output>
           </reporter-output>
         </test-method> <!-- setup -->
-        <test-method signature="validLoginTest()[pri:0, instance:com.alchemist.tests.LoginTest@55342f40]" started-at="2026-01-18T17:43:20 IST" name="validLoginTest" finished-at="2026-01-18T17:43:20 IST" duration-ms="0" status="SKIP">
+        <test-method signature="validLoginTest()[pri:0, instance:com.alchemist.tests.LoginTest@55342f40]" started-at="2026-01-18T18:02:55 IST" name="validLoginTest" finished-at="2026-01-18T18:02:55 IST" duration-ms="0" status="SKIP">
           <exception class="org.openqa.selenium.SessionNotCreatedException">
             <message>
               <![CDATA[Could not start a new session. Possible causes are invalid address of the remote server or browser start-up failure. 
@@ -173,43 +173,15 @@ at java.base/java.lang.ProcessBuilder.start(ProcessBuilder.java:1110)
           <reporter-output>
           </reporter-output>
         </test-method> <!-- validLoginTest -->
-        <test-method is-config="true" signature="tearDown()[pri:0, instance:com.alchemist.tests.LoginTest@55342f40]" started-at="2026-01-18T17:43:20 IST" name="tearDown" finished-at="2026-01-18T17:43:20 IST" duration-ms="1" status="PASS">
+        <test-method is-config="true" signature="tearDown()[pri:0, instance:com.alchemist.tests.LoginTest@55342f40]" started-at="2026-01-18T18:02:55 IST" name="tearDown" finished-at="2026-01-18T18:02:55 IST" duration-ms="1" status="PASS">
           <reporter-output>
           </reporter-output>
         </test-method> <!-- tearDown -->
       </class> <!-- com.alchemist.tests.LoginTest -->
-    </test> <!-- Firefox_UAT -->
-    <test started-at="2026-01-18T17:43:18 IST" name="Edge_PROD" finished-at="2026-01-18T17:43:26 IST" duration-ms="7996">
+    </test> <!-- Firefox -->
+    <test started-at="2026-01-18T18:02:54 IST" name="Chrome" finished-at="2026-01-18T18:03:03 IST" duration-ms="8132">
       <class name="com.alchemist.tests.LoginTest">
-        <test-method is-config="true" signature="setup(java.lang.String,java.lang.String)[pri:0, instance:com.alchemist.tests.LoginTest@72ea6193]" started-at="2026-01-18T17:43:18 IST" name="setup" finished-at="2026-01-18T17:43:25 IST" duration-ms="6826" status="PASS">
-          <params>
-            <param index="0">
-              <value>
-                <![CDATA[edge]]>
-              </value>
-            </param>
-            <param index="1">
-              <value>
-                <![CDATA[prod]]>
-              </value>
-            </param>
-          </params>
-          <reporter-output>
-          </reporter-output>
-        </test-method> <!-- setup -->
-        <test-method signature="validLoginTest()[pri:0, instance:com.alchemist.tests.LoginTest@72ea6193]" started-at="2026-01-18T17:43:25 IST" name="validLoginTest" finished-at="2026-01-18T17:43:26 IST" duration-ms="1005" status="PASS">
-          <reporter-output>
-          </reporter-output>
-        </test-method> <!-- validLoginTest -->
-        <test-method is-config="true" signature="tearDown()[pri:0, instance:com.alchemist.tests.LoginTest@72ea6193]" started-at="2026-01-18T17:43:26 IST" name="tearDown" finished-at="2026-01-18T17:43:26 IST" duration-ms="120" status="PASS">
-          <reporter-output>
-          </reporter-output>
-        </test-method> <!-- tearDown -->
-      </class> <!-- com.alchemist.tests.LoginTest -->
-    </test> <!-- Edge_PROD -->
-    <test started-at="2026-01-18T17:43:18 IST" name="Chrome_QA" finished-at="2026-01-18T17:43:28 IST" duration-ms="10555">
-      <class name="com.alchemist.tests.LoginTest">
-        <test-method is-config="true" signature="setup(java.lang.String,java.lang.String)[pri:0, instance:com.alchemist.tests.LoginTest@7ac2e39b]" started-at="2026-01-18T17:43:18 IST" name="setup" finished-at="2026-01-18T17:43:28 IST" duration-ms="9945" status="PASS">
+        <test-method is-config="true" signature="setup(java.lang.String,java.lang.String)[pri:0, instance:com.alchemist.tests.LoginTest@7ac2e39b]" started-at="2026-01-18T18:02:54 IST" name="setup" finished-at="2026-01-18T18:03:01 IST" duration-ms="6662" status="PASS">
           <params>
             <param index="0">
               <value>
@@ -225,15 +197,43 @@ at java.base/java.lang.ProcessBuilder.start(ProcessBuilder.java:1110)
           <reporter-output>
           </reporter-output>
         </test-method> <!-- setup -->
-        <test-method signature="validLoginTest()[pri:0, instance:com.alchemist.tests.LoginTest@7ac2e39b]" started-at="2026-01-18T17:43:28 IST" name="validLoginTest" finished-at="2026-01-18T17:43:28 IST" duration-ms="439" status="PASS">
+        <test-method signature="validLoginTest()[pri:0, instance:com.alchemist.tests.LoginTest@7ac2e39b]" started-at="2026-01-18T18:03:01 IST" name="validLoginTest" finished-at="2026-01-18T18:03:02 IST" duration-ms="1289" status="PASS">
           <reporter-output>
           </reporter-output>
         </test-method> <!-- validLoginTest -->
-        <test-method is-config="true" signature="tearDown()[pri:0, instance:com.alchemist.tests.LoginTest@7ac2e39b]" started-at="2026-01-18T17:43:28 IST" name="tearDown" finished-at="2026-01-18T17:43:28 IST" duration-ms="127" status="PASS">
+        <test-method is-config="true" signature="tearDown()[pri:0, instance:com.alchemist.tests.LoginTest@7ac2e39b]" started-at="2026-01-18T18:03:02 IST" name="tearDown" finished-at="2026-01-18T18:03:03 IST" duration-ms="134" status="PASS">
           <reporter-output>
           </reporter-output>
         </test-method> <!-- tearDown -->
       </class> <!-- com.alchemist.tests.LoginTest -->
-    </test> <!-- Chrome_QA -->
-  </suite> <!-- CrossBrowserSuite -->
+    </test> <!-- Chrome -->
+    <test started-at="2026-01-18T18:02:54 IST" name="Edge" finished-at="2026-01-18T18:03:03 IST" duration-ms="8429">
+      <class name="com.alchemist.tests.LoginTest">
+        <test-method is-config="true" signature="setup(java.lang.String,java.lang.String)[pri:0, instance:com.alchemist.tests.LoginTest@72ea6193]" started-at="2026-01-18T18:02:54 IST" name="setup" finished-at="2026-01-18T18:03:02 IST" duration-ms="7677" status="PASS">
+          <params>
+            <param index="0">
+              <value>
+                <![CDATA[edge]]>
+              </value>
+            </param>
+            <param index="1">
+              <value>
+                <![CDATA[qa]]>
+              </value>
+            </param>
+          </params>
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- setup -->
+        <test-method signature="validLoginTest()[pri:0, instance:com.alchemist.tests.LoginTest@72ea6193]" started-at="2026-01-18T18:03:02 IST" name="validLoginTest" finished-at="2026-01-18T18:03:03 IST" duration-ms="597" status="PASS">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- validLoginTest -->
+        <test-method is-config="true" signature="tearDown()[pri:0, instance:com.alchemist.tests.LoginTest@72ea6193]" started-at="2026-01-18T18:03:03 IST" name="tearDown" finished-at="2026-01-18T18:03:03 IST" duration-ms="110" status="PASS">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- tearDown -->
+      </class> <!-- com.alchemist.tests.LoginTest -->
+    </test> <!-- Edge -->
+  </suite> <!-- Grid-CrossBrowser -->
 </testng-results>
