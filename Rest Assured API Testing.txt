@@ -728,6 +728,66 @@ public class GoogleMapsCrudTest {
   ]
 }
 
+ROOT
+ ├── dashboard (object)
+ │     ├── purchaseAmount
+ │     └── website
+ │
+ └── courses (array)
+       ├── [0] object
+       ├── [1] object
+       └── [2] object
+
+OBJECT {}  → access by key
+ARRAY  []  → access by index (0,1,2...)
+
+START from ROOT {
+1. Identify top-level keys:
+   → dashboard (OBJECT)
+   → courses (ARRAY)
+--------------------------------------------------
+2. Traverse dashboard (OBJECT):
+   → Go inside "dashboard"
+   → Read purchaseAmount = 910
+   → Read website = rahulshettyacademy.com
+--------------------------------------------------
+
+3. Traverse courses (ARRAY):
+   → Go inside "courses"
+   → It contains list of objects → use index
+
+   → Index 0:
+        title = selenium python
+        price = 50
+        copies = 6
+
+   → Index 1:
+        title = cypress
+        price = 40
+        copies = 4
+
+   → Index 2:
+        title = RPA
+        price = 45
+        copies = 10
+--------------------------------------------------
+4. Iterate mentally:
+   → Move one object at a time (0 → 1 → 2)
+   → For each object, read all keys
+--------------------------------------------------
+
+5. Example calculation:
+   → (50 × 6) + (40 × 4) + (45 × 10)
+   → = 300 + 160 + 450 = 910
+
+--------------------------------------------------
+
+6. Compare:
+   → Calculated total = 910
+   → dashboard.purchaseAmount = 910
+   → VALIDATION SUCCESS
+END
+
 import io.restassured.path.json.JsonPath;
 
 public class CourseParsing {
