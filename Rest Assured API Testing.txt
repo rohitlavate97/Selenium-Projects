@@ -465,7 +465,11 @@ RestAssured.baseURI = "https://rahulshettyacademy.com";
 		.then()
 		   .log().all().assertThat().statusCode(200).header("Server","Apache/2.4.52 (Ubuntu)").body("language",equalTo("en-AU"));
 		   
-	
+Note: ValidatableResponse is the object you get after calling .then() in Rest Assured.
+ValidatableResponse response = given()
+    .when()
+    .get("/endpoint")
+    .then();
 	
 import io.restassured.RestAssured;
 import io.restassured.path.json.JsonPath;
