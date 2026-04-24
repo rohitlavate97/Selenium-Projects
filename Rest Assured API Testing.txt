@@ -1264,6 +1264,149 @@ Dependency needed for second test
 			<version>2.17.2</version>
 </dependency>
 
+-----------------------
+<root>
+    <dashboard>
+        <purchaseAmount>910</purchaseAmount>
+        <website>rahulshettyacademy.com</website>
+    </dashboard>
+    <courses>
+        <course>
+            <title>selenium python</title>
+            <price>50</price>
+            <copies>6</copies>
+        </course>
+        <course>
+            <title>cypress</title>
+            <price>40</price>
+            <copies>4</copies>
+        </course>
+        <course>
+            <title>RPA</title>
+            <price>45</price>
+            <copies>10</copies>
+        </course>
+    </courses>
+</root>
+
+START from ROOT <root>
+
+1. Identify child nodes:
+   → dashboard (single node)
+   → courses (contains multiple course nodes)
+
+--------------------------------------------------
+
+2. Traverse dashboard:
+   → Go inside <dashboard>
+   → Read <purchaseAmount> = 910
+   → Read <website> = rahulshettyacademy.com
+
+--------------------------------------------------
+
+3. Traverse courses:
+   → Go inside <courses>
+   → It contains multiple <course> nodes
+
+   → First <course>:
+        title = selenium python
+        price = 50
+        copies = 6
+
+   → Second <course>:
+        title = cypress
+        price = 40
+        copies = 4
+
+   → Third <course>:
+        title = RPA
+        price = 45
+        copies = 10
+
+--------------------------------------------------
+
+4. Iterate mentally:
+   → Move node by node: course → course → course
+
+--------------------------------------------------
+
+5. Example calculation:
+   → (50×6) + (40×4) + (45×10) = 910
+
+--------------------------------------------------
+
+6. Compare:
+   → dashboard.purchaseAmount = 910
+   → VALIDATION SUCCESS
+
+END
+
+import io.restassured.path.xml.XmlPath;
+
+public class XmlTraverseExample {
+
+    public static void main(String[] args) {
+
+        String xml = "<root>\n" +
+                "    <dashboard>\n" +
+                "        <purchaseAmount>910</purchaseAmount>\n" +
+                "        <website>rahulshettyacademy.com</website>\n" +
+                "    </dashboard>\n" +
+                "    <courses>\n" +
+                "        <course>\n" +
+                "            <title>selenium python</title>\n" +
+                "            <price>50</price>\n" +
+                "            <copies>6</copies>\n" +
+                "        </course>\n" +
+                "        <course>\n" +
+                "            <title>cypress</title>\n" +
+                "            <price>40</price>\n" +
+                "            <copies>4</copies>\n" +
+                "        </course>\n" +
+                "        <course>\n" +
+                "            <title>RPA</title>\n" +
+                "            <price>45</price>\n" +
+                "            <copies>10</copies>\n" +
+                "        </course>\n" +
+                "    </courses>\n" +
+                "</root>";
+
+        XmlPath xp = new XmlPath(xml);
+
+        // 🔹 1. Dashboard values
+        int purchaseAmount = xp.getInt("root.dashboard.purchaseAmount");
+        String website = xp.getString("root.dashboard.website");
+
+        System.out.println(purchaseAmount);
+        System.out.println(website);
+
+        // 🔹 2. Count courses
+        int count = xp.getList("root.courses.course").size();
+
+        // 🔹 3. Loop through each course
+        int total = 0;
+
+        for (int i = 0; i < count; i++) {
+
+            String title = xp.getString("root.courses.course[" + i + "].title");
+            int price = xp.getInt("root.courses.course[" + i + "].price");
+            int copies = xp.getInt("root.courses.course[" + i + "].copies");
+
+            System.out.println(title + " -> " + price);
+
+            total += price * copies;
+
+            if (title.equals("RPA")) {
+                System.out.println("Found RPA course");
+            }
+        }
+
+        // 🔹 4. Validation
+        System.out.println("Total = " + total);
+        System.out.println("Matches = " + (total == purchaseAmount));
+    }
+}
+
 
 --Automating JIRA API:
 ----------------------
