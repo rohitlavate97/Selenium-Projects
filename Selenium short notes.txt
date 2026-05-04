@@ -1,5 +1,14 @@
 Selenium
 --------
+Design patterns:
+--------------
+POM fundamentals
+Component Object Model
+Fluent APIs
+API + DB validation layer
+Screenplay Pattern
+Hybrid enterprise architecture
+
 -Flavors of Selenium: Selenium Core, Selenium IDE(Support only Mozilla firefox),Selenium RC, Selenium WebDriver
 
 -What Selenium cannot solve alone
